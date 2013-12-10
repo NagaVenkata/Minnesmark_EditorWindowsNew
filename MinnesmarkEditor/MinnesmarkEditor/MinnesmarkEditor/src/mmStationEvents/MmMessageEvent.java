@@ -187,13 +187,13 @@ public class MmMessageEvent {
 			     if(file.isDirectory())
 			     {
 				    src = new FileInputStream(sourcePath).getChannel(); 
-			        des = new FileOutputStream(destinationPath+"/messages/"+desPath[desPath.length-1]).getChannel();
+			        des = new FileOutputStream(desPath[desPath.length-1]).getChannel();
 			     }
 			     else
 			     {
 				    file.mkdir();
 				    src = new FileInputStream(sourcePath).getChannel();
-				    des = new FileOutputStream(destinationPath+"/messages/"+desPath[desPath.length-1]).getChannel();
+				    des = new FileOutputStream(desPath[desPath.length-1]).getChannel();
 			     }
 			  }
 			  

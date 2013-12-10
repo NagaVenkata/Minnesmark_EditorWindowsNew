@@ -32,6 +32,9 @@ import mmMap.*;
 
 import org.geonames.*;
 import org.jdesktop.swingx.mapviewer.GeoPosition;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 
 
@@ -165,9 +168,66 @@ public class MmAccordionMenuItems  {
 			public void actionPerformed(ActionEvent event) {
 				// TODO Auto-generated method stub
 				
+				String str = "http://maps.googleapis.com/maps/api/geocode/json?address=";
+				
+				String[] strs = textField.getText().split(" ");
+				
+				if(strs.length>0)
+				{
+					for(int i=0;i<strs.length-1;i++)
+					{
+						str+=strs[i]+"+";
+					}
+					
+					str+=strs[strs.length-1];
+				}
+				
+				try
+				{
+				    URL url = new URL(str+",+SE&sensor=false");	
+				    
+				    InputStream in = url.openStream();
+				    
+				    InputStreamReader is = new InputStreamReader(in);
+				    
+				    StringBuilder sb = new StringBuilder();
+				    
+				    BufferedReader br = new BufferedReader(is); 
+				    
+				    String line = br.readLine();
+
+	                 while (line != null) {
+	                       sb.append(line);
+	                       line = br.readLine();
+	                }
+	                String jsonContent = sb.toString();
+	                JSONTokener jsonTokens = new JSONTokener(jsonContent);
+
+				    JSONObject jsonObject = new JSONObject(jsonTokens);
+				    
+				    JSONArray jsonArray = new JSONArray(jsonObject.get("results").toString());
+				    
+				    jsonObject = (JSONObject) jsonArray.get(0);
+				    
+				    jsonObject = jsonObject.getJSONObject("geometry");
+				    
+				    jsonObject = jsonObject.getJSONObject("location");
+				    
+				    latitude = (Double) jsonObject.get("lat");
+				    longitude = (Double) jsonObject.get("lng");
+				    
+				    map.getMap().getMainMap().setAddressLocation(new GeoPosition(latitude,longitude));
+					map.getMap().setZoom(1);   
+				    
+				    
+				}
+				catch(Exception e)
+				{
+					JOptionPane.showMessageDialog(null, e);
+				}
 				//JOptionPane.showMessageDialog(null, textField.getText());
 				
-				WebService.setUserName("umapathi"); // add your username here
+				/*WebService.setUserName("umapathi"); // add your username here
 				 
 				  ToponymSearchCriteria searchCriteria = new ToponymSearchCriteria();
 				  searchCriteria.setQ(textField.getText());
@@ -191,7 +251,7 @@ public class MmAccordionMenuItems  {
 				  catch(Exception e)
 				  {
 					  JOptionPane.showMessageDialog(null, e);
-				  }
+				  }*/
 				  
 
 				

@@ -154,8 +154,16 @@ public class MmAudioEvent {
 			     else
 			     {
 				    file.mkdir();
-				    src = new FileInputStream(sourcePath).getChannel();
-				    des = new FileOutputStream(destinationPath+"/audios/"+desPath).getChannel();
+				    if(file.isDirectory())
+				    {	
+				       src = new FileInputStream(sourcePath).getChannel();
+				       des = new FileOutputStream(destinationPath+"/audios/"+desPath).getChannel();
+				    }
+				    else
+				    {
+				    	JOptionPane.showMessageDialog(null, "Inga behörighet att skapa mappar. Kontakt nätverk adminstartor för behörigheter");
+				    	return false;
+				    }
 			     }
 			  }   
 			  

@@ -179,7 +179,7 @@ public class MmAccordionMenu extends JPanel  {
 		
 		for(int i=0;i<texts.size();i++)
 			items.addLabelItems(texts.get(i),menu);
-	   System.out.println("Size "+texts.size());
+	   //System.out.println("Size "+texts.size());
 		for(MmAccordionMainItem item: getMenuItems())
         {
 			if(item.getName().equals(menu))

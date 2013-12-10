@@ -486,7 +486,7 @@ public class MmStationEvents {
 				  {	  
 				    lb = labels.get(currentLabelIndex);
 				   
-			      if(((lb.getText().contains(".jpg"))||(lb.getText().contains(".png"))||(lb.getText().contains(".bmp"))) && !(lb.getText().contains("Panorama")))
+			      if(isImage(lb.getText()))
 			      { 	
 			    	  
 			    	  System.out.println("Entered data");
@@ -849,7 +849,7 @@ public class MmStationEvents {
 		
 		    
 
-		if((lb.getText().contains(".jpg"))||(lb.getText().contains(".png"))||(lb.getText().contains(".bmp")) && !lb.getText().contains("Panorama") && !lb.getText().contains(".txt"))
+		if(isImage(lb.getText()))
 	    {
 		      
 			  System.out.println("label in image event"+lb.getText());  
@@ -1333,7 +1333,7 @@ public class MmStationEvents {
 
 		   
 		
-		      if((lb.getText().contains(".jpg"))||(lb.getText().contains(".png"))||(lb.getText().contains(".bmp"))||(lb.getText().contains("Panorama")))
+		      if(isImage(lb.getText()))
 		      {
 		    	  
 		    	  MmImageEvent imageEvent = new MmImageEvent();
@@ -1610,7 +1610,7 @@ public class MmStationEvents {
 
 		   
 		
-		      if((lb.getText().contains(".jpg"))||(lb.getText().contains(".png"))||(lb.getText().contains(".bmp"))||(lb.getText().contains("Panorama")))
+		      if(isImage(lb.getText()))
 		      {
                   
 		    	  MmImageEvent imageEvent = new MmImageEvent();
@@ -1899,7 +1899,7 @@ public class MmStationEvents {
 
 		   
 		
-		      if((lb.getText().contains(".jpg"))||(lb.getText().contains(".png"))||(lb.getText().contains(".bmp"))||(lb.getText().contains("Panorama")))
+		      if(isImage(lb.getText()))
 		      {
                   
 		    	  MmImageEvent imageEvent = new MmImageEvent();
@@ -2174,7 +2174,7 @@ public class MmStationEvents {
 			      }
 		   
 		
-		      if((lb.getText().contains(".jpg"))||(lb.getText().contains(".png"))||(lb.getText().contains(".bmp"))||(lb.getText().contains("Panorama")))
+		      if(isImage(lb.getText()))
 		      {
 			      if(currentLabelIndex<labels.size())
 			      {
@@ -2456,7 +2456,7 @@ public class MmStationEvents {
 
 		   
 		
-		      if((lb.getText().contains(".jpg"))||(lb.getText().contains(".png"))||(lb.getText().contains(".bmp"))||(lb.getText().contains("Panorama")))
+		      if(isImage(lb.getText()))
 		      {
 			      
 		    	  
@@ -2525,6 +2525,24 @@ public class MmStationEvents {
 			
 		
 		return true;
+	}
+	
+	public boolean isImage(String imageName)
+	{
+		String[] images = {
+			
+				".png",".PNG",".jpg",".JPG",".jpeg",".JPEG",".tiff",".TIFF",".bmp",".BMP"
+		};
+		
+		for(int i=0;i<images.length;i++)
+		{
+			if(imageName.contains(images[i]))
+				return true;
+			else
+				continue;
+		}
+		
+		return false;
 	}
 	
 	public JSONObject getStationEevnts()

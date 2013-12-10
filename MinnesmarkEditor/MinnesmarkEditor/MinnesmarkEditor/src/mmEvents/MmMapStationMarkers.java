@@ -611,6 +611,10 @@ public class MmMapStationMarkers extends JPanel {
 		if(markerIndex!=0)
 		{
 			//JOptionPane.showMessageDialog(null, "markers "+mapMarkers.size()+"  "+markerIndex);
+			
+			if(index==5)
+				markerIndex=index;
+			
 			mapMarkers.remove(markerIndex);
 		    mapMarkers.add(new JLabel(icon[index]));
 		    //markerIndex=index;
@@ -641,22 +645,41 @@ public class MmMapStationMarkers extends JPanel {
 		}
 		
 		mapMarkers.add(new JLabel(icon[markerIndex]));
-		for(int i= markerIndex+1;i<6;i++)
-		{
-			JLabel lb = new JLabel(icon_gray[i]);
-			mapMarkers.add(lb);
-		}
 		
-		for(int i= 0;i<6;i++)
+		if(index!=5)
+		{	
+		    for(int i= markerIndex+1;i<6;i++)
+		    {
+			    JLabel lb = new JLabel(icon_gray[i]);
+			    mapMarkers.add(lb);
+		    }
+		
+		    for(int i= 0;i<6;i++)
 			markerPanel.add(mapMarkers.get(i));
 		
-		markerPanel.revalidate();
+		    markerPanel.revalidate();
 		
-		//JOptionPane.showMessageDialog(null, "markers "+mapMarkers.size()+"  "+markerIndex);
+		   //JOptionPane.showMessageDialog(null, "markers "+mapMarkers.size()+"  "+markerIndex);
 		
-		mapMarkers.get(markerIndex).setVisible(true);
+		   mapMarkers.get(markerIndex).setVisible(true);
 		
-		selectMarker(markerIndex);
+		   selectMarker(markerIndex);
+		}
+		
+		if(index==5)
+		{	
+		    
+		    for(int i= 0;i<6;i++)
+			markerPanel.add(mapMarkers.get(i));
+		
+		    markerPanel.revalidate();
+		
+		   //JOptionPane.showMessageDialog(null, "markers "+mapMarkers.size()+"  "+markerIndex);
+		
+		   mapMarkers.get(markerIndex).setVisible(true);
+		
+		   selectMarker(markerIndex);
+		}
 		
 		//markerWindows.get(markerIndex).remove(moveableLabel);
 		

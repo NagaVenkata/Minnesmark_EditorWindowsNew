@@ -9,11 +9,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.print.Book;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterJob;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URL;
 
 
 import javax.swing.*;
@@ -25,14 +32,27 @@ import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 
+
+import mmFileManager.*;
+
+
+
+
+import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+
+
 import java.util.*;
 
 import mmFileManager.MmFileSelector;
+
+import com.sun.jna.NativeLibrary;
 
 
 import mmAccordionMenu.*;
 
 import mmMap.MmMapViewer;
+import mmPrintMarkers.MmPrintMarkers;
 
 public class MmEditorMain extends JFrame implements ActionListener,AWTEventListener{
 
@@ -75,6 +95,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	     accordionPanels = new ArrayList<MmAccordionPanel>();
 	     MmAccordionComponent.width = splitPane.getDividerLocation();
 	     width = splitPane.getDividerLocation();
+	     
 	     
 	     
 	     window = new JFrame();
@@ -145,6 +166,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		//java.awt.EventQueue.invokeLater(new Runnable() {
 			//public void run() {
 			  map = new MmMapViewer();
+			  map.setFileOpen(false);
 			  panelRight.setLayout(new FlowLayout());
 		      panelRight.add(map);
 			//}
@@ -178,7 +200,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		//panelLeft.add(leftAccordion);
 	    
 	    JPanel accordionPanel = new JPanel();
-	    accordionPanel.setPreferredSize(new Dimension(375,650));
+	    accordionPanel.setPreferredSize(new Dimension(375,window.getHeight()+250));
 	    /*accordionPanel.setBackground(new java.awt.Color(45, 183, 255));
 	    accordionPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 	    accordionPanel.setLayout(new javax.swing.BoxLayout(accordionPanel, javax.swing.BoxLayout.LINE_AXIS));*/
@@ -279,8 +301,8 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	{
 		
          		
-		//Toolkit.getDefaultToolkit().addAWTEventListener(
-				//new Listener(map), AWTEvent.MOUSE_EVENT_MASK | AWTEvent.FOCUS_EVENT_MASK);
+		/*Toolkit.getDefaultToolkit().addAWTEventListener(
+				new Listener(map), AWTEvent.MOUSE_EVENT_MASK | AWTEvent.FOCUS_EVENT_MASK); */
 		
 		window.addMouseListener(new MouseListener() {
 
@@ -288,7 +310,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			public void mouseClicked(MouseEvent event) {
 				// TODO Auto-generated method stub
 				//JOptionPane.showMessageDialog(null, event.getLocationOnScreen());
-				
+				//map.bringTofront();
 			}
 
 			@Override
@@ -323,7 +345,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			@Override
 			public void windowActivated(WindowEvent arg0) {
 				// TODO Auto-generated method stub
-				window.setState(JFrame.NORMAL);
+				//window.setState(JFrame.NORMAL);
 				//map.showStationEventWindow();
 				
 				
@@ -333,80 +355,37 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			@Override
 			public void windowClosed(WindowEvent arg0) {
 				// TODO Auto-generated method stub
-				if(map.getSavedState())
-				{	
-					accordionMenu.clearContent();
-					accordionMenu.getStartEvents().imageEvents.clear();
-					accordionMenu.getStartEvents().audioEvents.clear();
-					accordionMenu.getStartEvents().videoEvents.clear();
-					accordionMenu.getStartEvents().messageEvents.clear();
-				    map.resetMapContents();
-				}    
-				else
-				{
-					int option = JOptionPane.showConfirmDialog(null, "kankä spara file", "Spara", JOptionPane.YES_NO_CANCEL_OPTION);
-					if(option==JOptionPane.OK_OPTION)
-					{	
-					    JFileChooser saveFile = new JFileChooser();
-					    int saveOption = saveFile.showSaveDialog(null);
-					    
-                        saveFile.setAcceptAllFileFilterUsed(false);
-						
-						FileNameExtensionFilter filter = new FileNameExtensionFilter(
-						        "JSON files", "json");
-						
-						saveFile.addChoosableFileFilter(filter);
-						saveFile.setFileFilter(filter);
-					    
-					    map.hideStationEventWindow();
-					    if(saveOption == JFileChooser.APPROVE_OPTION)
-					    {
-					    	//map.showStationEventWindow();
-					       //saveFile.setCurrentDirectory(null);
-					       //JOptionPane.showMessageDialog(window, saveFile.getSelectedFile().getName()+" "+saveFile.getSelectedFile().getPath());			
-					       map.createJSONFile(saveFile.getSelectedFile().toString(),saveFile.getSelectedFile().getPath(),accordionMenu.getGlobalMarkerEvents(),accordionMenu.getStartEvents());
-					       map.setSaved(true);
-					       accordionMenu.clearContent();
-					       resetStartContent();
-						   accordionMenu.getStartEvents().imageEvents.clear();
-						   accordionMenu.getStartEvents().audioEvents.clear();
-						   accordionMenu.getStartEvents().videoEvents.clear();
-						   accordionMenu.getStartEvents().messageEvents.clear();
-					       map.resetMapContents();
-					    }   
-					    
-					    
-					}
-					
-					if(option==JOptionPane.NO_OPTION)
-					{
-						//accordionMenu.getGlobalMarkerEvents().clear();
-						accordionMenu.clearContent();
-						resetStartContent();
-						accordionMenu.getStartEvents().imageEvents.clear();
-						accordionMenu.getStartEvents().audioEvents.clear();
-						accordionMenu.getStartEvents().videoEvents.clear();
-						accordionMenu.getStartEvents().messageEvents.clear();
-					    map.resetMapContents();
-					}
-					
-				}
 				
-				System.exit(0);
 			}
 
 			@Override
 			public void windowClosing(WindowEvent arg0) {
 				// TODO Auto-generated method stub
-				int option = JOptionPane.showConfirmDialog(null, "kankä spara file", "Spara", JOptionPane.YES_NO_CANCEL_OPTION);
-				if(option==JOptionPane.OK_OPTION)
-				{
-				    SaveFile();
-				    
-				    System.exit(0);
-				}    
 				
-				System.exit(0);
+				if(!map.getSavedState())
+				{
+				   int option = JOptionPane.showConfirmDialog(null, "Spara file", "Spara", JOptionPane.YES_NO_CANCEL_OPTION);
+				   if(option==JOptionPane.OK_OPTION)
+				   {
+				       SaveFile();
+				    
+				       System.exit(0);
+				   }
+				   
+				   if(option==JOptionPane.NO_OPTION)
+				   {
+						System.exit(0);
+				   }
+				   
+				   if(option==JOptionPane.CANCEL_OPTION)
+				   {
+						window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+				   }
+				   
+				}
+				
+				
+				
 				
 				
 			}
@@ -424,9 +403,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				
 				
 				
-				if(MouseInfo.getPointerInfo().getLocation().y>750)
-					map.hideStationEventWindow();
-				System.out.println("mouse pos "+MouseInfo.getPointerInfo().getLocation().x+"  "+MouseInfo.getPointerInfo().getLocation().y);
+				
 			
 			}
 
@@ -434,7 +411,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			public void windowDeiconified(WindowEvent event) {
 				// TODO Auto-generated method stub
 				
-				map.showStationEventWindow();
+				//map.showStationEventWindow();
 				//window.setState(JFrame.NORMAL);
 				
 			}
@@ -463,7 +440,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	@Override
 	public void eventDispatched(AWTEvent arg0) {
 		// TODO Auto-generated method stub
-		JOptionPane.showMessageDialog(null, MouseInfo.getPointerInfo().getLocation());
+		//JOptionPane.showMessageDialog(null, MouseInfo.getPointerInfo().getLocation());
 	}
 	
 	
@@ -891,25 +868,39 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					}
 				}*/
 				
-				int option = JOptionPane.showConfirmDialog(null, "kankä spara file", "Spara", JOptionPane.YES_NO_CANCEL_OPTION);
-				if(option==JOptionPane.OK_OPTION)
-				{
-				    SaveFile();
-				    
-				    map.resetMapContents();
-				}	
+			   JOptionPane.showMessageDialog(null, map.getSavedState());
 				
-				if(option==JOptionPane.NO_OPTION)
-				{
-					//accordionMenu.getGlobalMarkerEvents().clear();
+				if(map.getSavedState())
+				{	
 					accordionMenu.clearContent();
-					resetStartContent();
 					accordionMenu.getStartEvents().imageEvents.clear();
 					accordionMenu.getStartEvents().audioEvents.clear();
 					accordionMenu.getStartEvents().videoEvents.clear();
 					accordionMenu.getStartEvents().messageEvents.clear();
 				    map.resetMapContents();
 				}
+				else
+				{	
+				    int option = JOptionPane.showConfirmDialog(null, "Spara file", "Spara", JOptionPane.YES_NO_CANCEL_OPTION);
+				    if(option==JOptionPane.OK_OPTION)
+				    {
+				       SaveFile();
+				    
+				       map.resetMapContents();
+				    }	
+				
+				    if(option==JOptionPane.NO_OPTION)
+				    {  
+				 	   //accordionMenu.getGlobalMarkerEvents().clear();
+					   accordionMenu.clearContent();
+					   resetStartContent();
+					   accordionMenu.getStartEvents().imageEvents.clear();
+					   accordionMenu.getStartEvents().audioEvents.clear();
+					   accordionMenu.getStartEvents().videoEvents.clear();
+					   accordionMenu.getStartEvents().messageEvents.clear();
+				       map.resetMapContents();
+				    }
+				}    
 			}
 			
 		});
@@ -920,33 +911,64 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			public void actionPerformed(ActionEvent event) {
 				// TODO Auto-generated method stub
 				
-				map.hideStationEventWindow();
+				//map.hideStationEventWindow();
 				
-				JFileChooser openFile = new JFileChooser();
+				/*final VFSJFileChooser vfs1 = new VFSJFileChooser();
+			     
+			     vfs1.setAccessory(new DefaultAccessoriesPanel(vfs1));
+			     vfs1.setFileHidingEnabled(false);
+			     vfs1.setMultiSelectionEnabled(false);
+			     vfs1.setFileSelectionMode(SELECTION_MODE.FILES_AND_DIRECTORIES);
+			     
+			    
+			        
+			     vfs1.addChoosableFileFilter(new MmFileFilter());
+			     
+			     vfs1.setFileFilter(new MmFileFilter());
+
+			     // show the file dialog
+			     RETURN_TYPE answer = vfs1.showOpenDialog(null);*/
 				
-				openFile.setAcceptAllFileFilterUsed(false);
-				
-				FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				        "JSON files", "json");
-				
-				openFile.addChoosableFileFilter(filter);
-				openFile.setFileFilter(filter);
-				
-				int option = openFile.showOpenDialog(null);
 				
 				
-                				
-				if(option == JFileChooser.APPROVE_OPTION)
+				if(!map.getSavedState() && map.isFileOpen())
 				{
-					map.showStationEventWindow();
-				    map.readJSONFileContents(openFile.getSelectedFile().getAbsolutePath(),accordionMenu);
-				    map.setSaved(false);
-				}    
-				
-				if(option == JFileChooser.CANCEL_OPTION)
-				{
-					map.showStationEventWindow();
+				    SaveFile();
 				}
+				else
+				{
+					
+					JFileChooser openFile = new JFileChooser();
+					
+					openFile.setAcceptAllFileFilterUsed(false);
+					
+					FileNameExtensionFilter filter = new FileNameExtensionFilter(
+					        "JSON files", "json");
+					
+					openFile.addChoosableFileFilter(filter);
+					openFile.setFileFilter(filter);
+					
+					int option = openFile.showOpenDialog(null);
+					
+				    if(option == JFileChooser.APPROVE_OPTION)
+				    {
+				    	map.resetMapContents();
+					    map.showStationEventWindow();
+				        map.readJSONFileContents(openFile.getSelectedFile().getAbsolutePath(),accordionMenu);
+				        map.setFileOpen(true);
+				        map.setSaved(false);
+				    }    
+				
+				    if(option == JFileChooser.CANCEL_OPTION)
+				    {
+				    	
+				    	if(!map.isFileOpen())
+				    	{
+				    	
+					        map.showStationEventWindow();
+				    	}    
+				    }
+				}    
 				
 				
 			}
@@ -1040,7 +1062,8 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					    
 					}
 					
-						
+					map.setSaved(true);
+					
 									   
 				}   
 				
@@ -1061,11 +1084,16 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			
 			public void actionPerformed(ActionEvent event)
 			{
-				map.isPrintSelected=true;
-				map.printMap();
-				map.isPrintSelected=false;
-				map.drawPoints();
-			}
+				
+				//accordionMenu.printMarker();
+				if(map.getStations().isEmpty() && accordionMenu.getGlobalMarkerEvents().isEmpty())
+				{
+					JOptionPane.showMessageDialog(null, "Ingen Stationer eller Markör till skriv ut");
+				}
+				else
+					print();
+				
+			}	
 		});
 		
 		print_preview.addActionListener(new ActionListener(){
@@ -1093,7 +1121,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				}    
 				else
 				{
-					int option = JOptionPane.showConfirmDialog(null, "kankä spara file", "Spara", JOptionPane.YES_NO_CANCEL_OPTION);
+					int option = JOptionPane.showConfirmDialog(null, "Spara file", "Spara", JOptionPane.YES_NO_CANCEL_OPTION);
 					if(option==JOptionPane.OK_OPTION)
 					{	
 					    JFileChooser saveFile = new JFileChooser();
@@ -1186,8 +1214,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		{	
 			map.showStationEventWindow();
 			String fileName = saveFile.getSelectedFile().toString();
-			
-			
+						
 			if(!fileName.contains(".json"))
 			{	
 				fileName = fileName+".json";
@@ -1242,13 +1269,89 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		}
 	}
 	
+	public void print()
+	{
+		PrinterJob printer = PrinterJob.getPrinterJob();
+	    //printer.setPrintable(this);
+	    boolean ok = printer.printDialog();
+	    	
+	    if(ok)
+	    {
+	    	try
+	    	{
+	    		PageFormat pPageFormat = printer.defaultPage();
+	    		Paper pPaper = pPageFormat.getPaper();
+	    		pPaper.setImageableArea(1.0, 1.0, pPaper.getWidth(), pPaper.getHeight());
+	    		pPageFormat.setPaper(pPaper);
+	    		pPageFormat = printer.pageDialog(pPageFormat);
+	    		Book pBook = new Book();
+	    		if(!map.getStations().isEmpty() || !accordionMenu.getGlobalMarkerEvents().isEmpty())
+				{	
+	    			int index;
+	    				    			
+	    			if(!map.getStations().isEmpty())
+	    			{
+	    				map.isPrintSelected=true;
+	    				pBook.append(map,printer.defaultPage());
+	    			}		
+	    			
+	    			if(!accordionMenu.getGlobalMarkerEvents().isEmpty())
+	    			{
+	    				index=accordionMenu.getGlobalMarkerEvents().get(0).getMarkerIndex();
+	    			    pBook.append(new MmPrintMarkers(System.getProperty("user.dir")+"/new markers/pattern"+Integer.toString(index+1)+".png" ,accordionMenu.getGlobalMarkerEvents().get(0)), printer.defaultPage());
+	    			}    
+	    			
+					for(int i=1;i<accordionMenu.getGlobalMarkerEvents().size();i++)
+					{		
+					   index = accordionMenu.getGlobalMarkerEvents().get(i).getMarkerIndex();
+					   
+					   pBook.append(new MmPrintMarkers(System.getProperty("user.dir")+"/new markers/pattern"+Integer.toString(index+1)+".png" ,accordionMenu.getGlobalMarkerEvents().get(i)), printer.defaultPage());
+					
+					   //JOptionPane.showMessageDialog(null, "marker index "+index);
+					  			   
+					   //accordionMenu.getMarkers().printMap();
+					}   
+				    
+				}
+	    		//pBook.append(new MmPrintMarkers("/Users/Umapathi/Desktop/brick.gif",null), printer.defaultPage());
+	    		//pBook.append(new MmPrintMarkers("/Users/Umapathi/Desktop/brickNrm.gif",null), pPageFormat);
+	    		//pBook.append(new MmPrintMarkers("/Users/Umapathi/Desktop/dirt_NRM.png",null), pPageFormat);
+	    		//pBook.append(new MmPrintMarkers("/Users/Umapathi/Desktop/childrenAtPond_NRM.png",null), pPageFormat);
+	    		printer.setPageable(pBook);
+	    		printer.print();
+	    			
+	    		}
+	    		catch(Exception e)
+	    		{
+	    			JOptionPane.showMessageDialog(null, e);
+	    		}
+	    	}
+		
+		
+		
+		    
+		
+		//map.printMap();
+		map.isPrintSelected=false;
+		map.drawPoints();
+	
+	}
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		
+        NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), System.getProperty("user.dir") + File.separator + "lib" + File.separator + "VLC.app" + File.separator + "Contents"+  File.separator + "MacOS"+File.separator + "lib");
+        //System.setProperty("jna.library.path", System.getProperty("user.dir") + File.separator + "lib" + File.separator + "VLC" + File.separator + "lib");
+        
+        
 		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
         GraphicsConfiguration gc = gd.getDefaultConfiguration();
         Insets ins = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+        
+        
+        
         int sw = gc.getBounds().width - ins.left - ins.right;
         int sh = gc.getBounds().height - ins.top - ins.bottom;
 		
@@ -1257,11 +1360,13 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		new MmEditorMain(new Dimension(sw,sh));
 		
 		
+		
+		 
              
 	}
 
 	
-	private static class Listener implements AWTEventListener {
+	/*private static class Listener implements AWTEventListener {
 		
 		MmMapViewer map1;
 		boolean focused = true;
@@ -1275,7 +1380,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
         }
         public void eventDispatched(AWTEvent event) {
             
-            /*if(MouseInfo.getPointerInfo().getLocation().y<75 && event.toString().contains("FOCUS_LOST"))
+            if(MouseInfo.getPointerInfo().getLocation().y<75 && event.toString().contains("FOCUS_LOST"))
             {
             	 //System.out.print(MouseInfo.getPointerInfo().getLocation() + " | ");
             	 //System.out.print("data  "+event);
@@ -1288,7 +1393,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
             	 //JOptionPane.showMessageDialog(null, "Entered");
             	 System.out.print("data1  "+event);
             	 map1.bringTofront();
-            }*/
+            }
             
             
             //System.out.println(event.toString());
@@ -1343,11 +1448,16 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
             	}
             	
             	Listener.prevEvent = event;
-            }*/ 	
+            }	
             	
             
         }
-    }
+        
+        
+    }*/
+	
+	
+	
 
 }
 
