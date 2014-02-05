@@ -233,9 +233,11 @@ public class MmStationEvents {
 		{
 			labels.get(count).setText(text);
 			labels.get(count).setName(path);
+			current_index++;
 		}
 		else
 		{	
+		   current_index++;	
 		   labels.add(lb);
 		}   
 		
@@ -404,6 +406,8 @@ public class MmStationEvents {
 		//JOptionPane.showMessageDialog(null, "Entered station1");
 		
 		//JOptionPane.showMessageDialog(null, this.stationName+"  "+nextStationIndex);
+		
+		gpsRadius = 10;
 		
 		try {
 			   stationEvent.put("name", this.stationName);
@@ -824,7 +828,7 @@ public class MmStationEvents {
 					
 		    JLabel lb = labels.get(currentLabelIndex);
 		   
-		    if(labels.get(currentLabelIndex).getText().isEmpty())
+		    if(lb.getText().isEmpty())
 		    {
 		    	 
 		    	 		    	 		    	 
@@ -852,14 +856,14 @@ public class MmStationEvents {
 		if(isImage(lb.getText()))
 	    {
 		      
-			  System.out.println("label in image event"+lb.getText());  
+			  System.out.println("label in image event "+lb.getText());  
 			  
 			  MmImageEvent nextImageEvent = new MmImageEvent();
 			  	  
 			  if(imageEvents.isEmpty())
 				  nextImageEvent.setEventName("station"+Integer.toString(stationIndex)+"image");
 			  else
-				  nextImageEvent.setEventName("enableStation"+Integer.toString(stationIndex)+"SwingPoint"+Integer.toString(swingIndex)+"Compass");
+				  nextImageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(imageEvents.size())+"image");
 			  
 			        String[] attrs = lb.getText().split(":");
 			        
@@ -872,11 +876,10 @@ public class MmStationEvents {
 			        
 			        if(attrs.length==2)
 			        {	
-			        	nextImageEvent.setImageType(attrs[0]);
+			        	nextImageEvent.setImageFile(attrs[0]);
 			        	nextImageEvent.setCollectItem(true);
-			        	JOptionPane.showMessageDialog(null, "objects collect "+collectItems.size());
 			        	collectItems.add(new Integer(collectItems.size()+1));
-			        	JOptionPane.showMessageDialog(null, "objects collect "+collectItems.size());
+			        	
 			        }    
 			        	
 			           
@@ -953,9 +956,7 @@ public class MmStationEvents {
 						   else
 							   audioEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(audioEvents.size())+"_audio");
 						   		   
-						   imageEvent.addActions(audioEvent.getEventName());
-						   imageEvent.JSONActions();
-						   audioEvents.add(audioEvent);
+						   
 						   
 						   String[] attrs = lb.getText().split(":");
 						   if(attrs.length<=1)
@@ -971,6 +972,9 @@ public class MmStationEvents {
 						   }
 						   audioEvent.setSourcePath(lb.getName());
 						   audioEvent.setDestinationPath(this.saveFilePath);
+						   imageEvent.addActions(audioEvent.getEventName());
+						   imageEvent.JSONActions();
+						   audioEvents.add(audioEvent);
 					       audioEvent.makeJSONObject();
 					       currentLabelIndex++;
 					       
@@ -1006,8 +1010,9 @@ public class MmStationEvents {
 							  videoEvent.makeJSONObject();
 					    	  videoEvents.add(videoEvent);
 					    	  currentLabelIndex++;
-					    	  if(currentLabelIndex<labels.size())
+					    	  if(currentLabelIndex<=labels.size())
 					    	  {	
+					    		  
 					    		  if(!createVideoEvent(videoEvent))
 					    			  return false;
 					    	  }   
@@ -1041,7 +1046,7 @@ public class MmStationEvents {
 							  modelEvent.makeJSONObject();
 							  modelEvents.add(modelEvent);
 					    	  currentLabelIndex++;
-					    	  if(currentLabelIndex<labels.size())
+					    	  if(currentLabelIndex<=labels.size())
 					    	  {	
 					    		  if(!createModelEvent(modelEvent))
 					    			  return false;
@@ -1072,7 +1077,7 @@ public class MmStationEvents {
 								  imageEvent.addActions(messageEvent.getEventName());
 								  imageEvent.JSONActions();
 								  currentLabelIndex++;
-						    	  if(currentLabelIndex<labels.size())
+						    	  if(currentLabelIndex<=labels.size())
 						    	  {	
 						    		  if(!createMessageEvent(messageEvent))
 						    			  return false;
@@ -1098,7 +1103,7 @@ public class MmStationEvents {
 			    else
 				{	
 					imageEvent.addActions("mapEditMarker"+Integer.toString(stationIndex));	
-				    
+					imageEvent.addActions("Done");
 				}
 			    
 			    imageEvent.JSONActions();
@@ -1171,7 +1176,7 @@ public class MmStationEvents {
 			   panoramaEvent.makeJSONObject();
 		       currentLabelIndex++;
 		       
-		       if(currentLabelIndex<labels.size())
+		       if(currentLabelIndex<=labels.size())
 			    {	
 			    	
 			    	nextPanoramaEvent.makeJSONObject();
@@ -1258,7 +1263,7 @@ public class MmStationEvents {
 				  videoEvent.makeJSONObject();
 		    	  videoEvents.add(videoEvent);
 		    	  currentLabelIndex++;
-		    	  if(currentLabelIndex<labels.size())
+		    	  if(currentLabelIndex<=labels.size())
 		    	  {	
 		    		  if(!createVideoEvent(videoEvent))
 		    			  return false;
@@ -1293,7 +1298,7 @@ public class MmStationEvents {
 				  modelEvent.makeJSONObject();
 		    	  modelEvents.add(modelEvent);
 		    	  currentLabelIndex++;
-		    	  if(currentLabelIndex<labels.size())
+		    	  if(currentLabelIndex<=labels.size())
 		    	  {	
 		    		  if(!createModelEvent(modelEvent))
 		    			  return false;
@@ -1319,12 +1324,13 @@ public class MmStationEvents {
 					  }
 					  messageEvent.setSourcePath(lb.getName());
 					  messageEvent.setDestinationPath(this.saveFilePath);
-					  panoramaEvent.addActions(panoramaEvent.getEventName());
+					  panoramaEvent.addActions(messageEvent.getEventName());
 					  panoramaEvent.JSONActions();
 					  panoramaEvent.makeJSONObject();
-			    	  panoramaEvents.add(panoramaEvent);
+					  messageEvent.makeJSONObject();
+			    	  messageEvents.add(messageEvent);
 			    	  currentLabelIndex++;
-			    	  if(currentLabelIndex<labels.size())
+			    	  if(currentLabelIndex<=labels.size())
 			    	  {	
 			    		  if(!createMessageEvent(messageEvent))
 			    			  return false;
@@ -1339,9 +1345,9 @@ public class MmStationEvents {
 		    	  MmImageEvent imageEvent = new MmImageEvent();
 			  	  
 				  if(imageEvents.isEmpty())
-					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"Image");
+					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"image");
 				  else
-					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(imageEvents.size())+"Image");
+					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(imageEvents.size())+"image");
 				        String[] attrs = lb.getText().split(":");
 				        
 				        if(attrs.length<=1)
@@ -1391,7 +1397,7 @@ public class MmStationEvents {
 		    else
 			{	
 				panoramaEvent.addActions("mapEditMarker"+Integer.toString(stationIndex));	
-			    
+				panoramaEvent.addActions("Done");
 			}
 		    
 		    
@@ -1524,7 +1530,7 @@ public class MmStationEvents {
 				  videoEvent.makeJSONObject();
 		    	  videoEvents.add(videoEvent);
 		    	  currentLabelIndex++;
-		    	  if(currentLabelIndex<labels.size())
+		    	  if(currentLabelIndex<=labels.size())
 		    	  {	
 		    	     if(!createVideoEvent(videoEvent))
 		    	    	 return false;
@@ -1558,7 +1564,7 @@ public class MmStationEvents {
 				  modelEvent.makeJSONObject();
 		    	  modelEvents.add(nextModelEvent);
 		    	  currentLabelIndex++;
-		    	  if(currentLabelIndex<labels.size())
+		    	  if(currentLabelIndex<=labels.size())
 		    	  {	
 		    		  nextModelEvent.makeJSONObject();
 				    	
@@ -1596,12 +1602,13 @@ public class MmStationEvents {
 					  }
 					  messageEvent.setSourcePath(lb.getName());
 					  messageEvent.setDestinationPath(this.saveFilePath);
-					  modelEvent.addActions(modelEvent.getEventName());
+					  modelEvent.addActions(messageEvent.getEventName());
 					  modelEvent.JSONActions();
 					  modelEvent.makeJSONObject();
-			    	  modelEvents.add(modelEvent);
+					  messageEvent.makeJSONObject();
+			    	  messageEvents.add(messageEvent);
 			    	  currentLabelIndex++;
-			    	  if(currentLabelIndex<labels.size())
+			    	  if(currentLabelIndex<=labels.size())
 			    	  {	
 			    		  if(!createMessageEvent(messageEvent))
 			    			  return false;
@@ -1616,9 +1623,9 @@ public class MmStationEvents {
 		    	  MmImageEvent imageEvent = new MmImageEvent();
 			  	  
 				  if(imageEvents.isEmpty())
-					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"Image");
+					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"image");
 				  else
-					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(imageEvents.size())+"Image");
+					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(imageEvents.size())+"image");
 				        String[] attrs = lb.getText().split(":");
 				        
 				        if(attrs.length<=1)
@@ -1666,7 +1673,7 @@ public class MmStationEvents {
 		    else
 			{	
 				modelEvent.addActions("mapEditMarker"+Integer.toString(stationIndex));	
-			    
+				modelEvent.addActions("Done");
 			}
 		    
 		    modelEvent.JSONActions();
@@ -1736,7 +1743,7 @@ public class MmStationEvents {
 			   panoramaEvent.setDestinationPath(this.saveFilePath);
 			   panoramaEvent.makeJSONObject();
 			   currentLabelIndex++;
-		       if(createPanoramaEvent(panoramaEvent))
+		       if(!createPanoramaEvent(panoramaEvent))
 		    	   return false;
 		       
 		       
@@ -1773,7 +1780,7 @@ public class MmStationEvents {
 		       
 		       currentLabelIndex++;
 		       
-		       if(currentLabelIndex<labels.size())
+		       if(currentLabelIndex<=labels.size())
 		       {	   
 		         nextAudioEvent.makeJSONObject();
 		         
@@ -1824,7 +1831,7 @@ public class MmStationEvents {
 				  videoEvent.makeJSONObject();
 		    	  videoEvents.add(videoEvent);
 		    	  currentLabelIndex++;
-		    	  if(currentLabelIndex<labels.size())
+		    	  if(currentLabelIndex<=labels.size())
 		    	  {
 		    		 System.out.println("video event in audio "+lb.getText());
 		    	     if(!createVideoEvent(videoEvent))
@@ -1860,7 +1867,7 @@ public class MmStationEvents {
 				  modelEvent.makeJSONObject();
 		    	  modelEvents.add(modelEvent);
 		    	  currentLabelIndex++;
-		    	  if(currentLabelIndex<labels.size())
+		    	  if(currentLabelIndex<=labels.size())
 		    	  {	
 		    	     if(!createModelEvent(modelEvent))
 		    	    	 return false;
@@ -1886,11 +1893,13 @@ public class MmStationEvents {
 					  }
 					  messageEvent.setSourcePath(lb.getName());
 					  messageEvent.setDestinationPath(this.saveFilePath);
-					  audioEvent.addActions(audioEvent.getEventName());
+					  audioEvent.addActions(messageEvent.getEventName());
 					  audioEvent.JSONActions();
 					  audioEvent.makeJSONObject();
+					  messageEvent.makeJSONObject();
+					  messageEvents.add(messageEvent);
 			    	  currentLabelIndex++;
-			    	  if(currentLabelIndex<labels.size())
+			    	  if(currentLabelIndex<=labels.size())
 			    	  {	
 			    	     if(!createMessageEvent(messageEvent))
 			    	    	 return false;
@@ -1905,9 +1914,9 @@ public class MmStationEvents {
 		    	  MmImageEvent imageEvent = new MmImageEvent();
 			  	  //JOptionPane.showMessageDialog(null, "image event in audio "+lb.getText());
 				  if(imageEvents.isEmpty())
-					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"Image");
+					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"image");
 				  else
-					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(imageEvents.size())+"Image");
+					  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(imageEvents.size())+"image");
 				        String[] attrs = lb.getText().split(":");
 				        
 				        if(attrs.length<=1)
@@ -1934,7 +1943,7 @@ public class MmStationEvents {
 					    audioEvent.JSONActions();
 					    
 					    currentLabelIndex++;
-				    	if(currentLabelIndex<labels.size())
+				    	if(currentLabelIndex<=labels.size())
 				    	{	
 				    	     if(!createImageEvent(imageEvent))
 				    	     {
@@ -1963,7 +1972,7 @@ public class MmStationEvents {
 			else
 			{	
 				audioEvent.addActions("mapEditMarker"+Integer.toString(stationIndex));	
-			    
+				audioEvent.addActions("Done");
 			}    
 			
 			audioEvent.JSONActions();
@@ -2087,7 +2096,7 @@ public class MmStationEvents {
 				  nextVideoEvent.setDestinationPath(this.saveFilePath);
 				  
 		    	  currentLabelIndex++;
-		    	  if(currentLabelIndex<labels.size())
+		    	  if(currentLabelIndex<=labels.size())
 		    	  {	
 		    		  nextVideoEvent.makeJSONObject();
 				    	
@@ -2134,7 +2143,7 @@ public class MmStationEvents {
 				  modelEvent.makeJSONObject();
 				  modelEvents.add(modelEvent);
 		    	  currentLabelIndex++;
-		    	  if(currentLabelIndex<labels.size())
+		    	  if(currentLabelIndex<=labels.size())
 		    	  {	
 		    		  if(!createModelEvent(modelEvent))
 		    			  return false;
@@ -2161,12 +2170,13 @@ public class MmStationEvents {
 					  }
 					  messageEvent.setSourcePath(lb.getName());
 					  messageEvent.setDestinationPath(this.saveFilePath);
-					  videoEvent.addActions(videoEvent.getEventName());
+					  videoEvent.addActions(messageEvent.getEventName());
 					  videoEvent.JSONActions();
-					  videoEvent.makeJSONObject();
-			    	  videoEvents.add(videoEvent);
+					  
+					  messageEvent.makeJSONObject();
+			    	  messageEvents.add(messageEvent);
 			    	  currentLabelIndex++;
-			    	  if(currentLabelIndex<labels.size())
+			    	  if(currentLabelIndex<=labels.size())
 			    	  {	
 			    		  if(!createMessageEvent(messageEvent))
 			    			  return false;
@@ -2174,16 +2184,15 @@ public class MmStationEvents {
 			      }
 		   
 		
-		      if(isImage(lb.getText()))
-		      {
-			      if(currentLabelIndex<labels.size())
-			      {
+		       if(isImage(lb.getText()))
+			   {
+	                  
 			    	  MmImageEvent imageEvent = new MmImageEvent();
-				  	  
+				  	  //JOptionPane.showMessageDialog(null, "image event in audio "+lb.getText());
 					  if(imageEvents.isEmpty())
-						  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"Image");
+						  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"image");
 					  else
-						  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(imageEvents.size())+"Image");
+						  imageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(imageEvents.size())+"image");
 					        String[] attrs = lb.getText().split(":");
 					        
 					        if(attrs.length<=1)
@@ -2204,18 +2213,24 @@ public class MmStationEvents {
 					        imageEvent.makeJSONObject();
 					        imageEvent.JSONActions();
 						    imageEvents.add(imageEvent);
-						    imageEvent.addActions(imageEvent.getEventName());
+						    //imageEvent.addActions(imageEvent.getEventName());   
 						    
 						    videoEvent.addActions(imageEvent.getEventName());
 						    videoEvent.JSONActions();
 						    
 						    currentLabelIndex++;
-						    if(!createImageEvent(imageEvent))
-						    {
-						    	return false;
-						    }
-			      }   
-		     }
+					    	if(currentLabelIndex<=labels.size())
+					    	{	
+					    	     if(!createImageEvent(imageEvent))
+					    	     {
+					    		     return false;
+					    	    }	 
+					    	}
+					    	
+			     }
+			
+			   
+			
 		
 		   
 		}
@@ -2236,7 +2251,7 @@ public class MmStationEvents {
 		    else
 			{	
 				videoEvent.addActions("mapEditMarker"+Integer.toString(stationIndex));	
-			    
+				videoEvent.addActions("Done");
 			}
 		    
 		    videoEvent.JSONActions();
@@ -2365,7 +2380,7 @@ public class MmStationEvents {
 				  videoEvent.makeJSONObject();
 		    	  videoEvents.add(videoEvent);
 		    	  currentLabelIndex++;
-		    	  if(currentLabelIndex<labels.size())
+		    	  if(currentLabelIndex<=labels.size())
 		    	  {	
 		    		  if(!createVideoEvent(videoEvent))
 		    			  return false;
@@ -2400,7 +2415,7 @@ public class MmStationEvents {
 				  modelEvent.makeJSONObject();
 		    	  modelEvents.add(modelEvent);
 		    	  currentLabelIndex++;
-		    	  if(currentLabelIndex<labels.size())
+		    	  if(currentLabelIndex<=labels.size())
 		    	  {	
 		    		  if(!createModelEvent(modelEvent))
 		    			  return false;
@@ -2432,7 +2447,7 @@ public class MmStationEvents {
 					  nextMessageEvent.setDestinationPath(this.saveFilePath);
 					  
 			    	  currentLabelIndex++;
-			    	  if(currentLabelIndex<labels.size())
+			    	  if(currentLabelIndex<=labels.size())
 			    	  {	
 			    		  nextMessageEvent.makeJSONObject();
 					    	
@@ -2465,8 +2480,7 @@ public class MmStationEvents {
 					   imageEvent.setEventName("station"+Integer.toString(stationIndex)+"_image");
 				   else
 					   imageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(audioEvents.size())+"_image");
-				   imageEvent.addActions(imageEvent.getEventName());
-				   imageEvent.JSONActions();
+				   
 				   imageEvents.add(imageEvent);
 				      
 				      String[] attrs = lb.getText().split(":");
@@ -2515,7 +2529,7 @@ public class MmStationEvents {
 		    else
 			{	
 				messageEvent.addActions("mapEditMarker"+Integer.toString(stationIndex));	
-			    
+				messageEvent.addActions("Done");
 			}
 		    
 		    messageEvent.JSONActions();
@@ -2530,14 +2544,19 @@ public class MmStationEvents {
 	public boolean isImage(String imageName)
 	{
 		String[] images = {
-			
-				".png",".PNG",".jpg",".JPG",".jpeg",".JPEG",".tiff",".TIFF",".bmp",".BMP"
+				".png",".PNG",".jpg",".JPG",".jpeg",".JPEG",".gif",".GIF",".tiff",".TIFF",".bmp",".BMP"
 		};
+		
+		String imageExt = imageName;
+		
+		//imageExt = imageName.substring(imageName.length()-4, imageName.length());
 		
 		for(int i=0;i<images.length;i++)
 		{
-			if(imageName.contains(images[i]))
+			if(imageExt.contains(images[i]) && !(imageExt.contains("Panorama")))
+			{
 				return true;
+			}
 			else
 				continue;
 		}

@@ -8,6 +8,8 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,7 +18,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Book;
 import java.awt.print.PageFormat;
@@ -59,6 +63,7 @@ import mmAccordionMenu.*;
 import mmEvents.*;
 
 import mmGPSCoordinates.*;
+import mmLanguage.MmLanguage;
 import mmObjWriter.MmObjWriter;
 import mmStationEvents.*;
 
@@ -254,9 +259,13 @@ public class MmMapViewer extends JPanel implements Printable {
 	//file open
 	boolean isFileOpen;
 
-
+    //language settings
+   	int language;
 	
 
+	int adjustx,adjusty;
+
+	
 	public MmMapViewer()
 	{
 		panel=this;
@@ -328,17 +337,13 @@ public class MmMapViewer extends JPanel implements Printable {
 		mapKit.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		((DefaultTileFactory)mapKit.getMainMap().getTileFactory()).setThreadPoolSize(8);
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		mapKit.setPreferredSize(new Dimension(toolkit.getScreenSize().width-460,toolkit.getScreenSize().height-200));
+		mapKit.setPreferredSize(new Dimension(toolkit.getScreenSize().width-480,toolkit.getScreenSize().height-130));
 		add(mapKit);
 		mapKit.setAddressLocationShown(true);
 		mapKit.getMainMap().setPanEnabled(true);
 		mapKit.getMainMap().setZoomEnabled(false);
 		
-		
-		
-	    
-	    
-            
+		    
 	    GridBagConstraints constraints = new GridBagConstraints(); 
 	    
 	    constraints.anchor = GridBagConstraints.NORTH;
@@ -378,7 +383,7 @@ public class MmMapViewer extends JPanel implements Printable {
 				       if(!events.getStations().get(station_index).getStationType() && events.getStations().get(station_index).getStationsEvents().isEmpty())
 				       {	
 				           JComponent cmp = (JComponent)e.getSource();
-				           cmp.setToolTipText("<html>Klicka pÃ¥ station fÃ¶r att lÃ¤gga till mediefiler</html>");
+				           cmp.setToolTipText(MmLanguage.language_media[language][0]);
 				       }
 				       else if(station_index!=-1)
 				       {
@@ -403,7 +408,7 @@ public class MmMapViewer extends JPanel implements Printable {
     	    	{
     	    		mapKit.getMainMap().setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
     	    		JComponent cmp = (JComponent)e.getSource();
-				    cmp.setToolTipText("SvÃ¤ng");
+				    cmp.setToolTipText("Sväng");
 				    isPointOnSwingPoint = true;
 				    
     	    	} 
@@ -628,12 +633,20 @@ public class MmMapViewer extends JPanel implements Printable {
         		{ 
         			isPointPresent = mousePos.get(i).isPointInRegion(new MmMousePoints(e.getX(),e.getY()));
         			
+        			/*if(e.getClickCount()==2)
+        			{
+        				JOptionPane.showMessageDialog(null, e.getX()+" "+e.getY());
+        				eventsDialog.setVisible(false);
+        			}*/
+        			
         			if(!isPointPresent)
         				continue;
         			else
         			{
         				isPointPresent=true;
         				eventsDialog.setVisible(true);
+        				events.setStationIndex(Integer.toString(index+1));
+        				events.setGeoIndex(index);
         				events.updateStationEvents(geoPos.get(index));
         				index=i;
         				break;
@@ -688,7 +701,7 @@ public class MmMapViewer extends JPanel implements Printable {
         			/*JOptionPane.showMessageDialog(null, "data "+e.getButton());
         			if(e.getButton()==3)
             		{		
-            		   int option = JOptionPane.showConfirmDialog(null, "Ta bort markÃ¶r", "markÃ¶r", JOptionPane.YES_NO_OPTION);
+            		   int option = JOptionPane.showConfirmDialog(null, "Ta bort markör", "markör", JOptionPane.YES_NO_OPTION);
             		   
             		   if(option==JOptionPane.OK_OPTION)
             		   {
@@ -830,7 +843,7 @@ public class MmMapViewer extends JPanel implements Printable {
 				    {	
 				    	mapKit.getMainMap().setPanEnabled(false);
 					    isPointPickedOnLine = true;
-					    System.out.println("clicked on point ");
+					    //System.out.println("clicked on point ");
 					    //swingPoints.add(getGeoPosition(event.getPoint()));
 					    
 					    
@@ -861,8 +874,10 @@ public class MmMapViewer extends JPanel implements Printable {
         	           {
         	        	  if(swingPos.get(i).isSwingPointPresent(event.getPoint()))
         	        	  {
-        	        		
-        	        		 int option = JOptionPane.showConfirmDialog(null, "Vill du ta bort swing point");
+        	        		  Object[] options = {MmLanguage.language_options[language][0],
+        								MmLanguage.language_options[language][1],
+        								MmLanguage.language_options[language][2]};
+        	        		 int option = JOptionPane.showOptionDialog(null, MmLanguage.language_exception[language][4], MmLanguage.language_fileOptions[language][1], JOptionPane.YES_NO_CANCEL_OPTION,0,null,options,options[2]);
         	        		 //JOptionPane.showMessageDialog(null, "swing pos size "+swingPos.size());
         	        		 if(option==JOptionPane.OK_OPTION)
         	        		 {	 
@@ -912,7 +927,7 @@ public class MmMapViewer extends JPanel implements Printable {
 					if((event.getX()>0 && event.getX()<400) && (event.getY()>0 && event.getY()<125))
 					{
 																	
-						int option = JOptionPane.showConfirmDialog(null, "Vill du ta bort stationen","Stationen",JOptionPane.YES_NO_OPTION);
+						int option = JOptionPane.showConfirmDialog(null, MmLanguage.language_exception[language][5],MmLanguage.language_exception[language][6],JOptionPane.YES_NO_OPTION);
 						
 						if(option == JOptionPane.OK_OPTION)
 						{
@@ -969,8 +984,6 @@ public class MmMapViewer extends JPanel implements Printable {
 			    	    			   
 			    	    		}
 							    
-			    	    		//swingPos.get(edgeIndex).setStartPoint(currentStationPoint);
-							    //swingPos.get(edgeIndex).setStartGeoPosition(getGeoPosition(currentStationPoint));
 							}  
 							else
 			    	    	{
@@ -983,7 +996,7 @@ public class MmMapViewer extends JPanel implements Printable {
 					
 					if(!isStationDelete &&!checkDistance() && geoPos.size()>1)
 					{
-						JOptionPane.showMessageDialog(null, "Kan inte flytta stationen");
+						JOptionPane.showMessageDialog(null, MmLanguage.language_exception[language][1]);
 						
 						if(index==0)
 						{	
@@ -1023,7 +1036,7 @@ public class MmMapViewer extends JPanel implements Printable {
 							//swingPoints.remove(swingPointIndex);
 							//swingPoints.add(swingPointIndex,getGeoPosition(moveSwingPoint));
 							
-							JOptionPane.showMessageDialog(null, "Kan inte flytta svÃ¤ng");
+							JOptionPane.showMessageDialog(null, MmLanguage.language_exception[language][2]);
 							
 							if(!checkSwingPointsDistance(swingPos.get(edgeIndex).getEndGeoPosition()))
 							{
@@ -1090,6 +1103,25 @@ public class MmMapViewer extends JPanel implements Printable {
         
 	}
 	
+	public int getLanguage() {
+		return language;
+	}
+
+
+	public void setLanguage(int language) {
+		this.language = language;
+	}
+
+	public void setMarkerDialogText()
+	{
+		mapMarkerWindow.setLanguage(language);
+		mapMarkerWindow.setTitleLabel();
+		
+		events.setLanguage(language);
+		
+		events.setLanguageText();
+		
+	}
 	
 	public JFrame getMainWindow() {
 		return mainWindow;
@@ -1098,6 +1130,23 @@ public class MmMapViewer extends JPanel implements Printable {
 	public void setMainWindow(JFrame mainWindow) {
 		this.mainWindow = mainWindow;
 	}
+	
+	public int getAdjustx() {
+		return adjustx;
+	}
+
+	public void setAdjustx(int adjustx) {
+		this.adjustx = adjustx;
+	}
+
+	public int getAdjusty() {
+		return adjusty;
+	}
+
+	public void setAdjusty(int adjusty) {
+		this.adjusty = adjusty;
+	}
+
 	
 	public JDialog getMapMarkersDialog() {
 		return mapMarkersDialog;
@@ -1126,9 +1175,10 @@ public class MmMapViewer extends JPanel implements Printable {
         mapMarkersDialog = new JDialog(mainWindow);
 	    
 	    mapMarkersDialog.setSize(300, 125);
-	    mapMarkersDialog.setLocation(425,75);
+	    mapMarkersDialog.setLocation(425,50);
         
 		mapMarkerWindow = new MmMapStationMarkers(mapMarkersDialog,this);
+		mapMarkerWindow.setLanguage(language);
 		
 		mapMarkersDialog.getContentPane().add(mapMarkerWindow);
 		
@@ -1153,6 +1203,7 @@ public class MmMapViewer extends JPanel implements Printable {
 		events = new MmAddEvents(eventsDialog);
 		
 		events.setMainWindow(mainWindow);
+		events.setLanguage(language);
 		    
 		events.setOpaque(true);
 		events.setMap(this);
@@ -1160,10 +1211,22 @@ public class MmMapViewer extends JPanel implements Printable {
 		        	    
 		    
 		eventsDialog.pack();
-		eventsDialog.setSize(425, 150);
+		eventsDialog.setSize(425, 200);
 		eventsDialog.setVisible(false);
 		
+		//eventsDialog.setOpacity(0.95f);
 		
+		
+		eventsDialog.addComponentListener(new ComponentAdapter() {
+            // Give the window an elliptical shape.
+            // If the window is resized, the shape is recalculated here.
+            @Override
+            public void componentResized(ComponentEvent e) {
+            	//eventsDialog.setShape(new Ellipse2D.Double(0,0,eventsDialog.getWidth()+50,eventsDialog.getHeight()+50));
+            	
+            	eventsDialog.setShape(new RoundRectangle2D.Double(0,0,eventsDialog.getWidth(),eventsDialog.getHeight(),25,25));
+            }
+        });
 		
 	    
 	   /* markerFrame2.setSize(300, 125);
@@ -1706,7 +1769,7 @@ public class MmMapViewer extends JPanel implements Printable {
           }
         }
 		
-		//System.out.println("json string "+jsonString);
+		
 		JSONTokener jsonTokens = new JSONTokener(jsonString);
 		
 		try
@@ -1717,7 +1780,7 @@ public class MmMapViewer extends JPanel implements Printable {
 	       latitude = mapLocationObject.optDouble("latitude");
 	       longitude = mapLocationObject.optDouble("longitude");
 	       
-	       //JOptionPane.showMessageDialog(null, latitude+"   "+longitude);
+	      
 	       
 		}
 		catch(Exception e)
@@ -1788,7 +1851,7 @@ public class MmMapViewer extends JPanel implements Printable {
 	       
 	       
 	       	       
-	           if(pntDist>50)
+	           if(pntDist>35)
 	           {	   
 	    	      insertPnt=true;
 	    	      continue;
@@ -1878,7 +1941,7 @@ public class MmMapViewer extends JPanel implements Printable {
 	       
 	       
 	       	       
-	           if(pntDist>50)
+	           if(pntDist>35)
 	           {	   
 	    	      insertPnt1=true;
 	    	      continue;
@@ -1927,7 +1990,7 @@ public class MmMapViewer extends JPanel implements Printable {
 	          float pntDist = new Float(dist * meterConversion).floatValue();
 	       
 	          	       
-	          if(pntDist>50)
+	          if(pntDist>35)
 	          {	   
 	    	      insertPnt=true;
 	    	      continue;
@@ -1950,16 +2013,13 @@ public class MmMapViewer extends JPanel implements Printable {
 		double earthRadius = 3958.75; 
 		boolean insertPnt = false;
 		
-		//if(swingPos.isEmpty())
-			//return false;
+		
 		
 		if(swingPos.size()<=2 && !isPointPresent)
 			return true;
 		
 		
 		
-		
-		//int swingIndex = swingPoints.indexOf(pnt);
 		
 	    for(int i=0;i<swingPos.size()-1;i++)
 	    {	
@@ -2095,7 +2155,7 @@ public class MmMapViewer extends JPanel implements Printable {
 		    stationAudioEvent.makeJSONObject();
 		    if(!stationAudioEvent.JSONActions())
 		    {
-		    	JOptionPane.showMessageDialog(null, "Kan inte spara json filen");
+		    	JOptionPane.showMessageDialog(null, MmLanguage.language_exception[language][0]);
 		    	File file = new File(filePath);
 		    	if(file.isDirectory())
 		    	{
@@ -2123,7 +2183,7 @@ public class MmMapViewer extends JPanel implements Printable {
 	  	          swingAudioEvent.makeJSONObject();
 		          if(!swingAudioEvent.JSONActions())
 		          {	
-		    	       JOptionPane.showMessageDialog(null, "Kan inte spara json filen");
+		    	       JOptionPane.showMessageDialog(null, MmLanguage.language_exception[language][0]);
 		    	       File file = new File(filePath);
 		    	       if(file.isDirectory())
 		    	       {
@@ -2184,7 +2244,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			   mapMarkers(eventsArray,filePath);
 			   if(!writeMap3DObjects(filePath))
 			   {
-				   JOptionPane.showMessageDialog(null, "Kan inte spara json filen");
+				   JOptionPane.showMessageDialog(null, MmLanguage.language_exception[language][0]);
 				   
 				   File file = new File(filePath);
 			    	if(file.isDirectory())
@@ -2238,13 +2298,15 @@ public class MmMapViewer extends JPanel implements Printable {
 				 //for(int j=0;j<events.getStations().get(i).getItemsCollected().size();j++)
 				 {
 					  //JOptionPane.showMessageDialog(null, "objects collect "+events.getStations().get(i).getItemsCollected().size()+"   "+count);
-					  count+=events.getStations().get(i).getItemsCollected().size();
+					 if(!events.getStations().get(i).getItemsCollected().isEmpty())
+					     count+=events.getStations().get(i).getItemsCollected().size();
 				 }
 		    }
 			
 			for(int i=0;i<markerEvents.size();i++)
 			{
-				count+=markerEvents.get(i).getCollectedItems();
+				if(markerEvents.get(i).getCollectedItems()!=0)
+				    count+=markerEvents.get(i).getCollectedItems();
 			}
 			
 		    
@@ -2260,6 +2322,45 @@ public class MmMapViewer extends JPanel implements Printable {
 			
 			
 			eventsArray.put(numCollectItems);
+			
+			if(!markerEvents.isEmpty())
+			{		
+			
+                MmMarkerDetectEvent detectMarker = new MmMarkerDetectEvent();
+             
+			    detectMarker.makeJSONObject();
+			
+			    eventsArray.put(detectMarker.getMarkerDetectEvent());
+			
+                MmMarkerUnDetectEvent undetectMarker = new MmMarkerUnDetectEvent();
+			
+			    undetectMarker.makeJSONObject();
+			
+			    eventsArray.put(undetectMarker.getMarkerUnDetectEvent());
+			}    
+			
+			try
+			{
+				JSONObject doneEvent = new JSONObject();
+				JSONObject doneAction = new JSONObject();
+				
+				doneEvent.put("name", "Done");
+				doneEvent.put("type", "done");
+				
+				JSONArray doneArry = new JSONArray();
+				
+				doneAction.put("application-done",doneArry);
+				
+				doneEvent.put("actions", doneAction);
+				
+				eventsArray.put(doneEvent);
+				
+			}
+			catch(Exception e)
+			{
+				JOptionPane.showMessageDialog(null, "Exception in writing done event "+e);
+			}
+
 			
 			try
 			{
@@ -2303,7 +2404,7 @@ public class MmMapViewer extends JPanel implements Printable {
 	       }
 	       catch(Exception e)
 	       {
-	    	    JOptionPane.showMessageDialog(null, "Kan inte spara json filen");
+	    	    JOptionPane.showMessageDialog(null,MmLanguage.language_exception[language][0]);
 	    	   
 	    	    File file = new File(filePath);
 		    	if(file.isDirectory())
@@ -2413,11 +2514,21 @@ public class MmMapViewer extends JPanel implements Printable {
 		
 		if(!startEvents.getTexts().isEmpty())
 		{
-			for(int i=1;i<2;i++)
+			if(startEvents.getTextPaths().size()>=2)
+			{	
+			   for(int i=1;i<2;i++)
+			   {
+				   if(!startEvents.eventNames[i].isEmpty())
+				   {
+					   startActionArray.put(startEvents.eventNames[i]);
+				   }
+			   }	   
+			}
+			else
 			{
-				if(!startEvents.eventNames[i].isEmpty())
-				{
-					startActionArray.put(startEvents.eventNames[i]);
+				if(!startEvents.eventNames[0].isEmpty() && !startEvents.eventNames[0].equals("BackGroundImage"))
+			    {
+					 startActionArray.put(startEvents.eventNames[0]);
 				}
 			}
 		}
@@ -2480,7 +2591,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			{
 				if(globalMarkers.get(i).getNumberOfEvents()!=0)
 				{	
-				   if(i==globalMarkers.size()-1)
+				   if(i==globalMarkers.size()-1 && events.getStations().isEmpty())
 				   {
 					   globalMarkers.get(i).setLastMarker(true);
 				   }
@@ -2769,7 +2880,7 @@ public class MmMapViewer extends JPanel implements Printable {
 				object.put("type", "marker");
 				
 				JSONObject attribute = new JSONObject();
-				attribute.put("markerName", "patt.map_marker"+Integer.toString(i+2));
+				attribute.put("markerName", "patt.map_marker"+Integer.toString(i+1));
 				attribute.put("modelName", "base.osg");
 				object.put("attributes", attribute);
 				jsonObjects.put(object);
@@ -2779,14 +2890,14 @@ public class MmMapViewer extends JPanel implements Printable {
 				else
 					startActionArray.put("mapMarker"+Integer.toString(i+1));
 				
-				writeMarkerFiles("patt.map_marker"+Integer.toString(i+2),filePath);
+				writeMarkerFiles("patt.map_marker"+Integer.toString(i+1),filePath);
 				
 				JSONObject object1 = new JSONObject();
 				object1.put("name", "mapEditMarker"+Integer.toString(i+1));
 				object1.put("type", "editModel");
 				
 				JSONObject attribute1 = new JSONObject();
-				attribute1.put("markerName", "patt.map_marker"+Integer.toString(i+2));
+				attribute1.put("markerName", "patt.map_marker"+Integer.toString(i+1));
 				attribute1.put("modelName", "diamond.osg");
 				object1.put("attributes", attribute1);
 				jsonObjects.put(object1);
@@ -2809,7 +2920,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			  
 			  File file = new File(filePath+"/markers");
 			  
-			  String sourcePath = System.getProperty("user.dir")+"/markers/"+markerFile;
+			  String sourcePath = System.getProperty("user.dir")+"/mapmarkers/"+markerFile;
 			  
 			  			  
 			  String[] desPath = sourcePath.split("/");
@@ -2821,7 +2932,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			     if(file.isDirectory())
 			     {
 				    src = new FileInputStream(sourcePath).getChannel(); 
-			        des = new FileOutputStream(filePath+"/markers/"+desPath[desPath.length-1]).getChannel();
+			        des = new FileOutputStream(filePath+"/mapmarkers/"+desPath[desPath.length-1]).getChannel();
 			     }
 			     else
 			     {
@@ -2865,6 +2976,8 @@ public class MmMapViewer extends JPanel implements Printable {
 			}
 			
 		}
+		
+		writeMarkerImageFiles(new String(markerFile.substring(markerFile.indexOf(".")+1, markerFile.length()))+".png",filePath);
 		
 		return true;
 
@@ -2950,6 +3063,80 @@ public class MmMapViewer extends JPanel implements Printable {
 		
 		return true;
 	}
+	
+	public boolean writeMarkerImageFiles(String markerImage,String filePath)
+	{
+		FileChannel src = null,des=null;
+		
+		try {
+			  
+			  
+			  File file = new File(filePath+"/markers");
+			  
+			  String sourcePath = System.getProperty("user.dir")+"/mapmarkers/"+markerImage;
+			  
+			 
+			  			  
+			  String[] desPath = sourcePath.split("/");
+			  
+			  File desFile = new File(filePath+"/markers/"+markerImage);
+			  
+			  //JOptionPane.showMessageDialog(null, "destination "+desFile.getAbsolutePath());
+			  
+			  if(!desFile.exists())
+			  {	  
+			     if(file.isDirectory())
+			     {
+				    src = new FileInputStream(sourcePath).getChannel(); 
+			        des = new FileOutputStream(filePath+"/markers/"+desPath[desPath.length-1]).getChannel();
+			     }
+			     else
+			     {
+				    file.mkdir();
+				    //JOptionPane.showMessageDialog(null, file.isDirectory()+"  "+file.getAbsolutePath());
+				    src = new FileInputStream(sourcePath).getChannel();
+				    des = new FileOutputStream(filePath+"/markers/"+desPath[desPath.length-1]).getChannel();
+			     }
+			  }   
+			  
+			  
+			  
+			  try {
+				  if(des!=null)
+					     des.transferFrom(src, 0, src.size());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(null, e);
+				e.printStackTrace();
+				return false;
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null, e);
+			e.printStackTrace();
+			return false;
+		}
+
+		finally
+		{
+			try {
+				  if(src!=null)
+				  {	
+				     src.close();
+				     des.close();
+				  }
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				JOptionPane.showMessageDialog(null, e);
+				e.printStackTrace();
+				return false;
+			}
+			
+		}
+		
+		return false;
+	}
+
 	
 	public ArrayList<MmStationEvents> getStations()
 	{
@@ -3069,7 +3256,7 @@ public class MmMapViewer extends JPanel implements Printable {
 		//JSONParser mapParser = new JSONParser();
 				
 		menuItems = menuItem;
-		
+		menuItems.getGlobalMarkers().setGlobalMarkers();
 		
 		
 		//JOptionPane.showMessageDialog(null, "filename "+fileName);
@@ -3100,6 +3287,8 @@ public class MmMapViewer extends JPanel implements Printable {
 	                   {	   
 	                      	                      
 	                	  parseJsonObject((JSONObject) readJSONObjects.get(i),i);
+	                	  
+	                	  
 	                                	  
 	                   }   
 	                }
@@ -3291,20 +3480,110 @@ public class MmMapViewer extends JPanel implements Printable {
 				   if(!station.getStationType())
 				        station.initializeLabels();
 				   
-				
-				   /*JSONObject actions = (JSONObject) jsonObject.get("actions");
-				
-				   JSONArray array = (JSONArray) actions.get("enter-region");
-				
-				   for(int i=0;i<array.length();i++)
-				   {
-					   
-				       station.addEventAction(array.get(i).toString());
-				       
-				   }*/
-				   
 				   events.getStations().add(station);
 				   
+				
+				   JSONObject actions = (JSONObject) jsonObject.get("actions");
+				
+				   JSONArray array = (JSONArray) actions.get("enter-region");
+				   
+				      
+					   String action = new String();
+					
+					   for(int i=0;i<array.length();i++)
+					   {
+						   
+						   if(isMedia(array.get(i).toString()))
+					          action = array.get(i).toString();
+					       
+					   }
+					   
+					   
+					   
+					   
+					   for(int i=0;i<readJSONObjects.length();i++)
+					   {
+						   JSONObject jsObject = readJSONObjects.getJSONObject(i);
+						   if(jsObject.optString("type").equals("image"))
+						   {
+	 					      
+	 					      if(jsObject.get("name").toString().equals(action))
+	 					      {
+	 						       parseImageEvent(jsObject);
+	 						       break;
+	 					      }
+	 					  
+	 					      if(action.isEmpty())
+	 					      {
+	 						     break;
+	 					      }
+	 					 
+						   }
+						   
+						   if(jsObject.optString("type").equals("panorama"))
+						   {
+	 					      
+	 					      if(jsObject.get("name").toString().equals(action))
+	 					      {
+	 						       parsePanoramaEvent(jsObject);
+	 						       break;
+	 					      }
+	 					  
+	 					      if(action.isEmpty())
+	 					      {
+	 						     break;
+	 					      }
+	 					 
+						   }
+						   
+						   if(jsObject.optString("type").equals("message"))
+						   {
+						      
+						      if(jsObject.get("name").toString().equals(action))
+						      {
+							       parseMessageEvent(jsObject);
+							       break;
+						      }
+						  
+						      if(action.isEmpty())
+						      {
+							     break;
+						      }
+						 
+						   }
+						   
+						   if(jsObject.optString("type").equals("audio"))
+						   {
+	 					       
+	 					       if(jsObject.get("name").toString().equals(action))
+	 					       {
+	 						       parseAudioEvent(jsObject);
+	 						       break;
+	 					       }
+	 					  
+	 					      if(action.isEmpty())
+	 					      {
+	 						     break;
+	 					      }
+	 					 
+						   }
+						   
+						   if(jsObject.optString("type").equals("video"))
+						   {
+	 					       
+	 					       if(jsObject.get("name").toString().equals(action))
+	 					       {
+	 						       parseVideoEvent(jsObject);
+	 						       break;
+	 					       }
+	 					  
+	 					      if(action.isEmpty())
+	 					      {
+	 						     break;
+	 					      }
+	 					 
+						   }
+				   }
 				   
 								  
 			   }	
@@ -3316,7 +3595,7 @@ public class MmMapViewer extends JPanel implements Printable {
 				parseGenericEvent(jsonObject);
 			}
 			
-			if(jsonObject.optString("type").equals("image"))
+			/*if(jsonObject.optString("type").equals("image"))
 			{
 			    parseImageEvent(jsonObject);
 			}
@@ -3324,13 +3603,13 @@ public class MmMapViewer extends JPanel implements Printable {
 		    if(jsonObject.optString("type").equals("panorama"))
 			{
 				parsePanoramaEvent(jsonObject);
-			}
+			} 
 			   
 			   
 			if(jsonObject.optString("type").equals("message"))
 			{
 				parseMessageEvent(jsonObject);
-			}
+			}*/
 			       
 			   
 			if(jsonObject.optString("type").equals("model"))
@@ -3339,7 +3618,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			}
 			       
 			   
-			if(jsonObject.optString("type").equals("audio"))
+			/*if(jsonObject.optString("type").equals("audio"))
 			{
 				parseAudioEvent(jsonObject);
 				
@@ -3350,7 +3629,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			if(jsonObject.optString("type").equals("video"))
 			{
 				parseVideoEvent(jsonObject);
-			}
+			}*/
 			       
 			   
 			if(jsonObject.optString("type").equals("compass"))
@@ -3420,6 +3699,7 @@ public class MmMapViewer extends JPanel implements Printable {
 		{
 		   if(!jsonObject.isNull("type"))
 		   {	   
+			    
 		      if(jsonObject.get("type").toString().equals("image"))
 		      {
 		    	  
@@ -3441,7 +3721,7 @@ public class MmMapViewer extends JPanel implements Printable {
 						
 			    		 if(attributes.get("collectItem").toString().equals("true"))
 			    		 {	 
-						     attrs +=":skatt";
+						     attrs +=MmLanguage.language_events[language][0];
 			    		 }    
 						 
 			    		 File imageFile = new File(openFileName.getParent()+"/images/"+attributes.get("imageName").toString());
@@ -3449,7 +3729,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			    		 if(imageFile.exists())
 			    		     events.getStations().get(index).setLabelsText(attrs,imageFile.getAbsolutePath());
 			    		 else
-			    			 showMessage("Bilden hittades inte");
+			    			 showMessage(MmLanguage.language_jsonException[language][0]);
 			    		 break;
 			    	 }
 			      }
@@ -3468,14 +3748,14 @@ public class MmMapViewer extends JPanel implements Printable {
 			    			 String attrs = attributes.get("imageName").toString();
 			    			 if(attributes.get("collectItem").toString().equals("true"))
 			    			 {		 
-							     attrs +=":skatt";
+							     attrs +=MmLanguage.language_events[language][0];
 			    			 }    
 			    			 File imageFile = new File(openFileName.getParent()+"/images/"+attributes.get("imageName").toString());
 					    		
 				    		 if(imageFile.exists())
 							     menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(attrs,imageFile.getAbsolutePath());
 				    		 else
-				    			 showMessage("Bilden hittades inte");
+				    			 showMessage(MmLanguage.language_jsonException[language][0]);
 				    		 
 			    			 break;
 			    	   }	  
@@ -3494,8 +3774,112 @@ public class MmMapViewer extends JPanel implements Printable {
 			              
 		    		  }    
 		    		  else
-		    			  showMessage("bildfilen hittades inte");
+		    			  showMessage(MmLanguage.language_jsonException[language][0]);
 				 } 
+			     
+			     
+			     
+			       JSONObject actions = (JSONObject) jsonObject.get("actions");
+					
+				   JSONArray array = (JSONArray) actions.get("image-disappeared");
+				   
+				      
+					   String action = new String();
+					
+					   for(int i=0;i<array.length();i++)
+					   {
+						   
+						   if(isMedia(array.get(i).toString()))
+					          action = array.get(i).toString();
+					       
+					   }
+					   
+					   
+					   
+					   
+					   for(int i=0;i<readJSONObjects.length();i++)
+					   {
+						   JSONObject jsObject = readJSONObjects.getJSONObject(i);
+						   if(jsObject.optString("type").equals("image"))
+						   {
+	 					      
+	 					      if(jsObject.get("name").toString().equals(action))
+	 					      {
+	 						       parseImageEvent(jsObject);
+	 						       break;
+	 					      }
+	 					  
+	 					      if(action.isEmpty())
+	 					      {
+	 						     break;
+	 					      }
+	 					 
+						   }
+						   
+						   if(jsObject.optString("type").equals("panorama"))
+						   {
+	 					      
+	 					      if(jsObject.get("name").toString().equals(action))
+	 					      {
+	 						       parsePanoramaEvent(jsObject);
+	 						       break;
+	 					      }
+	 					  
+	 					      if(action.isEmpty())
+	 					      {
+	 						     break;
+	 					      }
+	 					 
+						   }
+						   
+						   if(jsObject.optString("type").equals("message"))
+						   {
+						      
+						      if(jsObject.get("name").toString().equals(action))
+						      {
+							       parseMessageEvent(jsObject);
+							       break;
+						      }
+						  
+						      if(action.isEmpty())
+						      {
+							     break;
+						      }
+						 
+						   }
+						   
+						   if(jsObject.optString("type").equals("audio"))
+						   {
+	 					       
+	 					       if(jsObject.get("name").toString().equals(action))
+	 					       {
+	 						       parseAudioEvent(jsObject);
+	 						       break;
+	 					       }
+	 					  
+	 					      if(action.isEmpty())
+	 					      {
+	 						     break;
+	 					      }
+	 					 
+						   }
+						   
+						   if(jsObject.optString("type").equals("video"))
+						   {
+	 					       
+	 					       if(jsObject.get("name").toString().equals(action))
+	 					       {
+	 						       parseVideoEvent(jsObject);
+	 						       break;
+	 					       }
+	 					  
+	 					      if(action.isEmpty())
+	 					      {
+	 						     break;
+	 					      }
+	 					 
+						   }
+				   }
 		 	      
 		       }
 		    } 
@@ -3528,11 +3912,11 @@ public class MmMapViewer extends JPanel implements Printable {
 			    		 index = events.getStationIndex(i);
 			    		 String attrs = attributes.get("imageName").toString();
 			    		 
-			    		 attrs +=":Panorama";
+			    		 attrs +=MmLanguage.language_events[language][2];
 			    		 						
 			    		 if(attributes.get("collectItem").toString().equals("true"))
 			    		 {	 
-						     attrs +=":skatt";
+						     attrs +=MmLanguage.language_events[language][0];
 			    		 }    
 						 
 			    		 File filename = new File(openFileName.getParent()+"/images/"+attributes.get("imageName").toString());
@@ -3540,7 +3924,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			    		 if(filename.exists())
 			    		     events.getStations().get(index).setLabelsText(attrs,filename.getAbsolutePath());
 			    		 else
-			    			 showMessage("bildfilen hittades inte");
+			    			 showMessage(MmLanguage.language_jsonException[language][0]);
 			    		 break;
 			    	 }
 			      }
@@ -3556,23 +3940,121 @@ public class MmMapViewer extends JPanel implements Printable {
 			    	   {	  
 			    			 markerIndex=i-1;
 			    			 String attrs = attributes.get("imageName").toString();
-			    			 attrs +=":Panorama";
+			    			 attrs +=MmLanguage.language_events[language][2];
 			    			 if(attributes.get("collectItem").toString().equals("true"))
 			    			 {		 
-							     attrs +=":skatt";
+							     attrs +=MmLanguage.language_events[language][0];
 			    			 }    
 			    			 File filename = new File(openFileName.getParent()+"/images/"+attributes.get("imageName").toString());
 			    			 if(filename.exists())
 			    				 menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(attrs,filename.getAbsolutePath());
 			    			 else
-			    				 showMessage("Bildfilen hittades inte");
+			    				 showMessage(MmLanguage.language_jsonException[language][0]);
 			    			 break;
 			    	   }	  
 			    			      
 			      }
 			      
-			     
-		    	  
+			      JSONObject actions = (JSONObject) jsonObject.get("actions");
+					
+				  JSONArray array = (JSONArray) actions.get("panorama-finished-viewing");
+				   
+				   String action = new String();
+				
+				   for(int i=0;i<array.length();i++)
+				   {
+					   
+					   if(isMedia(array.get(i).toString()))
+				          action = array.get(i).toString();
+				       
+				   }
+				   
+				   
+				   
+				   
+				   for(int i=0;i<readJSONObjects.length();i++)
+				   {
+					   JSONObject jsObject = readJSONObjects.getJSONObject(i);
+					   if(jsObject.optString("type").equals("image"))
+					   {
+ 					      
+ 					      if(jsObject.get("name").toString().equals(action))
+ 					      {
+ 						       parseImageEvent(jsObject);
+ 						       break;
+ 					      }
+ 					  
+ 					      if(action.isEmpty())
+ 					      {
+ 						     break;
+ 					      }
+ 					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("panorama"))
+					   {
+ 					      
+ 					      if(jsObject.get("name").toString().equals(action))
+ 					      {
+ 						       parsePanoramaEvent(jsObject);
+ 						       break;
+ 					      }
+ 					  
+ 					      if(action.isEmpty())
+ 					      {
+ 						     break;
+ 					      }
+ 					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("message"))
+					   {
+					      
+					      if(jsObject.get("name").toString().equals(action))
+					      {
+						       parseMessageEvent(jsObject);
+						       break;
+					      }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("audio"))
+					   {
+ 					       
+ 					       if(jsObject.get("name").toString().equals(action))
+ 					       {
+ 						       parseAudioEvent(jsObject);
+ 						       break;
+ 					       }
+ 					  
+ 					      if(action.isEmpty())
+ 					      {
+ 						     break;
+ 					      }
+ 					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("video"))
+					   {
+ 					       
+ 					       if(jsObject.get("name").toString().equals(action))
+ 					       {
+ 						       parseVideoEvent(jsObject);
+ 						       break;
+ 					       }
+ 					  
+ 					      if(action.isEmpty())
+ 					      {
+ 						     break;
+ 					      }
+ 					 
+					   }
+				   }
 		     }
 		  } 
 		}   
@@ -3603,14 +4085,18 @@ public class MmMapViewer extends JPanel implements Printable {
 			    	 if(jsonObject.get("name").toString().indexOf("station"+Integer.toString(i))==0)
 			    	 {
 			    		 index = events.getStationIndex(i);
-			    		 String attrs = attributes.get("filename").toString();
+			    		 String attrs = attributes.get("fileName").toString();
 						
 			    		 if(attributes.get("collectItem").toString().equals("true"))
 			    		 {	 
-						     attrs +=":skatt";
-			    		 }    
-						 
-			    		 events.getStations().get(index).setLabelsText(attrs,"");
+						     attrs +=MmLanguage.language_events[language][0];
+			    		 }  
+			    		 
+			    		 File filename = new File(openFileName.getParent()+"/messages/"+attributes.get("fileName").toString());
+			    		 
+			    		 if(filename.exists())
+			    		     events.getStations().get(index).setLabelsText(attrs,filename.getAbsolutePath());
+			    		 
 			    		 break;
 			    	 }
 			      }
@@ -3625,13 +4111,17 @@ public class MmMapViewer extends JPanel implements Printable {
 			    	   if(jsonObject.get("name").toString().indexOf("marker"+Integer.toString(i))==0)
 			    	   {	  
 			    			 markerIndex=i-1;
-			    			 String attrs = attributes.get("filename").toString();
+			    			 String attrs = attributes.get("fileName").toString();
 			    			 if(attributes.get("collectItem").toString().equals("true"))
 			    			 {		 
-							     attrs +=":skatt";
+							     attrs +=MmLanguage.language_events[language][0];
 			    			 }    
 			    			 
-							 menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(attrs,"");
+			    			 File filename = new File(openFileName.getParent()+"/messages/"+attributes.get("fileName").toString());
+				    		 
+				    		 if(filename.exists())
+				    			 menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(attrs,filename.getAbsolutePath());
+				    		 
 			    			 break;
 			    	   }	  
 			    			      
@@ -3640,11 +4130,112 @@ public class MmMapViewer extends JPanel implements Printable {
 			     
 			     if(jsonObject.get("name").toString().indexOf("start")==0)
 			     {
-			    	 String attrs = attributes.get("filename").toString();
+			    	 String attrs = attributes.get("fileName").toString();
 			    	 menuItems.getStartEvents().getTexts().add(attrs);
 			    	 menuItems.getStartEvents().getTextPaths().add("");
 		    		 
 			     }
+			     
+			     JSONObject actions = (JSONObject) jsonObject.get("actions");
+					
+				  JSONArray array = (JSONArray) actions.get("message-disappeared");
+				   
+				   String action = new String();
+				
+				   for(int i=0;i<array.length();i++)
+				   {
+					   
+					   if(isMedia(array.get(i).toString()))
+				          action = array.get(i).toString();
+				       
+				   }
+				   
+				   
+				   
+				   
+				   for(int i=0;i<readJSONObjects.length();i++)
+				   {
+					   JSONObject jsObject = readJSONObjects.getJSONObject(i);
+					   if(jsObject.optString("type").equals("image"))
+					   {
+					      
+					      if(jsObject.get("name").toString().equals(action))
+					      {
+						       parseImageEvent(jsObject);
+						       break;
+					      }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("panorama"))
+					   {
+					      
+					      if(jsObject.get("name").toString().equals(action))
+					      {
+						       parsePanoramaEvent(jsObject);
+						       break;
+					      }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("message"))
+					   {
+					      
+					      if(jsObject.get("name").toString().equals(action))
+					      {
+						       parseMessageEvent(jsObject);
+						       break;
+					      }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("audio"))
+					   {
+					       
+					       if(jsObject.get("name").toString().equals(action))
+					       {
+						       parseAudioEvent(jsObject);
+						       break;
+					       }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("video"))
+					   {
+					       
+					       if(jsObject.get("name").toString().equals(action))
+					       {
+						       parseVideoEvent(jsObject);
+						       break;
+					       }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+				   }
 			      
 		       }
 		   }  
@@ -3681,7 +4272,7 @@ public class MmMapViewer extends JPanel implements Printable {
 						
 			    		 if(attributes.get("collectItem").toString().equals("true"))
 			    		 {	 
-						     attrs +=":skatt";
+						     attrs +=MmLanguage.language_events[language][0];
 			    		 }    
 			    		 
 			    		 File filename = new File(openFileName.getParent()+"/models/"+attributes.get("filename").toString());
@@ -3689,7 +4280,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			    		 if(filename.exists())
 			    		     events.getStations().get(index).setLabelsText(attrs,filename.getAbsolutePath());
 			    		 else
-			    			 showMessage("Modelfilen hittades inte");
+			    			 showMessage(MmLanguage.language_jsonException[language][1]);
 			    		 break;
 			    	 }
 			      }
@@ -3713,7 +4304,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			    			 if(filename.exists())
 							     menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(attrs,filename.getAbsolutePath());
 			    			 else
-			    				 showMessage("Modelfilen hittades inte");
+			    				 showMessage(MmLanguage.language_jsonException[language][1]);
 			    			 break;
 			    	   }	  
 			    			      
@@ -3750,7 +4341,7 @@ public class MmMapViewer extends JPanel implements Printable {
 						
 			    		 if(attributes.get("collectItem").toString().equals("true"))
 			    		 {	 
-						     attrs +=":skatt";
+						     attrs +=MmLanguage.language_events[language][0];
 			    		 }    
 						 
 			    		 File filename = new File(openFileName.getParent()+"/audios/"+attributes.get("filename").toString());
@@ -3759,7 +4350,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			    		 if(index!=-1 && filename.exists())
 			    		     events.getStations().get(index).setLabelsText(attrs,filename.getAbsolutePath());
 			    		 else
-			    			 showMessage("Index out of range eller ljudfilen hittades inte");
+			    			 showMessage(MmLanguage.language_jsonException[language][2]);
 			    		 
 			    		  break;
 			    	 }
@@ -3776,13 +4367,13 @@ public class MmMapViewer extends JPanel implements Printable {
 			    			 String attrs = attributes.get("filename").toString();
 			    			 if(attributes.get("collectItem").toString().equals("true"))
 			    			 {		 
-							     attrs +=":skatt";
+							     attrs +=MmLanguage.language_events[language][0];
 			    			 }    
 			    			 File filename = new File(openFileName.getParent()+"/audios/"+attributes.get("filename").toString());
 			    			 if(filename.exists())
 			    				 menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(attrs,filename.getAbsolutePath());
 			    			 else
-			    				 showMessage("Ljudfilen hittades inte");
+			    				 showMessage(MmLanguage.language_jsonException[language][2]);
 			    			 break;
 			    	   }	  
 			    			      
@@ -3798,8 +4389,112 @@ public class MmMapViewer extends JPanel implements Printable {
 		    		 if(filename.exists())
 			               menuItems.getStartEvents().getTextPaths().add(filename.getAbsolutePath());
 		    		 else
-		    			  showMessage("Ljudfilen hittades inte");
+		    			  showMessage(MmLanguage.language_jsonException[language][2]);
 				 } 
+			     
+			     
+			     JSONObject actions = (JSONObject) jsonObject.get("actions");
+					
+				 JSONArray array = (JSONArray) actions.get("audio-finished-playing");
+				 
+				    
+				   String action = new String();
+				
+				   for(int i=0;i<array.length();i++)
+				   {
+					   
+					   if(isMedia(array.get(i).toString()))
+				          action = array.get(i).toString();
+				       
+				   }
+				   
+				   
+				   
+				   
+				   for(int i=0;i<readJSONObjects.length();i++)
+				   {
+					   JSONObject jsObject = readJSONObjects.getJSONObject(i);
+					   if(jsObject.optString("type").equals("image"))
+					   {
+					      
+					      if(jsObject.get("name").toString().equals(action))
+					      {
+						       parseImageEvent(jsObject);
+						       break;
+					      }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("panorama"))
+					   {
+					      
+					      if(jsObject.get("name").toString().equals(action))
+					      {
+						       parsePanoramaEvent(jsObject);
+						       break;
+					      }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("message"))
+					   {
+					      
+					      if(jsObject.get("name").toString().equals(action))
+					      {
+						       parseMessageEvent(jsObject);
+						       break;
+					      }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+
+					   
+					   if(jsObject.optString("type").equals("audio"))
+					   {
+					       
+					       if(jsObject.get("name").toString().equals(action))
+					       {
+						       parseAudioEvent(jsObject);
+						       break;
+					       }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("video"))
+					   {
+					       
+					       if(jsObject.get("name").toString().equals(action))
+					       {
+						       parseVideoEvent(jsObject);
+						       break;
+					       }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+				   }
 			      
 		     }
 		  } 
@@ -3814,6 +4509,7 @@ public class MmMapViewer extends JPanel implements Printable {
 	{
 		try
 		{
+			
 		   if(!jsonObject.isNull("type"))
 		   {	   
 		      if(jsonObject.get("type").toString().equals("video"))
@@ -3835,14 +4531,14 @@ public class MmMapViewer extends JPanel implements Printable {
 						
 			    		 if(attributes.get("collectItem").toString().equals("true"))
 			    		 {	 
-						     attrs +=":skatt";
+						     attrs +=MmLanguage.language_events[language][0];
 			    		 }    
 						 
 			    		 File filename = new File(openFileName.getParent()+"/videos/"+attributes.get("filename").toString());
 			    		 if(filename.exists())
 			    		     events.getStations().get(index).setLabelsText(attrs,filename.getAbsolutePath());
 			    		 else
-			    			 showMessage("Videofilen hittades inte");
+			    			 showMessage(MmLanguage.language_jsonException[language][3]);
 			    		 
 			    		 break;
 			    	 }
@@ -3867,7 +4563,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			    			 if(filename.exists())
 			    				 menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(attrs,filename.getAbsolutePath());
 			    			 else
-			    				 showMessage("Videofilen hittades inte");
+			    				 showMessage(MmLanguage.language_jsonException[language][3]);
 			    			 break;
 			    	   }	  
 			    			      
@@ -3885,8 +4581,116 @@ public class MmMapViewer extends JPanel implements Printable {
 		    		  if(filename.exists())
 			               menuItems.getStartEvents().getTextPaths().add(filename.getAbsolutePath());
 		    		  else
-		    			  showMessage("Videofilen hittades inte");
+		    			  showMessage(MmLanguage.language_jsonException[language][3]);
 			      } 
+		          
+		          
+		          JSONObject actions = (JSONObject) jsonObject.get("actions");
+					
+				  JSONArray array = (JSONArray) actions.get("video-finished-playing");
+				  
+				  
+				   
+				   String action = new String();
+				
+				   for(int i=0;i<array.length();i++)
+				   {
+					   
+					   if(isMedia(array.get(i).toString()))
+				          action = array.get(i).toString();
+				       
+				   }
+				   
+				   
+				   
+				   
+				   for(int i=0;i<readJSONObjects.length();i++)
+				   {
+					   JSONObject jsObject = readJSONObjects.getJSONObject(i);
+					   if(jsObject.optString("type").equals("image"))
+					   {
+ 					      
+ 					      if(jsObject.get("name").toString().equals(action))
+ 					      {
+ 						       parseImageEvent(jsObject);
+ 						       break;
+ 					      }
+ 					  
+ 					      if(action.isEmpty())
+ 					      {
+ 						     break;
+ 					      }
+ 					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("panorama"))
+					   {
+ 					      
+ 					      if(jsObject.get("name").toString().equals(action))
+ 					      {
+ 						       parsePanoramaEvent(jsObject);
+ 						       break;
+ 					      }
+ 					  
+ 					      if(action.isEmpty())
+ 					      {
+ 						     break;
+ 					      }
+ 					 
+					   }
+					   
+					   System.out.println("print data "+action);
+					   
+					   if(jsObject.optString("type").equals("message"))
+					   {
+						  
+					      if(jsObject.get("name").toString().equals(action))
+					      {
+						       parseMessageEvent(jsObject);
+						       break;
+					      }
+					  
+					      if(action.isEmpty())
+					      {
+						     break;
+					      }
+					 
+					   }
+
+					   
+					   if(jsObject.optString("type").equals("audio"))
+					   {
+ 					       
+ 					       if(jsObject.get("name").toString().equals(action))
+ 					       {
+ 						       parseAudioEvent(jsObject);
+ 						       break;
+ 					       }
+ 					  
+ 					      if(action.isEmpty())
+ 					      {
+ 						     break;
+ 					      }
+ 					 
+					   }
+					   
+					   if(jsObject.optString("type").equals("video"))
+					   {
+ 					       
+ 					       if(jsObject.get("name").toString().equals(action))
+ 					       {
+ 						       parseVideoEvent(jsObject);
+ 						       break;
+ 					       }
+ 					  
+ 					      if(action.isEmpty())
+ 					      {
+ 						     break;
+ 					      }
+ 					 
+					   }
+				   }
+
 		    	        
 		     }
 		  } 
@@ -3955,7 +4759,7 @@ public class MmMapViewer extends JPanel implements Printable {
 		               attrs = attributes.get("modelName").toString();
 		               if(jsonObject.get("name").toString().contains("_Model"))
 		               {
-		            	   attrs +=":Model";
+		            	   attrs +=MmLanguage.language_events[language][1];
 		            	
 		            	   MmObjWriter objRead = new MmObjWriter(openFileName.getParent()+"/osg_obj/"+attributes.get("modelName").toString());
 		            	
@@ -3974,19 +4778,123 @@ public class MmMapViewer extends JPanel implements Printable {
 						   //JOptionPane.showMessageDialog(null, markerName+"  "+markerIndex);
 						   
 				   		   if(imageFile.exists())
-							     menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(fileName+":Model",imageFile.getAbsolutePath());
+							     menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(fileName+MmLanguage.language_events[language][1],imageFile.getAbsolutePath());
 				   		   else
-				   			 showMessage("Bilden hittades inte");
+				   			 showMessage(MmLanguage.language_jsonException[language][0]);
 		            	
 		               }
 		               
 		               if(attributes.get("collectItem").toString().equals("true"))
 				   	   {		 
-						    attrs +=":skatt";
+						    attrs +=MmLanguage.language_events[language][0];
 					   }
 		    	    }    
 		    	    else
-		    	      menuItems.getGlobalMarkers().addStation(jsonObject.get("name").toString(), markerIndex);
+		    	    { 	
+		    	      //menuItems.getGlobalMarkers().addStation(jsonObject.get("name").toString(), markerIndex);
+		    	      
+		    	      JSONObject actions = (JSONObject) jsonObject.get("actions");
+						
+					   JSONArray array = (JSONArray) actions.get("marker-found");
+					   
+					      
+						   String action = new String();
+						
+						   for(i=0;i<array.length();i++)
+						   {
+							   
+							   if(isMedia(array.get(i).toString()))
+						          action = array.get(i).toString();
+						       
+						   }
+						   
+						   
+						   
+						   
+						   for(i=0;i<readJSONObjects.length();i++)
+						   {
+							   JSONObject jsObject = readJSONObjects.getJSONObject(i);
+							   if(jsObject.optString("type").equals("image"))
+							   {
+		 					      
+		 					      if(jsObject.get("name").toString().equals(action))
+		 					      {
+		 						       parseImageEvent(jsObject);
+		 						       break;
+		 					      }
+		 					  
+		 					      if(action.isEmpty())
+		 					      {
+		 						     break;
+		 					      }
+		 					 
+							   }
+							   
+							   if(jsObject.optString("type").equals("panorama"))
+							   {
+		 					      
+		 					      if(jsObject.get("name").toString().equals(action))
+		 					      {
+		 						       parsePanoramaEvent(jsObject);
+		 						       break;
+		 					      }
+		 					  
+		 					      if(action.isEmpty())
+		 					      {
+		 						     break;
+		 					      }
+		 					 
+							   }
+							   
+							   if(jsObject.optString("type").equals("message"))
+							   {
+							      
+							      if(jsObject.get("name").toString().equals(action))
+							      {
+								       parseMessageEvent(jsObject);
+								       break;
+							      }
+							  
+							      if(action.isEmpty())
+							      {
+								     break;
+							      }
+							 
+							   }
+							   
+							   if(jsObject.optString("type").equals("audio"))
+							   {
+		 					       
+		 					       if(jsObject.get("name").toString().equals(action))
+		 					       {
+		 						       parseAudioEvent(jsObject);
+		 						       break;
+		 					       }
+		 					  
+		 					      if(action.isEmpty())
+		 					      {
+		 						     break;
+		 					      }
+		 					 
+							   }
+							   
+							   if(jsObject.optString("type").equals("video"))
+							   {
+		 					       
+		 					       if(jsObject.get("name").toString().equals(action))
+		 					       {
+		 						       parseVideoEvent(jsObject);
+		 						       break;
+		 					       }
+		 					  
+		 					      if(action.isEmpty())
+		 					      {
+		 						     break;
+		 					      }
+		 					 
+							   }
+					   }
+		    	    }  
 		    	    
 		           break;
 		       }
@@ -4003,6 +4911,19 @@ public class MmMapViewer extends JPanel implements Printable {
 		
 	}
 	
+	
+	public boolean isMedia(String text)
+	{
+		System.out.println("Text "+text);
+		if(text.contains("Image")||text.contains("image")||text.contains("panorama")||text.contains("audio")||text.contains("video")||
+		   text.contains("Model")||text.contains("model")||text.contains("message"))
+		{
+			return true;
+		}
+		
+		return false;
+			
+	}
 	
 	public void updateMapMarkerPositions(int x,int y)
 	{
@@ -4055,7 +4976,8 @@ public class MmMapViewer extends JPanel implements Printable {
                 // convert from viewport to world bitmap
                 final Rectangle rect = mapKit.getMainMap().getViewportBounds();
                 
-                
+                rect.width+=adjustx;
+                rect.height+=adjusty;
                 
                 System.out.println("rect "+rect);
                 

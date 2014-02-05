@@ -79,7 +79,9 @@ public class MmImageEvent {
 			   eventType.put("type","image");
 			   attributes.put("imageName", this.imageFile);
 			   attributes.put("imagetype", imageType);
+               File desFilePath = new File(sourcePath);
 			   
+			   attributes.put("imageSize", desFilePath.length());
 			   
 			   BufferedImage readImage = null;
 

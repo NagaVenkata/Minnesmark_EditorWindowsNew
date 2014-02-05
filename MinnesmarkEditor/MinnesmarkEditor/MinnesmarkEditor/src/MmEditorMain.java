@@ -2,6 +2,8 @@ import java.awt.*;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -13,7 +15,6 @@ import java.awt.print.Book;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
@@ -21,7 +22,6 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
-
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -31,16 +31,9 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-
-
 import mmFileManager.*;
-
-
-
-
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-
 
 import java.util.*;
 
@@ -48,9 +41,8 @@ import mmFileManager.MmFileSelector;
 
 import com.sun.jna.NativeLibrary;
 
-
 import mmAccordionMenu.*;
-
+import mmLanguage.MmLanguage;
 import mmMap.MmMapViewer;
 import mmPrintMarkers.MmPrintMarkers;
 
@@ -84,6 +76,12 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
     String urlLink;
     
     JFrame window;
+    
+    public int language=0;
+    
+    JMenu minnesmark,file,help,preferences,languages;
+    
+    JMenuItem newTrail,open,save,save_as,print,print_preview,about,exit,swedish,english,editorHelp;
 	
 	public MmEditorMain(Dimension dim)
 	{
@@ -113,6 +111,8 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	     
 	     window.setJMenuBar(menuBar);
 	     window.setTitle("Minnesmark Editor");
+	     
+	     window.setIconImage(new ImageIcon(getClass().getResource("/Icon.png")).getImage());
 	    
 	     splitPane.setLeftComponent(scrollPaneLeft);
 	     
@@ -156,6 +156,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	     
 	}
 	
+	
 	public void addMainLedInterface()
 	{
 		panelLeft = new JPanel();
@@ -167,6 +168,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			//public void run() {
 			  map = new MmMapViewer();
 			  map.setFileOpen(false);
+			  map.setLanguage(language);
 			  panelRight.setLayout(new FlowLayout());
 		      panelRight.add(map);
 			//}
@@ -211,63 +213,49 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
         panelLeft.add(accordionPanel);
 	    
         accordionMenu.setMap(map);
+        accordionMenu.setLanguage(language);
         
         //first menu
-        accordionMenu.addMenu("Sök i kartan","search");
-        accordionMenu.addTextFieldItem("search",":Sök",25);
+        accordionMenu.addMenu(MmLanguage.language[language][2],"search");
+        accordionMenu.addTextFieldItem("search",":"+MmLanguage.language_button[language][0],25);
         //accordionMenu.addGeoFieldItem("search");
-        accordionMenu.addButtonItem("search", "Sök", "ok");
+        accordionMenu.addButtonItem("search", MmLanguage.language_search[language][0], "ok");
         accordionMenu.addItems("search");
         accordionMenu.buttonActions("search");
         
         
         //second menu
-        accordionMenu.addMenu("Välj markör och koppla media till den ","markers");
+        accordionMenu.addMenu(MmLanguage.language[language][3],"markers");
         ArrayList<JLabel> texts = new ArrayList<JLabel>();
         
-        texts.add(addLabel("Markör 1","patt.marker1"));
-        texts.add(addLabel("Markör 2","patt.marker2"));
-        texts.add(addLabel("Markör 3","patt.marker3"));
-        texts.add(addLabel("Markör 4","patt.marker4"));
-        texts.add(addLabel("Markör 5","patt.marker5"));
-        texts.add(addLabel("Markör 6","patt.marker6"));
-        texts.add(addLabel("Markör 7","patt.marker7"));
-        texts.add(addLabel("Markör 8","patt.marker8"));
-        texts.add(addLabel("Markör 9","patt.marker9"));
-        texts.add(addLabel("Markör 10","patt.marker10"));
-        texts.add(addLabel("Markör 11","patt.marker11"));
-        texts.add(addLabel("Markör 12","patt.marker12"));
-        texts.add(addLabel("Markör 13","patt.marker13"));
-        texts.add(addLabel("Markör 14","patt.marker14"));
-        texts.add(addLabel("Markör 15","patt.marker15"));
-        texts.add(addLabel("Markör 16","patt.marker16"));
-        texts.add(addLabel("Markör 17","patt.marker17"));
-        texts.add(addLabel("Markör 18","patt.marker18"));
+        for(int i=0;i<18;i++)
+        	texts.add(addLabel(MmLanguage.language_markers[language][i],"patt.marker"+Integer.toString(i+1)));
+        
         
         
         accordionMenu.markerDialog();
 	    accordionMenu.addLabelItems("markers",texts);
-	    accordionMenu.addButtonItem("markers", "Lägg till media","ok");
-	    accordionMenu.addButtonItem("markers", "Ta bort media","cancel");
+	    accordionMenu.addButtonItem("markers", MmLanguage.language_button[language][1],"ok");
+	    accordionMenu.addButtonItem("markers", MmLanguage.language_button[language][2],"cancel");
 	    accordionMenu.addItems("markers");
 	    accordionMenu.buttonActions("markers");
 	    
        
 	    
 	    //third menu
-	    accordionMenu.addMenu("Definiera händelser vid uppstart av rundvandringen", "start");
+	    accordionMenu.addMenu(MmLanguage.language[language][4], "start");
 	    ArrayList<JLabel> texts1 = new ArrayList<JLabel>();
-        texts1.add(addLabel("Lägg till uppstart bild","text"));
-        texts1.add(addLabel("Lägg till media som spelas vid uppstart","text"));
-        texts1.add(addLabel("Lägg till media som spelas vid uppstart","text"));
-        texts1.add(addLabel("Lägg till media som spelas vid uppstart","text"));
+        texts1.add(addLabel(MmLanguage.language_startMedia[language][0],"text"));
+        texts1.add(addLabel(MmLanguage.language_startMedia[language][1],"text"));
+        texts1.add(addLabel(MmLanguage.language_startMedia[language][1],"text"));
+        texts1.add(addLabel(MmLanguage.language_startMedia[language][1],"text"));
         texts1.add(addLabel("","text"));
         texts1.add(addLabel("","text"));
                 
         
 	    accordionMenu.addLabelItems("start",texts1);
-	    accordionMenu.addButtonItem("start", "Lägg till media","ok");
-	    accordionMenu.addButtonItem("start", "Ta bort media","cancel");
+	    accordionMenu.addButtonItem("start", MmLanguage.language_button[0][1],"ok");
+	    accordionMenu.addButtonItem("start", MmLanguage.language_button[0][2],"cancel");
 	    accordionMenu.addItems("start");
 	    //accordionMenu.buttonActions("start");
 	    accordionMenu.startMenuButtonActions();
@@ -293,6 +281,37 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		scrollPaneRight.setPreferredSize(new Dimension(500,600));
 		
 		
+        /*scrollPaneRight.getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				// TODO Auto-generated method stub
+				//JOptionPane.showMessageDialog(null, e.getValue());
+				
+				System.out.println("scroll bar "+e.getValue());
+				
+				//Toolkit toolkit = Toolkit.getDefaultToolkit();
+				//map.getMap().setPreferredSize(new Dimension(toolkit.getScreenSize().width-460,(toolkit.getScreenSize().height-100)+e.getValue()));
+				
+				map.setAdjustx(e.getValue());
+			}
+		});
+		
+		scrollPaneRight.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				// TODO Auto-generated method stub
+				//JOptionPane.showMessageDialog(null, e.getValue());
+				
+				System.out.println("scroll bar "+e.getValue());
+				
+				//Toolkit toolkit = Toolkit.getDefaultToolkit();
+				//map.getMap().setPreferredSize(new Dimension(toolkit.getScreenSize().width-460,(toolkit.getScreenSize().height-100)+e.getValue()));
+				
+				map.setAdjusty(e.getValue());
+			}
+		});*/
 		
 		
 	}
@@ -300,10 +319,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	public void addMmWindowListener()
 	{
 		
-         		
-		/*Toolkit.getDefaultToolkit().addAWTEventListener(
-				new Listener(map), AWTEvent.MOUSE_EVENT_MASK | AWTEvent.FOCUS_EVENT_MASK); */
-		
+        
 		window.addMouseListener(new MouseListener() {
 
 			@Override
@@ -345,10 +361,6 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			@Override
 			public void windowActivated(WindowEvent arg0) {
 				// TODO Auto-generated method stub
-				//window.setState(JFrame.NORMAL);
-				//map.showStationEventWindow();
-				
-				
 				
 			}
 
@@ -364,7 +376,15 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				
 				if(!map.getSavedState())
 				{
-				   int option = JOptionPane.showConfirmDialog(null, "Spara file", "Spara", JOptionPane.YES_NO_CANCEL_OPTION);
+				
+					Object[] options = {MmLanguage.language_options[language][0],
+							MmLanguage.language_options[language][1],
+							MmLanguage.language_options[language][2]};
+					
+					ImageIcon icon = new ImageIcon(getClass().getResource("/exclamation.png"));
+					
+					int option = JOptionPane.showOptionDialog(null, MmLanguage.language_fileOptions[language][0], MmLanguage.language_fileOptions[language][1], JOptionPane.YES_NO_CANCEL_OPTION,0,icon,options,options[2]);
+					
 				   if(option==JOptionPane.OK_OPTION)
 				   {
 				       SaveFile();
@@ -393,17 +413,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			@Override
 			public void windowDeactivated(WindowEvent arg0) {
 				// TODO Auto-generated method stub
-				//window.setState(JFrame.ICONIFIED);
-				//JOptionPane.showMessageDialog(null, "out of window");
-				//map.setFocusable(!map.isFocusable());
-				//JOptionPane.showMessageDialog(null, "out of window "+map.isFocusOwner());
-				//if(map.isFocusOwner())
-			  	
-				//map.hideStationEventWindow();
-				
-				
-				
-				
+					
 			
 			}
 
@@ -411,8 +421,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			public void windowDeiconified(WindowEvent event) {
 				// TODO Auto-generated method stub
 				
-				//map.showStationEventWindow();
-				//window.setState(JFrame.NORMAL);
+				
 				
 			}
 
@@ -420,13 +429,13 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			public void windowIconified(WindowEvent event) {
 				// TODO Auto-generated method stub
 							
-				//window.setState(JFrame.ICONIFIED);
+				
 			}
 
 			@Override
 			public void windowOpened(WindowEvent arg0) {
 				// TODO Auto-generated method stub
-				//window.setState(JFrame.NORMAL);
+				
 			}
 	    	  
 	     });
@@ -440,7 +449,6 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	@Override
 	public void eventDispatched(AWTEvent arg0) {
 		// TODO Auto-generated method stub
-		//JOptionPane.showMessageDialog(null, MouseInfo.getPointerInfo().getLocation());
 	}
 	
 	
@@ -454,7 +462,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	
 	public void actionPerformed(ActionEvent e)
 	{
-		System.out.println("get data "+accordionPanels.size()+" "+currentFrame+"  "+lastFrame);
+		//System.out.println("get data "+accordionPanels.size()+" "+currentFrame+"  "+lastFrame);
 		
 		ImageIcon imageIcon = new ImageIcon(getClass().getResource("/image_add.png"));
 		
@@ -485,7 +493,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					   if(j==0)			
 				 	   {
 						   labels.clear();
-						   System.out.println("entered "+j);
+						   //System.out.println("entered "+j);
 						   labels.add("Trial Title");
 						   labels.add("Url");
 						   //accordionPanels.get(i).eventsDialog = new MmAccordionTrialDialog(frame,labels,accordionPanels.get(i));
@@ -510,7 +518,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					   if(j==1)
 					   {
 						   labels.clear();
-						   System.out.println("entered "+j);
+						   //System.out.println("entered "+j);
 						   labels.add("BackgroundImageLandscape");
 						   labels.add("BackgroundImagePortrait");
 						   labels.add("BackgroundAudio");
@@ -534,8 +542,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 						   
 					   }   
 					   
-					   //accordionPanels.get(j).eventsDialog.setOpaque(false);
-					   //frame.setContentPane(accordionPanels.get(j).eventsDialog);
+					   
 				   }
 				   
 				
@@ -548,7 +555,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				{	
 					if(lastFrame!=currentFrame)
 					{
-						 System.out.println("enterd else part "+currentFrame+" "+lastFrame);	
+						 //System.out.println("enterd else part "+currentFrame+" "+lastFrame);	
 						 for(int j=0;j<accordionPanels.get(lastFrame).eventsDialog.componentPanel.getLabels().size();j++)
 						 {
 							  JLabel label = accordionPanels.get(lastFrame).eventsDialog.componentPanel.getLabels().get(j);
@@ -575,7 +582,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 						 accordionPanels.get(currentFrame).eventsDialog.setOpaque(false);
 						 frame.setContentPane(accordionPanels.get(currentFrame).eventsDialog);
 						 
-						 //System.out.println("current frame "+ currentFrame);
+						 
 						 for(int j=0;j<accordionPanels.get(currentFrame).eventsDialog.componentPanel.getLabels().size();j++)
 						 {
 							  //JLabel label = accordionPanels.get(currentFrame).eventsDialog.componentPanel.getLabels().get(j);
@@ -615,10 +622,10 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			{
 				//for(int x=0;x<accordionPanels.size();x++)
 				{	
-					for(int j=0;j<accordionPanels.get(i).eventsDialog.componentPanel.getCheckBoxes().size();j++)
+					/*for(int j=0;j<accordionPanels.get(i).eventsDialog.componentPanel.getCheckBoxes().size();j++)
 					{	
 					     System.out.println("check boxs selected "+accordionPanels.get(i).eventsDialog.componentPanel.getCheckBoxes().get(j).isSelected());
-					}       
+					}*/       
 				   
 				   for(int j=0;j<accordionPanels.get(i).eventsDialog.componentPanel.getCheckBoxes().size();j++)
 				   {	
@@ -667,21 +674,140 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	    
 	}
 	
+	public void changeText()
+	{
+		
+		accordionMenu.setLanguage(language);
+		accordionMenu.setLanguageText(MmLanguage.language[language][2],"search");
+		accordionMenu.setLanguageText(MmLanguage.language[language][3],"markers");
+		accordionMenu.setLanguageText(MmLanguage.language[language][4],"start");
+		
+		accordionMenu.setSearchText(":"+MmLanguage.language_button[language][0]);
+		
+		ArrayList<String> markerTexts = new ArrayList<String>();
+		
+		for(int i=0;i<18;i++)
+			markerTexts.add(new String(MmLanguage.language_markers[language][i]));
+		
+		accordionMenu.setMarkersText(markerTexts);
+		
+		ArrayList<String> startTexts = new ArrayList<String>();
+		
+		startTexts.add(new String(MmLanguage.language_startMedia[language][0]));
+		startTexts.add(new String(MmLanguage.language_startMedia[language][1]));
+		startTexts.add(new String(MmLanguage.language_startMedia[language][1]));
+		startTexts.add(new String(MmLanguage.language_startMedia[language][1]));
+		
+		accordionMenu.setStartTexts(startTexts);
+		
+		file.setText(MmLanguage.language_menu[language][0]);
+		help.setText(MmLanguage.language_menu[language][1]);
+		
+		newTrail.setText(MmLanguage.language_menu[language][2]);
+		open.setText(MmLanguage.language_menu[language][3]);
+		save.setText(MmLanguage.language_menu[language][4]);
+		save_as.setText(MmLanguage.language_menu[language][5]);
+		print.setText(MmLanguage.language_menu[language][6]);
+		print_preview.setText(MmLanguage.language_menu[language][7]);
+		
+		about.setText(MmLanguage.language_menu[language][10]);
+		//preferences.setText(MmLanguage.language_menu[language][11]);
+		languages.setText(MmLanguage.language_menu[language][12]);
+		exit.setText(MmLanguage.language_menu[language][8]);
+		
+		editorHelp.setText(MmLanguage.language_menu[language][9]);
+		
+	
+		
+		swedish.setText(MmLanguage.language_menu_languages[language][0]);
+		english.setText(MmLanguage.language_menu_languages[language][1]);
+		
+		map.setLanguage(language);
+		map.setMarkerDialogText();
+		
+		
+		
+		
+	}
+	
 	public void addMenu()
 	{
-		JMenu file = new JMenu("Fil");
+		
+		minnesmark = new JMenu("Minnesmark");
+		file = new JMenu(MmLanguage.language_menu[language][0]);
 		file.setMnemonic(KeyEvent.VK_F);
-		JMenu help = new JMenu("Hjälpa");
+		help = new JMenu(MmLanguage.language_menu[language][1]);
 		help.setMnemonic(KeyEvent.VK_H);
+		
+		
+		
+		menuBar.add(minnesmark);
 		menuBar.add(file);
 		menuBar.add(help);
-		JMenuItem newTrail = new JMenuItem("Ny N",KeyEvent.VK_N);
-		JMenuItem open  = new JMenuItem("Öpanna O",KeyEvent.VK_O);
-		JMenuItem save  = new JMenuItem("Spara S",KeyEvent.VK_S);
-		JMenuItem save_as  = new JMenuItem("Spara som");
-		JMenuItem print  = new JMenuItem("Skriva ut P",KeyEvent.VK_P);
-		JMenuItem print_preview  = new JMenuItem("Print Preview");
-		JMenuItem exit  = new JMenuItem("Avsluta E",KeyEvent.VK_E);
+		
+		about = new JMenuItem(MmLanguage.language_menu[language][10]);
+		//preferences = new JMenu(MmLanguage.language_menu[language][11]);
+		languages = new JMenu(MmLanguage.language_menu[language][12]);
+		exit = new JMenuItem(MmLanguage.language_menu[language][8],KeyEvent.VK_E);
+		
+		minnesmark.add(about);
+		//minnesmark.add(preferences);
+		minnesmark.add(languages);
+		minnesmark.add(exit);
+		
+		
+		
+		//preferences.add(languages);
+		
+		swedish = new JMenuItem(MmLanguage.language_menu_languages[language][0]);
+		english = new JMenuItem(MmLanguage.language_menu_languages[language][1]);
+		
+		languages.add(swedish);
+		languages.add(english);
+		
+		swedish.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				language = 0;
+				changeText();
+			}
+			
+		});
+		
+        english.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				language = 1;
+				changeText();
+				
+			}
+			
+		});
+        
+        
+        exit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				System.exit(0);
+				
+			}
+			
+		});
+		
+		
+		newTrail = new JMenuItem(MmLanguage.language_menu[language][2],KeyEvent.VK_N);
+		open  = new JMenuItem(MmLanguage.language_menu[language][3],KeyEvent.VK_O);
+		save  = new JMenuItem(MmLanguage.language_menu[language][4],KeyEvent.VK_S);
+		save_as  = new JMenuItem(MmLanguage.language_menu[language][5]);
+		print  = new JMenuItem(MmLanguage.language_menu[language][6],KeyEvent.VK_P);
+		print_preview  = new JMenuItem(MmLanguage.language_menu[language][7]);
+		exit  = new JMenuItem(MmLanguage.language_menu[language][8],KeyEvent.VK_E);
 		
 	
 						
@@ -868,7 +994,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					}
 				}*/
 				
-			   JOptionPane.showMessageDialog(null, map.getSavedState());
+			   //JOptionPane.showMessageDialog(null, map.getSavedState());
 				
 				if(map.getSavedState())
 				{	
@@ -881,7 +1007,14 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				}
 				else
 				{	
-				    int option = JOptionPane.showConfirmDialog(null, "Spara file", "Spara", JOptionPane.YES_NO_CANCEL_OPTION);
+					Object[] options = {MmLanguage.language_options[language][0],
+							MmLanguage.language_options[language][1],
+							MmLanguage.language_options[language][2]};
+					
+					ImageIcon icon = new ImageIcon(getClass().getResource("/exclamation.png"));
+					
+					int option = JOptionPane.showOptionDialog(null, MmLanguage.language_fileOptions[language][0], MmLanguage.language_fileOptions[language][1], JOptionPane.YES_NO_CANCEL_OPTION,0,icon,options,options[2]);
+					
 				    if(option==JOptionPane.OK_OPTION)
 				    {
 				       SaveFile();
@@ -933,7 +1066,73 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				
 				if(!map.getSavedState() && map.isFileOpen())
 				{
-				    SaveFile();
+					Object[] options = {MmLanguage.language_options[language][0],
+							MmLanguage.language_options[language][1],
+							MmLanguage.language_options[language][2]};
+					
+					ImageIcon icon = new ImageIcon(getClass().getResource("/exclamation.png"));
+					
+					int option = JOptionPane.showOptionDialog(null, MmLanguage.language_fileOptions[language][0], MmLanguage.language_fileOptions[language][1], JOptionPane.YES_NO_CANCEL_OPTION,0,icon,options,options[2]);
+					
+				    if(option==JOptionPane.OK_OPTION)
+				    {
+				       SaveFile();
+				    
+				       map.resetMapContents();
+				    }
+				    
+				    if(option==JOptionPane.NO_OPTION)
+				    {  
+				 	   //accordionMenu.getGlobalMarkerEvents().clear();
+					   accordionMenu.clearContent();
+					   resetStartContent();
+					   accordionMenu.getStartEvents().imageEvents.clear();
+					   accordionMenu.getStartEvents().audioEvents.clear();
+					   accordionMenu.getStartEvents().videoEvents.clear();
+					   accordionMenu.getStartEvents().messageEvents.clear();
+				       map.resetMapContents();
+				       
+				       JFileChooser openFile = new JFileChooser();
+						
+						openFile.setAcceptAllFileFilterUsed(false);
+						
+						
+						
+						FileNameExtensionFilter filter = new FileNameExtensionFilter(
+						        "JSON files", "json");
+						
+						openFile.addChoosableFileFilter(filter);
+						openFile.setFileFilter(filter);
+						
+						option = openFile.showOpenDialog(null);
+						
+					    if(option == JFileChooser.APPROVE_OPTION)
+					    {
+					    	
+					    	resetStartContent();
+						    accordionMenu.getStartEvents().imageEvents.clear();
+							accordionMenu.getStartEvents().audioEvents.clear();
+							accordionMenu.getStartEvents().videoEvents.clear();
+							accordionMenu.getStartEvents().messageEvents.clear();
+							
+					    	map.resetMapContents();
+						    map.showStationEventWindow();
+					        map.readJSONFileContents(openFile.getSelectedFile().getAbsolutePath(),accordionMenu);
+					        map.setFileOpen(true);
+					        map.setSaved(false);
+					    }    
+					
+					    if(option == JFileChooser.CANCEL_OPTION)
+					    {
+					    	
+					    	if(!map.isFileOpen())
+					    	{
+					    	
+						        map.showStationEventWindow();
+					    	}    
+					    }
+				    }
+					
 				}
 				else
 				{
@@ -941,6 +1140,8 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					JFileChooser openFile = new JFileChooser();
 					
 					openFile.setAcceptAllFileFilterUsed(false);
+					
+					
 					
 					FileNameExtensionFilter filter = new FileNameExtensionFilter(
 					        "JSON files", "json");
@@ -995,6 +1196,9 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				map.hideStationEventWindow();
 				
                 JFileChooser saveFile = new JFileChooser();
+                
+                saveFile.setDialogTitle(MmLanguage.language_menu[language][5]);
+                
 				
 				saveFile.setAcceptAllFileFilterUsed(false);
 				
@@ -1047,7 +1251,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					if(dirFile.isDirectory() && save_file.exists())
 					{
 						//File jsonFile = new File(dirFile.getName());
-						int fileOption = JOptionPane.showConfirmDialog(null, "Filen finns redan. Vill du ersätta filen?","Spara" ,JOptionPane.YES_NO_OPTION);
+						int fileOption = JOptionPane.showConfirmDialog(null, MmLanguage.language_fileOptions[language][2],MmLanguage.language_fileOptions[language][1] ,JOptionPane.YES_NO_OPTION);
 						if(fileOption == JOptionPane.YES_OPTION)
 						{
 							map.createJSONFile(save_file.getPath(),(dirFile.getAbsolutePath().toString()),accordionMenu.getGlobalMarkerEvents(),accordionMenu.getStartEvents());
@@ -1088,7 +1292,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				//accordionMenu.printMarker();
 				if(map.getStations().isEmpty() && accordionMenu.getGlobalMarkerEvents().isEmpty())
 				{
-					JOptionPane.showMessageDialog(null, "Ingen Stationer eller Markör till skriv ut");
+					JOptionPane.showMessageDialog(null, MmLanguage.language_printException[language][0]);
 				}
 				else
 					print();
@@ -1121,7 +1325,13 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				}    
 				else
 				{
-					int option = JOptionPane.showConfirmDialog(null, "Spara file", "Spara", JOptionPane.YES_NO_CANCEL_OPTION);
+					Object[] options = {MmLanguage.language_options[language][0],
+							MmLanguage.language_options[language][1],
+							MmLanguage.language_options[language][2]};
+					
+					ImageIcon icon = new ImageIcon(getClass().getResource("/exclamation.png"));
+					
+					int option = JOptionPane.showOptionDialog(null, MmLanguage.language_fileOptions[language][0], MmLanguage.language_fileOptions[language][1], JOptionPane.YES_NO_CANCEL_OPTION,0,icon,options,options[2]);
 					if(option==JOptionPane.OK_OPTION)
 					{	
 					    JFileChooser saveFile = new JFileChooser();
@@ -1165,7 +1375,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		});
 		
 		
-		JMenuItem editorHelp = new JMenuItem("Demo  D",KeyEvent.VK_D);
+		editorHelp = new JMenuItem(MmLanguage.language_menu[language][9],KeyEvent.VK_D);
 		
 		help.add(editorHelp);
 		
@@ -1205,7 +1415,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		saveFile.addChoosableFileFilter(filter);
 		saveFile.setFileFilter(filter);
 		
-		int option = saveFile.showSaveDialog(null);
+		int option = saveFile.showSaveDialog(this);
 		
 		//JOptionPane.showMessageDialog(null, "file name "+saveFile.getSelectedFile().getName());
 		
@@ -1245,7 +1455,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			if(dirFile.isDirectory() && save_file.exists())
 			{
 				//File jsonFile = new File(dirFile.getName());
-				int fileOption = JOptionPane.showConfirmDialog(null, "Filen finns redan. Vill du override","Spara" ,JOptionPane.YES_NO_OPTION);
+				int fileOption = JOptionPane.showConfirmDialog(null, MmLanguage.language_fileOptions[language][2],MmLanguage.language_fileOptions[language][1] ,JOptionPane.YES_NO_OPTION);
 				if(fileOption == JOptionPane.YES_OPTION)
 				{
 					map.createJSONFile(save_file.getPath(),(dirFile.getAbsolutePath().toString()),accordionMenu.getGlobalMarkerEvents(),accordionMenu.getStartEvents());
@@ -1298,14 +1508,14 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	    			if(!accordionMenu.getGlobalMarkerEvents().isEmpty())
 	    			{
 	    				index=accordionMenu.getGlobalMarkerEvents().get(0).getMarkerIndex();
-	    			    pBook.append(new MmPrintMarkers(System.getProperty("user.dir")+"/new markers/pattern"+Integer.toString(index+1)+".png" ,accordionMenu.getGlobalMarkerEvents().get(0)), printer.defaultPage());
+	    			    pBook.append(new MmPrintMarkers(System.getProperty("user.dir")+"/globalmarkers/pattern"+Integer.toString(index+1)+".png" ,accordionMenu.getGlobalMarkerEvents().get(0),language), printer.defaultPage());
 	    			}    
 	    			
 					for(int i=1;i<accordionMenu.getGlobalMarkerEvents().size();i++)
 					{		
 					   index = accordionMenu.getGlobalMarkerEvents().get(i).getMarkerIndex();
 					   
-					   pBook.append(new MmPrintMarkers(System.getProperty("user.dir")+"/new markers/pattern"+Integer.toString(index+1)+".png" ,accordionMenu.getGlobalMarkerEvents().get(i)), printer.defaultPage());
+					   pBook.append(new MmPrintMarkers(System.getProperty("user.dir")+"/globalmarkers/pattern"+Integer.toString(index+1)+".png" ,accordionMenu.getGlobalMarkerEvents().get(i),language), printer.defaultPage());
 					
 					   //JOptionPane.showMessageDialog(null, "marker index "+index);
 					  			   

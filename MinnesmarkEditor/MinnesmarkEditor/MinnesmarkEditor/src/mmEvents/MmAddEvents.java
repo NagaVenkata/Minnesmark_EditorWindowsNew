@@ -9,6 +9,10 @@ import org.jdesktop.swingx.mapviewer.GeoPosition;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -17,9 +21,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
-
+import mmLanguage.MmLanguage;
 import mmMap.*;
 import mmStationEvents.MmAudioEvent;
 import mmStationEvents.MmImageEvent;
@@ -75,7 +80,20 @@ public class MmAddEvents extends JPanel {
 	
 	JFrame mainWindow;
 	
+    int language;
 	
+	JButton addButton,minusButton;
+	
+	MmAddEventsDialog eventProperties,eventProperties1;
+	
+	JLabel latLabel,lanLabel;
+	JTextField latText,lanText;
+	
+	int geoIndex;
+	
+    String stationIndex;
+    
+    JLabel stationLabel;
 
 	public MmAddEvents(JDialog frame1)
 	{
@@ -87,6 +105,7 @@ public class MmAddEvents extends JPanel {
 		
 		dialogFrame = null;
 		
+		stationLabel = new JLabel();
 						
 		//frame.setLocation(0,0);
 		 //this.frame.setPreferredSize(new Dimension(400,200));
@@ -112,7 +131,7 @@ public class MmAddEvents extends JPanel {
 		 eventPanel.setLayout(grid);
 		 
 		 
-		 JLabel lb = new JLabel("Lägg till media som spelas på stationen");
+		 JLabel lb = new JLabel(MmLanguage.language_events[language][3]);
 		 lb.setName("label");
 		 eventLabels.add(lb);
 		 eventLabels.add(addLabels());
@@ -124,9 +143,19 @@ public class MmAddEvents extends JPanel {
 		 
 		 JPanel buttonPanel = new JPanel();
 		 		 	 
-		 JButton addButton = new JButton("+   Lägg till media");
-		 JButton minusButton = new JButton("-   Ta bort media");
+		 addButton = new JButton("+   "+MmLanguage.language_button[language][1]);
+		 minusButton = new JButton("-   "+MmLanguage.language_button[language][2]);
 		 JButton okButton = new JButton("Ok");
+		 
+		 
+		 JPanel latPanel = new JPanel();
+		 JPanel lanPanel = new JPanel();
+		 
+		 latLabel = new JLabel("Latitude:");
+		 lanLabel = new JLabel("Longitude:");
+		 
+		 latText = new JTextField(7);
+		 lanText = new JTextField(7);
 		 
 		 pane = new JScrollPane(eventPanel);
 		 pane.setBorder(BorderFactory.createEtchedBorder());
@@ -181,11 +210,11 @@ public class MmAddEvents extends JPanel {
 					    JDialog frame2 = new JDialog(mainWindow);
 					    
 					        
-					    MmAddEventsDialog eventProperties = new MmAddEventsDialog(frame2,index,eventPanel,station,true);
-					    eventProperties.setMainWindow(mainWindow);
+					    eventProperties1 = new MmAddEventsDialog(frame2,index,eventPanel,station,true,language);
+					    eventProperties1.setMainWindow(mainWindow);
 					    frame2.pack();
 					    frame2.setSize(400, 150);
-					    frame2.setContentPane(eventProperties);
+					    frame2.setContentPane(eventProperties1);
 					    frame2.setLocation(eventDialog.getLocation().x+25, eventDialog.getLocation().y+50);
 					    frame2.setVisible(true); 
 					    frame2.toFront();
@@ -197,7 +226,7 @@ public class MmAddEvents extends JPanel {
 						int index = station.getLabels().indexOf(lb);
 						
 						JDialog frame2 = new JDialog(mainWindow);
-						MmAddEventsDialog eventProperties = new MmAddEventsDialog(frame2,index,eventPanel,station,false);
+					    eventProperties = new MmAddEventsDialog(frame2,index,eventPanel,station,false,language);
 						eventProperties.setMainWindow(mainWindow);
 					    frame2.pack();
 					    frame2.setSize(400, 150);
@@ -328,7 +357,7 @@ public class MmAddEvents extends JPanel {
 						 tempLabel.setName(station.getLabels().get(select_index+1).getName());
 						 int index = select_index; 
 						 index++;
-						 JOptionPane.showMessageDialog(null, "Entered");
+						 //JOptionPane.showMessageDialog(null, "Entered");
 						 swapUp(tempLabel,index);
 						 station.getLabels().get(put_index).setText(moveLabel.getText());
 						 station.getLabels().get(put_index).setName(moveLabel.getName());
@@ -409,10 +438,10 @@ public class MmAddEvents extends JPanel {
 				
 				 if(index==0 && !station.getLabels().get(index).getName().equals("label") && station.getLabels().get(index+1).getName().equals("label"))
 				 {
-					 station.getLabels().get(index).setText("Lägg till media som spelas på stationen");
+					 station.getLabels().get(index).setText(MmLanguage.language_events[language][3]);
 					 station.getLabels().get(index).setName("label");
 					 JLabel lb = (JLabel) eventPanel.getComponent(index);
-					 lb.setText("Lägg till media som spelas på stationen");
+					 lb.setText(MmLanguage.language_events[language][3]);
 					 lb.setName("label");
 					 lb.setOpaque(false);
 					 System.out.println("panel size "+eventPanel.getComponentCount());	 
@@ -561,20 +590,149 @@ public class MmAddEvents extends JPanel {
 		 buttonPanel.add(addButton);
 		 buttonPanel.add(minusButton);
 		 buttonPanel.add(okButton);
-		
-
 		 
-		 JPanel panel1 = new JPanel();
-		 
-		 panel1.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
-		 panel1.add(buttonPanel);
-		 
-		 add(panel1,BorderLayout.SOUTH);
-		 eventDialog.add(this);
+		 if(station!=null && station.getStationIndex()!=0)
+			    stationLabel = new JLabel("Station"+Integer.toString(station.getStationIndex()));
+			
+			 latPanel.add(latLabel);
+			 latPanel.add(latText);
+			 
+			 lanPanel.add(lanLabel);
+			 lanPanel.add(lanText);
+			 
+			 //FlowLayout layout = new FlowLayout();
+			 
+	         JPanel latitudePanel = new JPanel();
+	         
+	         latitudePanel.setLayout(new GridBagLayout());
+	         
+	         GridBagConstraints gbc = new GridBagConstraints();
+	         
+	         gbc.fill  = GridBagConstraints.HORIZONTAL;
+	         
+	         gbc.weightx=0.5;
+	         
+	         gbc.gridx = 0;
+	         gbc.gridy = 0;
+	         
+	         latitudePanel.add(new JLabel(""),gbc);
+	         
+	         gbc.fill  = GridBagConstraints.HORIZONTAL;
+	         
+	         gbc.weightx=0.5;
+	         
+	         gbc.gridx = 1;
+	         gbc.gridy = 0;
+	         
+	         
+	         latitudePanel.add(stationLabel,gbc);
+	         
+	         gbc.fill  = GridBagConstraints.HORIZONTAL;
+	         
+	         gbc.weightx=0.5;
+	         
+	         gbc.gridx = 2;
+	         gbc.gridy = 0;
+	         
+	         
+	         
+	         latitudePanel.add(new JLabel(" "),gbc);
+	         
+	         gbc.fill = GridBagConstraints.HORIZONTAL;
+	         
+	         gbc.gridx = 0;
+	         gbc.gridy = 1;
+	         
+	         latitudePanel.add(latPanel,gbc);
+	         
+	         gbc.fill = GridBagConstraints.HORIZONTAL;
+	         
+	         gbc.gridx = 1;
+	         gbc.gridy = 1;
+	         
+	         latitudePanel.add(lanPanel,gbc);
+	         
+			 
+	         //latitudePanel.setBorder(BorderFactory.createEmptyBorder(5,5,0,0));
+	        /* latitudePanel.add(stationLabel);
+	         latitudePanel.add(latPanel);
+	         latitudePanel.add(lanPanel);*/
+	         
+			 
+			 JPanel panel1 = new JPanel();
+			 
+			 panel1.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
+			 panel1.add(buttonPanel);
+			 
+			 add(latitudePanel,BorderLayout.NORTH);
+			 add(panel1,BorderLayout.SOUTH);
+			 eventDialog.add(this);
         
 		 
 		
 	}
+	
+	public String getStationIndex() {
+		return stationIndex;
+	}
+
+	public void setStationIndex(String stationIndex) {
+		this.stationIndex = stationIndex;
+		stationLabel.setText("Station"+stationIndex);
+		stationLabel.setFont(new Font(stationLabel.getName(),Font.BOLD,18));
+		
+	}
+
+	
+	public int getLanguage() {
+		return language;
+	}
+
+
+	public void setLanguage(int language) {
+		this.language = language;
+	}
+	
+	public int getGeoIndex() {
+		return geoIndex;
+	}
+
+	public void setGeoIndex(int geoIndex) {
+		this.geoIndex = geoIndex;
+	}
+	
+	public void setLanguageText()
+	{
+	
+		if((station!=null) && !station.getLabels().isEmpty() && station.getLabels().get(0).getName().equals("label"))
+		{	
+			station.getLabels().get(0).setText(MmLanguage.language_events[language][3]);
+			station.getLabels().get(0).setName("label");
+			eventPanel.repaint();
+		    eventPanel.updateUI();
+		    eventPanel.revalidate();
+		    eventDialog.repaint();
+
+		}		
+		
+		addButton.setText("+   "+MmLanguage.language_button[language][1]);
+		minusButton.setText("-   "+MmLanguage.language_button[language][2]);
+		
+		if(eventProperties!=null)
+		{	
+		   eventProperties.setLanguage(language);
+		   eventProperties.setLanguageText();
+		}   
+		
+		if(eventProperties1!=null)
+		{	
+		    eventProperties1.setLanguage(language);
+		    eventProperties1.setLanguageText();
+		}    
+		
+		
+	}
+
 	
 	
 	public JFrame getMainWindow() {
@@ -611,7 +769,7 @@ public class MmAddEvents extends JPanel {
 		 if(station.getLabels().isEmpty())
 		 {	 
 			 ArrayList<JLabel> stationLabels = new ArrayList<JLabel>(); 
-			 JLabel lb = new JLabel("Lägg till media som spelas på stationen");
+			 JLabel lb = new JLabel(MmLanguage.language_events[language][3]);
 			 lb.setName("label");
 			 stationLabels.add(lb);
 			 stationLabels.add(addLabels());
@@ -625,6 +783,18 @@ public class MmAddEvents extends JPanel {
 			 eventPanel.updateUI();
 			    
 		}   
+		 
+		 BigDecimal bd = new BigDecimal(station.getLatitude());
+			
+		 BigDecimal bd1 = bd.setScale(6, 6);
+			
+		 latText.setText(Double.toString(bd1.doubleValue()));
+		 
+		 bd = new BigDecimal(station.getLongitude());
+			
+		 bd1 = bd.setScale(6, 6);
+		 
+		 lanText.setText(Double.toString(bd1.doubleValue())); 
 			 
 		
 	}
@@ -656,6 +826,19 @@ public class MmAddEvents extends JPanel {
 	     
 	     eventPanel.repaint();
 		 eventPanel.updateUI();
+		 
+		 BigDecimal bd = new BigDecimal(station.getLatitude());
+			
+		 BigDecimal bd1 = bd.setScale(6, 6);
+			
+		 latText.setText(Double.toString(bd1.doubleValue()));
+		 
+		 bd = new BigDecimal(station.getLongitude());
+			
+		 bd1 = bd.setScale(6, 6);
+		 
+		 lanText.setText(Double.toString(bd1.doubleValue()));
+		
 	}
 	
 	public void updateStationEvents(GeoPosition point)

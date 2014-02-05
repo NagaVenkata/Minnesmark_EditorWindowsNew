@@ -103,7 +103,8 @@ public class MmAudioEvent {
 			events.put("name", this.eventName);
 			events.put("type", "audio");
 			attributes.put("filename", this.audioFile);
-			
+			File desFilePath = new File(sourcePath);
+			attributes.put("fileSize", desFilePath.length());
 			attributes.put("collectItem", collectItem);
 			
 			events.put("attributes", attributes);

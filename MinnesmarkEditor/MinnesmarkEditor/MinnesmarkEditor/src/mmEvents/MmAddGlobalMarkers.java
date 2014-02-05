@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import mmLanguage.MmLanguage;
 import mmStationEvents.*;
 
 
@@ -64,7 +65,7 @@ public class MmAddGlobalMarkers extends JPanel {
 	
 	JFrame mainWindow;
 	
-	
+	int language;
 	
 
 	public MmAddGlobalMarkers(JDialog frame1)
@@ -98,7 +99,7 @@ public class MmAddGlobalMarkers extends JPanel {
 		 eventPanel.setLayout(grid);
 		 
 		 
-		 JLabel lb = new JLabel("Lägg till media som spelas på markör");
+		 JLabel lb = new JLabel(MmLanguage.language[language][5]);
 		 lb.setName("label");
 		 eventLabels.add(lb);
 		 eventLabels.add(addLabels());
@@ -110,8 +111,8 @@ public class MmAddGlobalMarkers extends JPanel {
 		 
 		 JPanel buttonPanel = new JPanel();
 		 		 	 
-		 addButton = new JButton("+   Lägg till media");
-		 minusButton = new JButton("-   Ta bort media");
+		 addButton = new JButton("+  "+MmLanguage.language_button[language][1]);
+		 minusButton = new JButton("-  "+MmLanguage.language_button[language][2]);
 		 okButton = new JButton("Ok");
 		 
 		 pane = new JScrollPane(eventPanel);
@@ -338,7 +339,11 @@ public class MmAddGlobalMarkers extends JPanel {
 				// TODO Auto-generated method stub
 	           
 				
-				addEvent();
+				if(!(station.getLabels().get(0).getText().contains(MmLanguage.language_mediaevents[language][8])||
+					station.getLabels().get(0).getText().contains(MmLanguage.language_mediaevents[language][9])))
+						  addEvent();
+				else
+					JOptionPane.showMessageDialog(null, MmLanguage.language_mediaException[language][2]);
 								
 				eventPanel.repaint();
 			    eventPanel.updateUI();
@@ -369,10 +374,10 @@ public class MmAddGlobalMarkers extends JPanel {
 				
 				 if(index==0 && !station.getLabels().get(index).getName().equals("label") && station.getLabels().get(index+1).getName().equals("label"))
 				 {
-						 station.getLabels().get(index).setText("Lägg till media som spelas på stationen");
+						 station.getLabels().get(index).setText(MmLanguage.language[language][5]);
 						 station.getLabels().get(index).setName("label");
 						 JLabel lb = (JLabel) eventPanel.getComponent(index);
-						 lb.setText("Lägg till media som spelas på stationen");
+						 lb.setText(MmLanguage.language[language][5]);
 						 lb.setName("label");
 						 lb.setOpaque(false);
 					     System.out.println("panel size "+eventPanel.getComponentCount());	 
@@ -569,6 +574,44 @@ public class MmAddGlobalMarkers extends JPanel {
 		this.mainWindow = mainWindow;
 	}
 	
+	public int getLanguage() {
+		return language;
+	}
+
+
+	public void setLanguage(int language) {
+		this.language = language;
+	}
+
+	public void setLanguageText()
+	{
+	
+		if((station!=null) && !station.getLabels().isEmpty() && station.getLabels().get(0).getName().equals("label"))
+		{	
+			station.getLabels().get(0).setText(MmLanguage.language[language][5]);
+			station.getLabels().get(0).setName("label");
+			eventPanel.repaint();
+		    eventPanel.updateUI();
+		    eventPanel.revalidate();
+		    
+
+		}		
+		
+		addButton.setText("+   "+MmLanguage.language_button[language][1]);
+		minusButton.setText("-   "+MmLanguage.language_button[language][2]);
+		
+		if(eventProperties!=null)
+		{	
+		   eventProperties.setLanguage(language);
+		   eventProperties.setLanguageText();
+		}   
+		
+		    
+		
+		
+	}
+
+	
 	public void resetSelectedText()
 	{
 	  
@@ -577,6 +620,43 @@ public class MmAddGlobalMarkers extends JPanel {
 	public void setLabel(JLabel label)
 	{
 		markerLabel = label;
+	}
+	
+	public void setGlobalMarkers()
+	{
+		
+		for(int i=0;i<18;i++)
+		{
+			station = new MmGlobalMarkerEvents();
+			station.setMarkerName("marker"+Integer.toString(i+1));
+			station.setMarkerIndex(i);
+			globalMarkerEvents.add(station);
+			eventPanel.removeAll();
+		    if(station.getLabels().isEmpty())
+			{	 
+				ArrayList<JLabel> stationLabels = new ArrayList<JLabel>(); 
+			    JLabel lb = new JLabel(MmLanguage.language[language][5]);
+			    lb.setName("label");
+			    stationLabels.add(lb);
+			    stationLabels.add(addLabels());
+			    stationLabels.add(addLabels());
+			    stationLabels.add(addLabels());
+			    
+			    station.setLabels(stationLabels);
+			    
+			    
+			    for(int j=0;j<station.getLabels().size();j++)
+					 eventPanel.add(station.getLabels().get(j));
+			    
+			    eventPanel.updateUI();
+			    
+			    //JOptionPane.showMessageDialog(null, "entered marker event");
+			    
+			}
+		
+		}
+		
+		
 	}
 	
 	public void addStation(String text,int index)
@@ -595,7 +675,7 @@ public class MmAddGlobalMarkers extends JPanel {
 			 if(station.getLabels().isEmpty())
 			 {	 
 				ArrayList<JLabel> stationLabels = new ArrayList<JLabel>(); 
-			    JLabel lb = new JLabel("Lägg till media som spelas när hitta makör");
+			    JLabel lb = new JLabel(MmLanguage.language[language][5]);
 			    lb.setName("label");
 			    stationLabels.add(lb);
 			    stationLabels.add(addLabels());
@@ -655,7 +735,7 @@ public class MmAddGlobalMarkers extends JPanel {
 				 if(station.getLabels().isEmpty())
 				 {	 
 					ArrayList<JLabel> stationLabels = new ArrayList<JLabel>(); 
-				    JLabel lb = new JLabel("Lägg till media som spelas när hitta markör");
+				    JLabel lb = new JLabel(MmLanguage.language[language][5]);
 				    lb.setName("label");
 				    stationLabels.add(lb);
 				    stationLabels.add(addLabels());

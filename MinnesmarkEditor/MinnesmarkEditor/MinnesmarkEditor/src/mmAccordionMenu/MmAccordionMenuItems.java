@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
 
+import mmLanguage.MmLanguage;
 import mmMap.*;
 
 import org.geonames.*;
@@ -71,11 +72,23 @@ public class MmAccordionMenuItems  {
 	JTextArea searchArea = new JTextArea(5,25);
 	
 	JWindow window = new JWindow();
+	
+	int language;
 		
+	
 	public MmAccordionMenuItems(String text)
 	{
 		//super(text);
 	}
+	
+	public int getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(int language) {
+		this.language = language;
+	}
+
 	
 	public MmAccordionMenuItems()
 	{
@@ -168,63 +181,100 @@ public class MmAccordionMenuItems  {
 			public void actionPerformed(ActionEvent event) {
 				// TODO Auto-generated method stub
 				
-				String str = "http://maps.googleapis.com/maps/api/geocode/json?address=";
+				 String[] strings = textField.getText().split("\\s+");
+				 
+				 				 
+				 
+				 String str = "http://maps.googleapis.com/maps/api/geocode/json?address=";
+				 
+				if(strings.length>0)
+				 {
+					 for(int i=0;i<strings.length-1;i++)
+					     str +=strings[i]+"+";
+				 }
+				 
+				 str+=strings[strings.length-1]+",+";
+				 
 				
-				String[] strs = textField.getText().split(" ");
-				
-				if(strs.length>0)
-				{
-					for(int i=0;i<strs.length-1;i++)
-					{
-						str+=strs[i]+"+";
-					}
-					
-					str+=strs[strs.length-1];
-				}
-				
-				try
-				{
-				    URL url = new URL(str+",+SE&sensor=false");	
-				    
-				    InputStream in = url.openStream();
-				    
-				    InputStreamReader is = new InputStreamReader(in);
-				    
-				    StringBuilder sb = new StringBuilder();
-				    
-				    BufferedReader br = new BufferedReader(is); 
-				    
-				    String line = br.readLine();
+				 try
+				  {
+				     URL url = new URL(str+"SE&sensor=false");
+				     //JOptionPane.showMessageDialog(null, url.getQuery());
+				     
+				     
+				     InputStream is = url.openStream();
+				     InputStreamReader is1 = new InputStreamReader(is);
+		             StringBuilder sb=new StringBuilder();
+		             BufferedReader br = new BufferedReader(is1);
+		             String read = br.readLine();
 
-	                 while (line != null) {
-	                       sb.append(line);
-	                       line = br.readLine();
-	                }
-	                String jsonContent = sb.toString();
-	                JSONTokener jsonTokens = new JSONTokener(jsonContent);
+		             while(read != null) {
+		                    //System.out.println(read);
+		                    sb.append(read);
+		                    read =br.readLine();
 
-				    JSONObject jsonObject = new JSONObject(jsonTokens);
-				    
-				    JSONArray jsonArray = new JSONArray(jsonObject.get("results").toString());
-				    
-				    jsonObject = (JSONObject) jsonArray.get(0);
-				    
-				    jsonObject = jsonObject.getJSONObject("geometry");
-				    
-				    jsonObject = jsonObject.getJSONObject("location");
-				    
-				    latitude = (Double) jsonObject.get("lat");
-				    longitude = (Double) jsonObject.get("lng");
-				    
-				    map.getMap().getMainMap().setAddressLocation(new GeoPosition(latitude,longitude));
-					map.getMap().setZoom(1);   
-				    
-				    
-				}
-				catch(Exception e)
-				{
-					JOptionPane.showMessageDialog(null, e);
-				}
+		              }
+		                
+		             //JOptionPane.showMessageDialog(null, sb.toString());
+		             //System.out.println("data "+sb.toString());
+		             
+		             String jsonContent = sb.toString();
+		             JSONTokener jsonTokens = new JSONTokener(jsonContent);
+		             
+		             JSONObject jsonObject = new JSONObject(jsonTokens);
+		             
+		             //JOptionPane.showMessageDialog(null, jsonObject);
+		             //JOptionPane.showMessageDialog(null, jsonObject.get("results"));
+		             
+		             if(!jsonObject.isNull("results"))
+		             {
+		            	 JSONArray jsonArray = new JSONArray(jsonObject.get("results").toString());
+		            	 //JOptionPane.showMessageDialog(null, jsonArray.get(0));
+		            	 jsonObject = (JSONObject) jsonArray.getJSONObject(0).getJSONObject("geometry");
+		            	 jsonObject = (JSONObject)jsonObject.get("location");
+		            	 
+		            	 //JOptionPane.showMessageDialog(null, jsonObject.get("lat"));
+		            	 //JOptionPane.showMessageDialog(null, jsonObject.get("lng"));
+		            	 
+		            	 latitude = (Double)jsonObject.get("lat");
+				         longitude = (Double)jsonObject.get("lng");
+				         
+				         map.getMap().getMainMap().setAddressLocation(new GeoPosition(latitude,longitude));
+						 map.getMap().setZoom(1);
+				         
+				         //JOptionPane.showMessageDialog(null, "lat "+latitude+" long  "+longitude);
+		            	 
+		            	 //jsonArray = new JSONArray(jsonObject.get("geometry").toString());
+		            	 //JOptionPane.showMessageDialog(null, jsonArray.length());
+		             }
+		             
+		             /*JSONArray placeAttrs = new JSONArray(jsonTokens);
+		             for(int i=0;i<placeAttrs.length();i++)
+		             {
+		            	 try
+		            	 {
+		            	    jsonObject = (JSONObject)placeAttrs.get(i);
+		            	    
+		            	    if(!jsonObject.isNull("location"))
+		            	    {
+		            	    	
+		            	    }
+		            	 }
+		            	 catch(Exception e)
+		            	 {
+		            		 JOptionPane.showMessageDialog(null,e);
+		            	 }
+		            	 
+		            	 
+		             }*/
+		             
+		             
+				  }
+				  catch(Exception e)
+				  {
+					  JOptionPane.showMessageDialog(null, e);
+				  }
+				
 				//JOptionPane.showMessageDialog(null, textField.getText());
 				
 				/*WebService.setUserName("umapathi"); // add your username here
@@ -234,6 +284,7 @@ public class MmAccordionMenuItems  {
 				  try
 				  {
 				     ToponymSearchResult searchResult = WebService.search(searchCriteria);
+				     
 				     for (Toponym toponym : searchResult.getToponyms()) {
 				         System.out.println(toponym.getName()+" "+toponym.getLatitude()+"  "+toponym.getLongitude()+" "+toponym.getName());
 				         latitude = toponym.getLatitude();
@@ -253,7 +304,8 @@ public class MmAccordionMenuItems  {
 					  JOptionPane.showMessageDialog(null, e);
 				  }*/
 				  
-
+                  
+				 
 				
 				/*InputStream is = null;
 				
@@ -303,6 +355,8 @@ public class MmAccordionMenuItems  {
 			
 		});
 	}
+	
+	
 	
 	public JPanel getSearchItemPanel()
 	{
@@ -359,9 +413,9 @@ public class MmAccordionMenuItems  {
 		latitudeField.setText("latitude");
 		longitudeField.setText("longitude");
 		
-		latitudeField.setToolTipText("Klick på text till srikva latitude");
+		latitudeField.setToolTipText(MmLanguage.language_search[language][1]);
 		
-		longitudeField.setToolTipText("Klick på text till srikva longitude");
+		longitudeField.setToolTipText(MmLanguage.language_search[language][2]);
 	}
 	
 	public double getLatitude()
@@ -423,7 +477,7 @@ public class MmAccordionMenuItems  {
             public void mousePressed(MouseEvent e) {
                 //MmAccordionMenuItems item = (MmAccordionMenuItems) e.getSource();
                 
-                System.out.println(" selected item "+e.getSource());
+                //System.out.println(" selected item "+e.getSource());
                    
                
             }
@@ -639,7 +693,7 @@ public class MmAccordionMenuItems  {
 				if(events!=null && events.getStations().isEmpty())
 				{
 					JComponent cmp = (JComponent)event.getSource();
-			        cmp.setToolTipText("<html>Klicka på station för att lägga till mediefiler</html>");
+			        cmp.setToolTipText(MmLanguage.language_media[language][0]);
 				}
 				
 				if(events!=null && labelIndex!=-1 && labelIndex<events.getStations().size())
@@ -652,13 +706,13 @@ public class MmAccordionMenuItems  {
 					else
 					{
 						JComponent cmp = (JComponent)event.getSource();
-				        cmp.setToolTipText("<html>Klicka på station för att lägga till mediafilen</html>");
+				        cmp.setToolTipText(MmLanguage.language_media[language][0]);
 					}
 				}
 				else
 				{
 					JComponent cmp = (JComponent)event.getSource();
-			        cmp.setToolTipText("<html>Klicka på station för att lägga till mediafilen</html>");
+			        cmp.setToolTipText(MmLanguage.language_media[language][0]);
 				}
 				
 				
@@ -689,44 +743,63 @@ public class MmAccordionMenuItems  {
 		panel.revalidate();
 	}
 	
+	public void setMarkersText(ArrayList<String> texts)
+	{
+		
+		
+		for(int i=0;i<texts.size();i++)
+		{
+			labels.get(i).setText(texts.get(i));
+		}
+		panel.revalidate();
+	}
+	
 	public void resetContent()
 	{
-		labels.get(0).setText("Markör 1");
+		for(int i=0;i<18;i++)
+		{
+			labels.get(i).setText(MmLanguage.language_markers[language][i]);
+			labels.get(i).setName("patt.marker"+Integer.toString(i+1));
+		}
+		
+		/*labels.get(0).setText(MmLanguage.language_markers[0][0]);
 		labels.get(0).setName("patt.marker1");
-		labels.get(1).setText("Markör 2");
+		labels.get(1).setText(MmLanguage.language_markers[0][1]);
 		labels.get(1).setName("patt.marker2");
-		labels.get(2).setText("Markör 3");
+		labels.get(2).setText(MmLanguage.language_markers[0][2]);
 		labels.get(2).setName("patt.marker3");
-		labels.get(3).setText("Markör 4");
+		labels.get(3).setText(MmLanguage.language_markers[0][3]);
 		labels.get(3).setName("patt.marker4");
-		labels.get(4).setText("Markör 5");
+		labels.get(4).setText("MarkÃ¶r 5");
 		labels.get(4).setName("patt.marker5");
-		labels.get(5).setText("Markör 6");
+		labels.get(5).setText("MarkÃ¶r 6");
 		labels.get(5).setName("patt.marker6");
-		labels.get(6).setText("Markör 7");
+		labels.get(6).setText("MarkÃ¶r 7");
 		labels.get(6).setName("patt.marker7");
-		labels.get(7).setText("Markör 8");
+		labels.get(7).setText("MarkÃ¶r 8");
 		labels.get(7).setName("patt.marker8");
-		labels.get(8).setText("Markör 9");
+		labels.get(8).setText("MarkÃ¶r 9");
 		labels.get(8).setName("patt.marker9");
-		labels.get(9).setText("Markör 10");
+		labels.get(9).setText("MarkÃ¶r 10");
 		labels.get(9).setName("patt.marker10");
-		labels.get(10).setText("Markör 11");
+		labels.get(10).setText("MarkÃ¶r 11");
 		labels.get(10).setName("patt.marker11");
-		labels.get(11).setText("Markör 12");
+		labels.get(11).setText("MarkÃ¶r 12");
 		labels.get(11).setName("patt.marker12");
-		labels.get(12).setText("Markör 13");
+		labels.get(12).setText("MarkÃ¶r 13");
 		labels.get(12).setName("patt.marker13");
-		labels.get(13).setText("Markör 14");
+		labels.get(13).setText("MarkÃ¶r 14");
 		labels.get(13).setName("patt.marker14");
-		labels.get(14).setText("Markör 15");
+		labels.get(14).setText("MarkÃ¶r 15");
 		labels.get(14).setName("patt.marker15");
-		labels.get(15).setText("Markör 16");
+		labels.get(15).setText("MarkÃ¶r 16");
 		labels.get(15).setName("patt.marker16");
-		labels.get(16).setText("Markör 17");
+		labels.get(16).setText("MarkÃ¶r 17");
 		labels.get(16).setName("patt.marker17");
-		labels.get(17).setText("Markör 18");
-		labels.get(17).setName("patt.marker18");
+		labels.get(17).setText("MarkÃ¶r 18");
+		labels.get(17).setName("patt.marker18");*/
+		
+		
 		
 		for(int i=0;i<18;i++)
 		{
@@ -743,10 +816,10 @@ public class MmAccordionMenuItems  {
 	public void resetStartContent()
 	{
 				
-		labels.get(0).setText("Lägg till uppstart bild");
-		labels.get(1).setText("Lägg till media som spelas vid uppstart");
-		labels.get(2).setText("Lägg till media som spelas vid uppstart");
-		labels.get(3).setText("Lägg till media som spelas vid uppstart");
+		labels.get(0).setText(MmLanguage.language_startMedia[language][0]);
+		labels.get(1).setText(MmLanguage.language_startMedia[language][1]);
+		labels.get(2).setText(MmLanguage.language_startMedia[language][1]);
+		labels.get(3).setText(MmLanguage.language_startMedia[language][1]);
 		labels.get(4).setText("");
 		labels.get(5).setText("");
 		

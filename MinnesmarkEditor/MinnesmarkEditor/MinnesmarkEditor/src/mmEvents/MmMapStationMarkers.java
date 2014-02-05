@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-
 import mmGPSCoordinates.MmMousePoints;
+import mmLanguage.MmLanguage;
 import mmMap.MmMapViewer;
 
 public class MmMapStationMarkers extends JPanel {
@@ -71,6 +71,13 @@ public class MmMapStationMarkers extends JPanel {
 	public JDialog dialog;
 	
 	public final JWindow window = new JWindow();
+	
+    JPanel  titlePanel,titlePanel1;
+	
+	JLabel titleLabel,titleLabel1;
+	
+	int language;
+	
 	public MmMapStationMarkers(JDialog markerDialog,MmMapViewer mapView)
 	{
 		
@@ -158,10 +165,10 @@ public class MmMapStationMarkers extends JPanel {
 		 JPanel panel = new JPanel();
 		 panel.setLayout(new GridLayout(0,1));
 		 
-		 JPanel titlePanel = new JPanel();
+		 titlePanel = new JPanel();
 		 titlePanel.setBackground(new Color(230,242,252));
 		 titlePanel.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
-		 JLabel titleLabel = new JLabel("Dra och släpp stationer på kartan för att skapa en rundvandring");
+		 titleLabel = new JLabel(MmLanguage.language[language][0]);
 		 
 		 titleLabel.setOpaque(false);
 		 titleLabel.setForeground(new Color(24,24,24));
@@ -171,10 +178,10 @@ public class MmMapStationMarkers extends JPanel {
 		 //framePanel.add(titlePanel,BorderLayout.NORTH);
 		 
 		 
-		 JPanel titlePanel1 = new JPanel();
+		 titlePanel1 = new JPanel();
 		 titlePanel1.setBackground(new Color(230,242,252));
 		 titlePanel1.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
-		 JLabel titleLabel1 = new JLabel("Station för ett lägga till media");
+		 titleLabel1 = new JLabel(MmLanguage.language[language][1]);
 		 titleLabel1.setOpaque(false);
 		 titleLabel1.setForeground(new Color(24,24,24));
 		 titlePanel1.add(titleLabel1);
@@ -465,7 +472,7 @@ public class MmMapStationMarkers extends JPanel {
 				}
 				else
 				{
-					JOptionPane.showMessageDialog(mainPanel, "Kan inte lägga till en station");
+					JOptionPane.showMessageDialog(mainPanel, MmLanguage.language_exception[language][1]);
 					markerWindows.get(markerIndex).setVisible(false);
 				}
 				
@@ -536,6 +543,22 @@ public class MmMapStationMarkers extends JPanel {
 		 });
 
 	}
+	
+	public int getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(int language) {
+		this.language = language;
+	}
+	
+	public void setTitleLabel()
+	{
+		titleLabel.setText(MmLanguage.language[language][0]);
+		titleLabel1.setText(MmLanguage.language[language][1]);
+		
+	}
+
 	
 		
 	public void setLabelIcon(int index)
