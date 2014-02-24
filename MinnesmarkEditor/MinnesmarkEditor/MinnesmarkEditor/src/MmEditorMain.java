@@ -1172,6 +1172,8 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					
 				}
 				
+				
+				
 				if(accordionMenu.getCurrentAtiveMarkersCount()!=0)
 				{
 					isSaved = accordionMenu.getMarkersSavedState();
@@ -1182,6 +1184,8 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				
 				
 				isSaved = accordionMenu.isStartEventsSaved();
+				
+				
 				
 				if(isSaved && map.isFileOpen())
 				{
@@ -1203,7 +1207,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				    save_file = null;
 				}
 				
-				if(!isSaved && map.isFileOpen())
+				if(!isSaved)
 				{
 					Object[] options = {MmLanguage.language_options[language][0],
 							MmLanguage.language_options[language][1],
