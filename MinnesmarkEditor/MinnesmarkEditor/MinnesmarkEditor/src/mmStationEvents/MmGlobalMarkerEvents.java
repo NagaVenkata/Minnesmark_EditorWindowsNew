@@ -2452,5 +2452,19 @@ public class MmGlobalMarkerEvents {
 		
 	}
 	
+	public void clearContent()
+	{
+		markerEvent.clearContent();
+		markerEvent = null;
+		
+		imageEvents.clear();
+		audioEvents.clear();
+		modelEvents.clear();
+		panoramaEvents.clear();
+		videoEvents.clear();
+		messageEvents.clear();
+		
+	}
+	
 }
 

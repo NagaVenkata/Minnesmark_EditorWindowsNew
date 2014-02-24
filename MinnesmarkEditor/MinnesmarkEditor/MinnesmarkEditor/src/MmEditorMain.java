@@ -15,6 +15,7 @@ import java.awt.print.Book;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
+
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -31,17 +33,26 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+
 import mmFileManager.*;
-import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+
+
+
+
+//import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+//import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+
 
 import java.util.*;
 
 import mmFileManager.MmFileSelector;
 
+
 import com.sun.jna.NativeLibrary;
 
+
 import mmAccordionMenu.*;
+
 import mmLanguage.MmLanguage;
 import mmMap.MmMapViewer;
 import mmPrintMarkers.MmPrintMarkers;
@@ -73,9 +84,17 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
     
     MmMapViewer map;
     
-    String urlLink;
+    String urlLink,fileName;
+    
+    File dirFile=null,save_file=null;
+    
+    JFileChooser saveFile;
+    
+   
     
     JFrame window;
+    
+    String windowTitle="Minnesmark Editor",fileNameText ="Untitled - ";
     
     public int language=0;
     
@@ -107,17 +126,20 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	     
 	     addMainLedInterface();
 	     
-	     	     
 	     
 	     window.setJMenuBar(menuBar);
-	     window.setTitle("Minnesmark Editor");
+	     setIconImage(new ImageIcon(getClass().getResource("/Icon.png")).getImage());
+	     window.setTitle(fileNameText+windowTitle);
 	     
-	     window.setIconImage(new ImageIcon(getClass().getResource("/Icon.png")).getImage());
+	     
+	     
 	    
 	     splitPane.setLeftComponent(scrollPaneLeft);
 	     
 	     splitPane.setAutoscrolls(true);
 	     splitPane.setRightComponent(scrollPaneRight);
+	     
+	  
 	     
 	     	     
 	     splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,new PropertyChangeListener(){
@@ -143,9 +165,10 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	    		//accordionPanel.setPreferredSize(new Dimension(splitPane.getDividerLocation(),accordionPanel.getHeight()));
 	    	}
 	    });
-	    
+	     
 	     
 	     window.add(splitPane);
+	   
 	     window.setVisible(true);
 	     
 	     map.setMainWindow(window);
@@ -173,7 +196,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		      panelRight.add(map);
 			//}
 		//});	
-	        
+		     
 		      
 		    
 		
@@ -228,7 +251,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
         accordionMenu.addMenu(MmLanguage.language[language][3],"markers");
         ArrayList<JLabel> texts = new ArrayList<JLabel>();
         
-        for(int i=0;i<18;i++)
+        for(int i=0;i<14;i++)
         	texts.add(addLabel(MmLanguage.language_markers[language][i],"patt.marker"+Integer.toString(i+1)));
         
         
@@ -281,39 +304,47 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		scrollPaneRight.setPreferredSize(new Dimension(500,600));
 		
 		
-        /*scrollPaneRight.getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-			
+        JScrollBar hscrollBar = scrollPaneRight.getHorizontalScrollBar();
+		
+		hscrollBar.addAdjustmentListener(new AdjustmentListener() {
+
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				// TODO Auto-generated method stub
-				//JOptionPane.showMessageDialog(null, e.getValue());
 				
-				System.out.println("scroll bar "+e.getValue());
-				
-				//Toolkit toolkit = Toolkit.getDefaultToolkit();
-				//map.getMap().setPreferredSize(new Dimension(toolkit.getScreenSize().width-460,(toolkit.getScreenSize().height-100)+e.getValue()));
-				
-				map.setAdjustx(e.getValue());
+				/*System.out.println(" adjust value  "+e.getValue());
+				map.setScrollbarAdjustX(e.getValue());
+				map.drawPoints();*/
+				//map.repaint();
 			}
+			
+		});
+
+		
+		JScrollBar vscrollBar = scrollPaneRight.getVerticalScrollBar();
+		
+		vscrollBar.addAdjustmentListener(new AdjustmentListener() {
+
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				// TODO Auto-generated method stub
+				
+				//System.out.println(" adjust value  "+e.getValue());
+				/*map.setScrollbarAdjustY(e.getValue());
+				map.drawPoints();*/
+				//map.repaint();
+			}
+			
 		});
 		
-		scrollPaneRight.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-			
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-				// TODO Auto-generated method stub
-				//JOptionPane.showMessageDialog(null, e.getValue());
-				
-				System.out.println("scroll bar "+e.getValue());
-				
-				//Toolkit toolkit = Toolkit.getDefaultToolkit();
-				//map.getMap().setPreferredSize(new Dimension(toolkit.getScreenSize().width-460,(toolkit.getScreenSize().height-100)+e.getValue()));
-				
-				map.setAdjusty(e.getValue());
-			}
-		});*/
+		/*JOptionPane.showMessageDialog(null, menuBar.getX()+"  "+menuBar.getY());
+       
+		Point pt = new Point(window.getX(),window.getY());
 		
+		SwingUtilities.convertPointToScreen(pt, window);
 		
+		JOptionPane.showMessageDialog(null, pt+"  "+menuBar.getBounds());*/
+        		
 	}
 	
 	public void addMmWindowListener()
@@ -374,7 +405,30 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			public void windowClosing(WindowEvent arg0) {
 				// TODO Auto-generated method stub
 				
-				if(!map.getSavedState())
+                boolean isSaved = false;
+				
+                if(!map.getStations().isEmpty())
+				{
+					isSaved = map.getChangedState();
+					if(!isSaved)
+					{
+						accordionMenu.setMarkerstSavedState(false);
+						accordionMenu.setStartEventsSaved(false);
+					}
+					
+				}
+				
+				if(accordionMenu.getCurrentAtiveMarkersCount()!=0)
+				{
+					isSaved = accordionMenu.getMarkersSavedState();
+					if(!isSaved)
+				    	accordionMenu.setStartEventsSaved(false);
+				}
+				
+				
+				isSaved = accordionMenu.isStartEventsSaved();
+				
+				if(!isSaved)
 				{
 				
 					Object[] options = {MmLanguage.language_options[language][0],
@@ -560,7 +614,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 						 {
 							  JLabel label = accordionPanels.get(lastFrame).eventsDialog.componentPanel.getLabels().get(j);
 							  JCheckBox checkBox = accordionPanels.get(lastFrame).eventsDialog.componentPanel.getCheckBoxes().get(j);
-							  System.out.println("label text "+label.getName());
+							  //System.out.println("label text "+label.getName());
 							  label.setVisible(false);
 							  checkBox.setVisible(false);
 							  label=null;
@@ -996,14 +1050,49 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				
 			   //JOptionPane.showMessageDialog(null, map.getSavedState());
 				
-				if(map.getSavedState())
+				boolean isSaved = false;
+				
+				if(!map.getStations().isEmpty())
+				{
+					isSaved = map.getChangedState();
+					if(!isSaved)
+					{
+						accordionMenu.setMarkerstSavedState(false);
+						accordionMenu.setStartEventsSaved(false);
+					}
+					
+				}
+				
+				if(accordionMenu.getCurrentAtiveMarkersCount()!=0)
+				{
+					isSaved = accordionMenu.getMarkersSavedState();
+					
+					if(!isSaved)
+					{	
+				    	accordionMenu.setStartEventsSaved(false);
+				    	
+					} 	
+				}
+				
+				isSaved = accordionMenu.isStartEventsSaved();
+				
+				
+				
+				if(isSaved)
 				{	
-					accordionMenu.clearContent();
-					accordionMenu.getStartEvents().imageEvents.clear();
-					accordionMenu.getStartEvents().audioEvents.clear();
-					accordionMenu.getStartEvents().videoEvents.clear();
-					accordionMenu.getStartEvents().messageEvents.clear();
+					if(!accordionMenu.getGlobalMarkerEvents().isEmpty())
+					{
+						for(int i=0;i<accordionMenu.getGlobalMarkerEvents().size();i++)
+						{
+							if(accordionMenu.getGlobalMarkerEvents().get(i).getNumberOfEvents()!=0)
+							    accordionMenu.getGlobalMarkerEvents().get(i).clearContent();
+						}
+					}
+				    accordionMenu.clearContent();   
+				    accordionMenu.getStartEvents().clearContent();
+				    accordionMenu.setSearchText(":"+MmLanguage.language_search[language][0]);
 				    map.resetMapContents();
+				    window.setTitle("Untitled - "+windowTitle);
 				}
 				else
 				{	
@@ -1011,15 +1100,20 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 							MmLanguage.language_options[language][1],
 							MmLanguage.language_options[language][2]};
 					
-					ImageIcon icon = new ImageIcon(getClass().getResource("/exclamation.png"));
-					
+				    ImageIcon icon = new ImageIcon(getClass().getResource("/exclamation.png"));
+				
 					int option = JOptionPane.showOptionDialog(null, MmLanguage.language_fileOptions[language][0], MmLanguage.language_fileOptions[language][1], JOptionPane.YES_NO_CANCEL_OPTION,0,icon,options,options[2]);
 					
 				    if(option==JOptionPane.OK_OPTION)
 				    {
 				       SaveFile();
-				    
+				       accordionMenu.clearContent();
+					   accordionMenu.setSearchText(":"+MmLanguage.language_search[language][0]);
 				       map.resetMapContents();
+				       window.setTitle("Untitled - "+windowTitle);
+				       map.setSaved(false);
+				       dirFile = null;
+				       save_file = null;
 				    }	
 				
 				    if(option==JOptionPane.NO_OPTION)
@@ -1027,11 +1121,13 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				 	   //accordionMenu.getGlobalMarkerEvents().clear();
 					   accordionMenu.clearContent();
 					   resetStartContent();
-					   accordionMenu.getStartEvents().imageEvents.clear();
-					   accordionMenu.getStartEvents().audioEvents.clear();
-					   accordionMenu.getStartEvents().videoEvents.clear();
-					   accordionMenu.getStartEvents().messageEvents.clear();
+					   accordionMenu.setSearchText(":"+MmLanguage.language_search[language][0]);
 				       map.resetMapContents();
+				       window.setTitle("Untitled - "+windowTitle);
+				       map.setSaved(false);
+				       dirFile = null;
+				       save_file = null;
+				       
 				    }
 				}    
 			}
@@ -1063,8 +1159,51 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			     RETURN_TYPE answer = vfs1.showOpenDialog(null);*/
 				
 				
+                boolean isSaved = false;
 				
-				if(!map.getSavedState() && map.isFileOpen())
+				if(!map.getStations().isEmpty())
+				{
+					isSaved = map.getChangedState();
+					if(!isSaved)
+					{
+						accordionMenu.setMarkerstSavedState(false);
+						accordionMenu.setStartEventsSaved(false);
+					}
+					
+				}
+				
+				if(accordionMenu.getCurrentAtiveMarkersCount()!=0)
+				{
+					isSaved = accordionMenu.getMarkersSavedState();
+					if(!isSaved)
+				    	accordionMenu.setStartEventsSaved(false);
+				}
+				
+				
+				
+				isSaved = accordionMenu.isStartEventsSaved();
+				
+				if(isSaved && map.isFileOpen())
+				{
+					map.resetMapContents();
+					if(!accordionMenu.getGlobalMarkerEvents().isEmpty())
+					{
+						for(int i=0;i<accordionMenu.getGlobalMarkerEvents().size();i++)
+						{
+							accordionMenu.getGlobalMarkerEvents().get(i).clearContent();
+						}
+					}
+				    accordionMenu.clearContent();   
+				    accordionMenu.getStartEvents().clearContent();
+				    accordionMenu.setSearchText(":"+MmLanguage.language_search[language][0]);
+				    map.setSaved(true);
+				    accordionMenu.setMarkerstSavedState(true);
+				    accordionMenu.setStartEventsSaved(true);
+				    dirFile = null;
+				    save_file = null;
+				}
+				
+				if(!isSaved && map.isFileOpen())
 				{
 					Object[] options = {MmLanguage.language_options[language][0],
 							MmLanguage.language_options[language][1],
@@ -1079,6 +1218,12 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				       SaveFile();
 				    
 				       map.resetMapContents();
+				       
+				       map.setSaved(true);
+				       accordionMenu.setMarkerstSavedState(true);
+				       accordionMenu.setStartEventsSaved(true);
+				       dirFile = null;
+				       save_file = null;
 				    }
 				    
 				    if(option==JOptionPane.NO_OPTION)
@@ -1086,19 +1231,16 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				 	   //accordionMenu.getGlobalMarkerEvents().clear();
 					   accordionMenu.clearContent();
 					   resetStartContent();
-					   accordionMenu.getStartEvents().imageEvents.clear();
-					   accordionMenu.getStartEvents().audioEvents.clear();
-					   accordionMenu.getStartEvents().videoEvents.clear();
-					   accordionMenu.getStartEvents().messageEvents.clear();
+					   accordionMenu.getStartEvents().clearContent();
 				       map.resetMapContents();
 				       
 				       JFileChooser openFile = new JFileChooser();
 						
-						openFile.setAcceptAllFileFilterUsed(false);
+					   openFile.setAcceptAllFileFilterUsed(false);
 						
 						
 						
-						FileNameExtensionFilter filter = new FileNameExtensionFilter(
+					   FileNameExtensionFilter filter = new FileNameExtensionFilter(
 						        "JSON files", "json");
 						
 						openFile.addChoosableFileFilter(filter);
@@ -1110,16 +1252,32 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					    {
 					    	
 					    	resetStartContent();
-						    accordionMenu.getStartEvents().imageEvents.clear();
-							accordionMenu.getStartEvents().audioEvents.clear();
-							accordionMenu.getStartEvents().videoEvents.clear();
-							accordionMenu.getStartEvents().messageEvents.clear();
+						    accordionMenu.getStartEvents().clearContent();
+							
 							
 					    	map.resetMapContents();
 						    map.showStationEventWindow();
 					        map.readJSONFileContents(openFile.getSelectedFile().getAbsolutePath(),accordionMenu);
 					        map.setFileOpen(true);
-					        map.setSaved(false);
+					        
+					        File file = new File(openFile.getSelectedFile().toString());
+							
+							String fileName1 = file.getName();
+							
+							//JOptionPane.showMessageDialog(null, fileName1);
+							
+							int fileIndex = fileName1.indexOf(".");
+							
+							fileName1 = fileName1.substring(0, fileIndex);
+					        
+							dirFile = new File(openFile.getSelectedFile().getParent());
+							save_file = new File(openFile.getSelectedFile().getAbsolutePath());
+					        
+					        fileNameText = openFile.getSelectedFile().getName() +" - ";
+					        window.setTitle(fileNameText+windowTitle);
+					        map.setSaved(true);
+					        accordionMenu.setMarkerstSavedState(true);
+					        accordionMenu.setStartEventsSaved(true);
 					    }    
 					
 					    if(option == JFileChooser.CANCEL_OPTION)
@@ -1155,9 +1313,32 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				    {
 				    	map.resetMapContents();
 					    map.showStationEventWindow();
+					    accordionMenu.clearContent();
+					    accordionMenu.getStartEvents().clearContent();
 				        map.readJSONFileContents(openFile.getSelectedFile().getAbsolutePath(),accordionMenu);
 				        map.setFileOpen(true);
-				        map.setSaved(false);
+				        map.setSaved(true);
+				        accordionMenu.setMarkerstSavedState(true);
+				        accordionMenu.setStartEventsSaved(true);
+				        File file = new File(openFile.getSelectedFile().getAbsolutePath());
+						
+						String fileName1 = file.getName();
+						
+						//JOptionPane.showMessageDialog(null, fileName1);
+						
+						int fileIndex = fileName1.indexOf(".");
+						
+						fileName1 = fileName1.substring(0, fileIndex);
+				        
+				        dirFile = new File(openFile.getSelectedFile().getParent());
+						save_file = new File(openFile.getSelectedFile().getAbsolutePath());
+
+						
+				        
+						fileNameText = openFile.getSelectedFile().getName()+" - ";
+				        window.setTitle(fileNameText+windowTitle);
+				        
+				        
 				    }    
 				
 				    if(option == JFileChooser.CANCEL_OPTION)
@@ -1195,7 +1376,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				
 				map.hideStationEventWindow();
 				
-                JFileChooser saveFile = new JFileChooser();
+                saveFile = new JFileChooser();
                 
                 saveFile.setDialogTitle(MmLanguage.language_menu[language][5]);
                 
@@ -1218,7 +1399,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				{	
 					
 					map.showStationEventWindow();
-					String fileName = saveFile.getSelectedFile().toString();
+					fileName = saveFile.getSelectedFile().toString();
 					
 					
 					if(!fileName.contains(".json"))
@@ -1226,6 +1407,8 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 						fileName = fileName+".json";
 						
 					}	
+					
+					
 					
 					File file = new File(fileName);
 					
@@ -1237,13 +1420,16 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					
 					fileName1 = fileName1.substring(0, fileIndex);
 					
+					fileNameText = file.getName()+" - ";
+			        window.setTitle(fileNameText+windowTitle);
+					
 					
 					//JOptionPane.showMessageDialog(null, "selected file "+saveFile.getSelectedFile()+"  "+file.getName());
 					
 					
-					File dirFile = new File(saveFile.getSelectedFile().getParent()+"/"+fileName1);
+					dirFile = new File(saveFile.getSelectedFile().getParent()+"/"+fileName1);
 					
-					File save_file = new File(saveFile.getSelectedFile()+"/"+file.getName());
+					save_file = new File(saveFile.getSelectedFile()+"/"+file.getName());
 					saveFile.setSelectedFile(save_file);
 					
 					//JOptionPane.showMessageDialog(null, saveFile.getSelectedFile()+"  "+dirFile.isDirectory()+"  "+dirFile.getName()+" "+save_file.exists()+"  "+save_file.getPath());
@@ -1267,7 +1453,8 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					}
 					
 					map.setSaved(true);
-					
+					accordionMenu.setMarkerstSavedState(true);
+				    accordionMenu.setStartEventsSaved(true);
 									   
 				}   
 				
@@ -1314,13 +1501,10 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 			public void actionPerformed(ActionEvent event) {
 				// TODO Auto-generated method stub
 				
-				if(map.getSavedState())
+				if(map.getChangedState())
 				{	
 					accordionMenu.clearContent();
-					accordionMenu.getStartEvents().imageEvents.clear();
-					accordionMenu.getStartEvents().audioEvents.clear();
-					accordionMenu.getStartEvents().videoEvents.clear();
-					accordionMenu.getStartEvents().messageEvents.clear();
+					accordionMenu.getStartEvents().clearContent();
 					System.exit(0);
 				}    
 				else
@@ -1346,10 +1530,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 					       map.setSaved(true);
 					       accordionMenu.clearContent();
 					       resetStartContent();
-						   accordionMenu.getStartEvents().imageEvents.clear();
-						   accordionMenu.getStartEvents().audioEvents.clear();
-						   accordionMenu.getStartEvents().videoEvents.clear();
-						   accordionMenu.getStartEvents().messageEvents.clear();
+						   accordionMenu.getStartEvents().clearContent();
 						   System.exit(0);
 					    }   
 					    
@@ -1361,10 +1542,8 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 						//accordionMenu.getGlobalMarkerEvents().clear();
 						accordionMenu.clearContent();
 						resetStartContent();
-						accordionMenu.getStartEvents().imageEvents.clear();
-						accordionMenu.getStartEvents().audioEvents.clear();
-						accordionMenu.getStartEvents().videoEvents.clear();
-						accordionMenu.getStartEvents().messageEvents.clear();
+						accordionMenu.getStartEvents().clearContent();
+						
 					    System.exit(0);
 					}
 					
@@ -1405,54 +1584,79 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	{
 		map.hideStationEventWindow();
 		
-        JFileChooser saveFile = new JFileChooser();
+		String fileName1;
 		
-		saveFile.setAcceptAllFileFilterUsed(false);
 		
-		FileNameExtensionFilter filter = new FileNameExtensionFilter(
+		
+		if(!map.getSavedState())
+		{		
+           saveFile = new JFileChooser();
+		
+		   saveFile.setAcceptAllFileFilterUsed(false);
+		
+		   FileNameExtensionFilter filter = new FileNameExtensionFilter(
 		        "JSON files", "json");
 		
-		saveFile.addChoosableFileFilter(filter);
-		saveFile.setFileFilter(filter);
+		   saveFile.addChoosableFileFilter(filter);
+		   saveFile.setFileFilter(filter);
 		
-		int option = saveFile.showSaveDialog(this);
+		   int option = saveFile.showSaveDialog(null);
 		
 		//JOptionPane.showMessageDialog(null, "file name "+saveFile.getSelectedFile().getName());
 		
 		
-		if(option == JFileChooser.APPROVE_OPTION)
-		{	
-			map.showStationEventWindow();
-			String fileName = saveFile.getSelectedFile().toString();
-						
-			if(!fileName.contains(".json"))
-			{	
+		   if(option == JFileChooser.APPROVE_OPTION)
+		   {	
+			 map.showStationEventWindow();
+			 fileName = saveFile.getSelectedFile().toString();
+			 
+			 if(!fileName.contains(".json"))
+			 {	
 				fileName = fileName+".json";
+			 		
+			 }	
 				
-			}	
+				File file = new File(fileName);
+				
+				fileName1 = file.getName();
+				
+				//JOptionPane.showMessageDialog(null, fileName1);
+				
+				int fileIndex = fileName1.indexOf(".");
+				
+				fileName1 = fileName1.substring(0, fileIndex);
+				
+				
+				//JOptionPane.showMessageDialog(null, "selected file "+saveFile.getSelectedFile()+"  "+file.getName());
+				
+				
+				dirFile = new File(saveFile.getSelectedFile().getParent()+"/"+fileName1);
+				
+				
+				
+				save_file = new File(saveFile.getSelectedFile()+"/"+file.getName());
+				saveFile.setSelectedFile(save_file);
+				
+				
+				fileNameText = file.getName()+" - ";
+		        window.setTitle(fileNameText+windowTitle);
+		   }
+		   
+		   if(option == JFileChooser.CANCEL_OPTION)
+		   {	
+				
+				map.showStationEventWindow();
+				window.setTitle("Untitled - "+windowTitle);
+		   }
+		}  
+						
 			
-			File file = new File(fileName);
-			
-			String fileName1 = file.getName();
-			
-			//JOptionPane.showMessageDialog(null, fileName1);
-			
-			int fileIndex = fileName1.indexOf(".");
-			
-			fileName1 = fileName1.substring(0, fileIndex);
-			
-			
-			//JOptionPane.showMessageDialog(null, "selected file "+saveFile.getSelectedFile()+"  "+file.getName());
-			
-			
-			File dirFile = new File(saveFile.getSelectedFile().getParent()+"/"+fileName1);
-			
-			File save_file = new File(saveFile.getSelectedFile()+"/"+file.getName());
-			saveFile.setSelectedFile(save_file);
 			
 			//JOptionPane.showMessageDialog(null, saveFile.getSelectedFile()+"  "+dirFile.isDirectory()+"  "+dirFile.getName()+" "+save_file.exists()+"  "+save_file.getPath());
 			
-			if(dirFile.isDirectory() && save_file.exists())
+			
+			
+			if(dirFile.isDirectory() && save_file.exists() && !map.getSavedState())
 			{
 				//File jsonFile = new File(dirFile.getName());
 				int fileOption = JOptionPane.showConfirmDialog(null, MmLanguage.language_fileOptions[language][2],MmLanguage.language_fileOptions[language][1] ,JOptionPane.YES_NO_OPTION);
@@ -1460,24 +1664,24 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				{
 					map.createJSONFile(save_file.getPath(),(dirFile.getAbsolutePath().toString()),accordionMenu.getGlobalMarkerEvents(),accordionMenu.getStartEvents());
 				    map.setSaved(true);
+				    accordionMenu.setMarkerstSavedState(true);
+				    accordionMenu.setStartEventsSaved(true);
 				}
 			}
-			else
+			else 
 			{
 				if(!dirFile.isDirectory())
 				      dirFile.mkdir();
 				map.createJSONFile(save_file.getPath(),(dirFile.getAbsolutePath().toString()),accordionMenu.getGlobalMarkerEvents(),accordionMenu.getStartEvents());
 			    map.setSaved(true);
+			    accordionMenu.setMarkerstSavedState(true);
+			    accordionMenu.setStartEventsSaved(true);
 			}
 							   
 		}   
 		
-		if(option == JFileChooser.CANCEL_OPTION)
-		{	
-			
-			map.showStationEventWindow();
-		}
-	}
+		
+	
 	
 	public void print()
 	{
@@ -1550,7 +1754,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-        NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), System.getProperty("user.dir") + File.separator + "lib" + File.separator + "VLC.app" + File.separator + "Contents"+  File.separator + "MacOS"+File.separator + "lib");
+        //NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), System.getProperty("user.dir") + File.separator + "lib" + File.separator + "VLC.app" + File.separator + "Contents"+  File.separator + "MacOS"+File.separator + "lib");
         //System.setProperty("jna.library.path", System.getProperty("user.dir") + File.separator + "lib" + File.separator + "VLC" + File.separator + "lib");
         
         

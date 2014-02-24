@@ -62,10 +62,25 @@ public class MmStartEvents {
     }
     
     
-    public void addText(String text,String path)
+    public void addText(String text,String path,int index)
     {
-    	labelsText.add(text);
-    	pathsText.add(path);
+    	
+    	labelsText.set(index, text);
+    	pathsText.set(index,path);
+    	eventNames[index] ="";  
+    	
+    	
+    	
+    }
+    
+    public void removeText(String text)
+    {
+    	//System.out.println(labelsText.size());
+    	int index = labelsText.indexOf(text);
+    	labelsText.set(index,"");
+    	pathsText.set(index,"");
+    	
+    	
     }
     
     //adds the event at paticular index
@@ -87,6 +102,21 @@ public class MmStartEvents {
     {
     	return pathsText;
     }
+    
+    public void  setContent()
+    {
+    	labelsText.clear();
+    	pathsText.clear();
+    	for(int i=0;i<4;i++)
+    	{	
+    	    labelsText.add("");
+    	    pathsText.add("");
+    	    eventNames[i] ="";
+    	} 
+    	
+    	
+    }
+
     
     
     public void writeJson(String saveFilePath)
@@ -370,6 +400,14 @@ public class MmStartEvents {
 			
 		}
 
+    }
+    
+    public void clearContent()
+    {
+    	audioEvents.clear();
+        videoEvents.clear();
+        imageEvents.clear();
+        messageEvents.clear();
     }
 
 }
