@@ -118,6 +118,10 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	     window = new JFrame();
 	     window.setSize(new Dimension(dim.width,dim.height));
 	     
+	     ImageIcon icon = new ImageIcon();
+	     
+	     
+	     
 	     accordionMenu = new MmAccordionMenu();
 	     
 	     accordionMenu.setMainWindow(window);
@@ -128,7 +132,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	     
 	     
 	     window.setJMenuBar(menuBar);
-	     setIconImage(new ImageIcon(getClass().getResource("/Icon.png")).getImage());
+	     window.setIconImage(new ImageIcon(getClass().getResource("/Icon.png")).getImage());
 	     window.setTitle(fileNameText+windowTitle);
 	     
 	     

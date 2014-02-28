@@ -2122,7 +2122,37 @@ public class MmMapViewer extends JPanel implements Printable {
 	public void createJSONFile(String fileName,String filePath,ArrayList<MmGlobalMarkerEvents> markerEvents,MmStartEvents startEvents)
 	{
 	
+        File file1 = new File(fileName);
+		
 		action = new JSONArray();
+		
+		if(file1.exists())
+		{
+			if(!events.getStations().isEmpty())
+			{
+				
+				for(int i=0;i<events.getStations().size();i++)
+				{
+					events.getStations().get(i).clearContent();
+				}
+			}
+			
+			if(!markerEvents.isEmpty())
+			{
+				
+				for(int i=0;i<markerEvents.size();i++)
+				{
+					if(markerEvents.get(i).getNumberOfEvents()!=0)
+					{	
+					   
+					   markerEvents.get(i).clearContent();
+					}   
+				}
+			}
+			
+			startEvents.clearContent();
+		}
+
 		JSONArray eventsArray = new JSONArray();
 		
 		JSONObject numCollectItems = new JSONObject();
@@ -2879,9 +2909,12 @@ public class MmMapViewer extends JPanel implements Printable {
 				object.put("name", "mapMarker"+Integer.toString(i+1));
 				object.put("type", "marker");
 				
+				File desFilePath = new File(System.getProperty("user.dir")+"/mapmarkers/"+"patt.map_marker"+Integer.toString(i+1));
+				
 				JSONObject attribute = new JSONObject();
 				attribute.put("markerName", "patt.map_marker"+Integer.toString(i+1));
 				attribute.put("modelName", "base.osg");
+				attribute.put("markerSize",desFilePath.length());
 				object.put("attributes", attribute);
 				jsonObjects.put(object);
 				
@@ -2899,6 +2932,7 @@ public class MmMapViewer extends JPanel implements Printable {
 				JSONObject attribute1 = new JSONObject();
 				attribute1.put("markerName", "patt.map_marker"+Integer.toString(i+1));
 				attribute1.put("modelName", "diamond.osg");
+				attribute1.put("markerSize",desFilePath.length());
 				object1.put("attributes", attribute1);
 				jsonObjects.put(object1);
 				
@@ -2925,14 +2959,14 @@ public class MmMapViewer extends JPanel implements Printable {
 			  			  
 			  String[] desPath = sourcePath.split("/");
 			  
-			  File desFile = new File(filePath+"/markers/"+desPath[desPath.length-1]);
+			  File desFile = new File(filePath+"/markers/"+markerFile);
 			  
 			  if(!desFile.exists())
 			  {	  
 			     if(file.isDirectory())
 			     {
 				    src = new FileInputStream(sourcePath).getChannel(); 
-			        des = new FileOutputStream(filePath+"/mapmarkers/"+desPath[desPath.length-1]).getChannel();
+			        des = new FileOutputStream(filePath+"/markers/"+desPath[desPath.length-1]).getChannel();
 			     }
 			     else
 			     {

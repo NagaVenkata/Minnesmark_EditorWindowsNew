@@ -398,6 +398,8 @@ public class MmStationEvents {
 		nextStation = next_station;
 		
 		stationIndex = -1;
+		
+		currentLabelIndex=0;
 				
 		this.saveFilePath = saveFilePath;
 		stationEvent = new JSONObject();
@@ -2619,6 +2621,20 @@ public class MmStationEvents {
 			jsonEvents.put(messageEvents.get(i).getMessageEvent());
 		
 		
+	}
+	
+	public void clearContent()
+	{
+	    stationEvent = null;
+	    action = null;
+		imageEvents.clear();
+		audioEvents.clear();
+		modelEvents.clear();
+		panoramaEvents.clear();
+		videoEvents.clear();
+		messageEvents.clear();
+		
+		action = new JSONArray();
 	}
 	
 }
