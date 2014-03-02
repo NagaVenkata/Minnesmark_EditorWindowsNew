@@ -2517,7 +2517,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			   initializeEvents.put("name", "launch");
 			   initializeEvents.put("type", "generic");
 			   
-			   if(!this.getStations().isEmpty() && (startEvents.getTexts().size()<=1))
+			   if(!this.getStations().isEmpty())
 			       startActionArray.put("compassView");
 			   
 			   action.put("Start");

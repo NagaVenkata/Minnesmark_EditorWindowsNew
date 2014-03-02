@@ -416,6 +416,7 @@ public class MmGlobalMarkerEvents {
 					    imageEvent.setDestinationPath(this.saveFilePath);
 					    imageEvent.makeJSONObject();
 					    imageEvent.JSONActions();
+					    imageEvent.addActions("MarkerUnDetect");
 					    imageEvents.add(imageEvent);
 			    	    currentLabelIndex++;
 			    	    System.out.println("currentLabelIndex "+currentLabelIndex+"  "+labels.size());
@@ -426,7 +427,8 @@ public class MmGlobalMarkerEvents {
 			    	    }   
 			    	    else
 			    	    {
-			    		   //if(isLastMarker)
+			    	       imageEvent.addActions("MarkerDetect");	
+			    		   if(isLastMarker)
 			    		   {
 			    			   imageEvent.addActions("Done");
 			    		   }
@@ -460,6 +462,7 @@ public class MmGlobalMarkerEvents {
 			    	  panoramaEvent.setDestinationPath(this.saveFilePath);
 			    	  panoramaEvent.makeJSONObject();
 			    	  panoramaEvent.JSONActions();
+			    	  panoramaEvent.addActions("MarkerUnDetect");
 			    	  panoramaEvents.add(panoramaEvent);
 			    	  currentLabelIndex++;
 			    	  if(currentLabelIndex<=labels.size())
@@ -469,6 +472,7 @@ public class MmGlobalMarkerEvents {
 			    	  } 
 			    	  else
 			    	  {
+			    		  panoramaEvent.addActions("MarkerDetect");
 			    		  if(isLastMarker)
 				    	  {
 				    		  panoramaEvent.addActions("Done");
@@ -505,6 +509,7 @@ public class MmGlobalMarkerEvents {
 					  audioEvent.setDestinationPath(this.saveFilePath);
 					  audioEvent.makeJSONObject();
 					  audioEvent.JSONActions();
+					  audioEvent.addActions("MarkerUnDetect");
 			    	  audioEvents.add(audioEvent);
 			    	  currentLabelIndex++;
 			    	  if(currentLabelIndex<=labels.size())
@@ -514,7 +519,8 @@ public class MmGlobalMarkerEvents {
 			    	  } 
 			    	  else
 			    	  {		  
-			    		  //if(isLastMarker)
+			    		  audioEvent.addActions("MarkerDetect");
+			    		  if(isLastMarker)
 				    	  {
 				    		  audioEvent.addActions("Done");
 				    	  } 
@@ -546,6 +552,7 @@ public class MmGlobalMarkerEvents {
 					  videoEvent.setDestinationPath(this.saveFilePath);
 					  videoEvent.makeJSONObject();
 					  videoEvent.JSONActions();
+					  videoEvent.addActions("MarkerUnDetect");
 			    	  videoEvents.add(videoEvent);
 			    	  currentLabelIndex++;
 			    	  if(currentLabelIndex<=labels.size())
@@ -555,7 +562,8 @@ public class MmGlobalMarkerEvents {
 			    	  }   
 			    	  else
 			    	  {	  
-			    		  //if(isLastMarker)
+			    		  videoEvent.addActions("MarkerDetect");
+			    		  if(isLastMarker)
 				    	  {
 				    		  videoEvent.addActions("Done");
 				    	  } 
@@ -693,6 +701,7 @@ public class MmGlobalMarkerEvents {
 					   messageEvent.setDestinationPath(this.saveFilePath);
 					   messageEvent.makeJSONObject();
 					   messageEvent.JSONActions();
+					   messageEvent.addActions("MarkerUnDetect");
 			    	   messageEvents.add(messageEvent);
 			    	   currentLabelIndex++;
 			    	   
@@ -703,7 +712,8 @@ public class MmGlobalMarkerEvents {
 			    	  }   
 			    	  else
 			    	  {	  
-			    		  //if(isLastMarker)
+			    		  messageEvent.addActions("MarkerDetect");
+			    		  if(isLastMarker)
 				    	  {
 				    		  messageEvent.addActions("Done");
 				    	  } 
@@ -800,7 +810,8 @@ public class MmGlobalMarkerEvents {
 		   
 		    if(labels.get(currentLabelIndex).getText().isEmpty())
 		    {
-		    	//if(isLastMarker)
+		    	imageEvent.addActions("MarkerDetect");
+		    	if(isLastMarker)
 		    	{
 		    		imageEvent.addActions("Done");
 		    	} 
@@ -1051,7 +1062,8 @@ public class MmGlobalMarkerEvents {
 		 if(labels.size()>=currentLabelIndex)
 		 {	
 				//System.out.println("label index "+currentLabelIndex+" labels size "+labels.size());
-				//if(isLastMarker)
+			    imageEvent.addActions("MarkerDetect");
+				if(isLastMarker)
 			    {
 			    	imageEvent.addActions("Done");
 			    }
@@ -1075,7 +1087,8 @@ public class MmGlobalMarkerEvents {
 		   
 		   if(labels.get(currentLabelIndex).getText().isEmpty())
 		   {
-			   //if(isLastMarker)
+			   panoramaEvent.addActions("MarkerDetect");
+			   if(isLastMarker)
 		       {
 		    	   panoramaEvent.addActions("Done");
 		       }
@@ -1327,7 +1340,8 @@ public class MmGlobalMarkerEvents {
 		if(labels.size()>=currentLabelIndex)
 		{	
 			//System.out.println("label index "+currentLabelIndex+" labels size "+labels.size());
-			//if(isLastMarker)
+			panoramaEvent.addActions("MarkerDetect");
+			if(isLastMarker)
 		    {
 		    	panoramaEvent.addActions("Done");
 		    }
@@ -1347,7 +1361,8 @@ public class MmGlobalMarkerEvents {
 		   
 		   if(labels.get(currentLabelIndex).getText().isEmpty())
 		   {
-			   //if(isLastMarker)
+			   modelEvent.addActions("MarkerDetect");
+			   if(isLastMarker)
 		       {
 		    	   modelEvent.addActions("Done");
 		       } 
@@ -1589,7 +1604,8 @@ public class MmGlobalMarkerEvents {
 		if(labels.size()>=currentLabelIndex)
 		{	
 			//System.out.println("label index "+currentLabelIndex+" labels size "+labels.size());
-			//if(isLastMarker)
+			modelEvent.addActions("MarkerDetect");
+			if(isLastMarker)
 		    {
 		    	modelEvent.addActions("Done");
 		    }
@@ -1611,7 +1627,8 @@ public class MmGlobalMarkerEvents {
 		   
 		   if(labels.get(currentLabelIndex).getText().isEmpty())
 		   {
-			   //if(isLastMarker)
+			   audioEvent.addActions("MarkerDetect");
+			   if(isLastMarker)
 		       {
 		    	   audioEvent.addActions("Done");
 		       }
@@ -1862,7 +1879,8 @@ public class MmGlobalMarkerEvents {
 		if(labels.size()>=currentLabelIndex)
 		{	
 			//System.out.println("label index "+currentLabelIndex+" labels size "+labels.size());
-			//if(isLastMarker)
+			audioEvent.addActions("MarkerDetect");
+			if(isLastMarker)
 		    {
 		    	audioEvent.addActions("Done");
 		    }
@@ -1881,7 +1899,8 @@ public class MmGlobalMarkerEvents {
 		   
 		   if(labels.get(currentLabelIndex).getText().isEmpty())
 		   {
-			   //if(isLastMarker)
+			   videoEvent.addActions("MarkerDetect");
+			   if(isLastMarker)
 		       {
 		    	   videoEvent.addActions("Done");
 		       }
@@ -2118,7 +2137,8 @@ public class MmGlobalMarkerEvents {
 		if(labels.size()>=currentLabelIndex)
 		{	
 			//System.out.println("label index "+currentLabelIndex+" labels size "+labels.size());
-			//if(isLastMarker)
+			videoEvent.addActions("MarkerDetect");
+			if(isLastMarker)
 		    {
 		    	videoEvent.addActions("Done");
 		    }
@@ -2139,7 +2159,8 @@ public class MmGlobalMarkerEvents {
 		   
 		   if(labels.get(currentLabelIndex).getText().isEmpty())
 		   {
-			   //if(isLastMarker)
+			   messageEvent.addActions("MarkerDetect");
+			   if(isLastMarker)
 		       {
 		    	   messageEvent.addActions("Done");
 		       }
@@ -2377,7 +2398,8 @@ public class MmGlobalMarkerEvents {
 		if(labels.size()>=currentLabelIndex)
 		{	
 			//System.out.println("label index "+currentLabelIndex+" labels size "+labels.size());
-			//if(isLastMarker)
+			messageEvent.addActions("MarkerDetect");
+			if(isLastMarker)
 		    {
 		    	messageEvent.addActions("Done");
 		    }
