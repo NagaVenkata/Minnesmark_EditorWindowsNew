@@ -5205,7 +5205,17 @@ public class MmMapViewer extends JPanel implements Printable {
                         // convert geo to world bitmap pixel
                     	
                     	//Image geoMarker = new ImageIcon(System.getProperty("user.dir")+"/markers/map_marker"+Integer.toString(imageIndex+1)+".png").getImage();
-                    	Image geoMarker = new ImageIcon(getClass().getResource("/map_marker"+Integer.toString(imageIndex+1)+".png")).getImage();
+                    	//Image geoMarker = new ImageIcon(getClass().getResource("/map_marker"+Integer.toString(imageIndex+1)+".png")).getImage();
+                    	
+                    	File img = new File(System.getProperty("user.dir")+"/printmarkers/map_marker"+Integer.toString(imageIndex+1)+".png");
+                    	Image geoMarker=null;
+						try {
+							geoMarker = ImageIO.read(img);
+							geoMarker = geoMarker.getScaledInstance(25, 25, 0);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
                     	
                         final Point2D pt = mapKit.getMainMap().getTileFactory().geoToPixel(gp, mapKit.getMainMap().getZoom());
                         

@@ -15,7 +15,6 @@ import java.awt.print.Book;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
@@ -24,7 +23,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 
-
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.event.AncestorEvent;
@@ -33,26 +32,15 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-
 import mmFileManager.*;
-
-
-
-
-//import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-//import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-
 
 import java.util.*;
 
 import mmFileManager.MmFileSelector;
 
-
 import com.sun.jna.NativeLibrary;
 
-
 import mmAccordionMenu.*;
-
 import mmLanguage.MmLanguage;
 import mmMap.MmMapViewer;
 import mmPrintMarkers.MmPrintMarkers;
@@ -256,7 +244,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
         ArrayList<JLabel> texts = new ArrayList<JLabel>();
         
         for(int i=0;i<14;i++)
-        	texts.add(addLabel(MmLanguage.language_markers[language][i],"patt.marker"+Integer.toString(i+1)));
+        	texts.add(addLabel(MmLanguage.language_markers[language][i],"patt.marker"+Integer.toString(i+1),i));
         
         
         
@@ -272,12 +260,12 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	    //third menu
 	    accordionMenu.addMenu(MmLanguage.language[language][4], "start");
 	    ArrayList<JLabel> texts1 = new ArrayList<JLabel>();
-        texts1.add(addLabel(MmLanguage.language_startMedia[language][0],"text"));
-        texts1.add(addLabel(MmLanguage.language_startMedia[language][1],"text"));
-        texts1.add(addLabel(MmLanguage.language_startMedia[language][1],"text"));
-        texts1.add(addLabel(MmLanguage.language_startMedia[language][1],"text"));
-        texts1.add(addLabel("","text"));
-        texts1.add(addLabel("","text"));
+        texts1.add(addStartLabel(MmLanguage.language_startMedia[language][0],"text"));
+        texts1.add(addStartLabel(MmLanguage.language_startMedia[language][1],"text"));
+        texts1.add(addStartLabel(MmLanguage.language_startMedia[language][1],"text"));
+        texts1.add(addStartLabel(MmLanguage.language_startMedia[language][1],"text"));
+        texts1.add(addStartLabel("","text"));
+        texts1.add(addStartLabel("","text"));
                 
         
 	    accordionMenu.addLabelItems("start",texts1);
@@ -510,10 +498,37 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 	}
 	
 	
-	public JLabel addLabel(String text,String name)
+	public JLabel addStartLabel(String text,String name)
 	{
 		JLabel lb = new JLabel(text);
 		lb.setName(name);
+		
+		return lb;
+	}
+	
+	public JLabel addLabel(String text,String name,int index)
+	{
+		JLabel lb = new JLabel(text);
+		lb.setName(name);
+		
+		File imgname = new File(System.getProperty("user.dir")+"/globalmarkers/pattern"+Integer.toString(index+1)+".png");
+		
+		Image img;
+		
+		
+		
+		try
+		{
+			img = ImageIO.read(imgname);
+			img = img.getScaledInstance(40, 40, 0);
+			
+			lb.setIcon(new ImageIcon(img));
+			
+		}
+		catch(Exception e) 
+		{
+			JOptionPane.showMessageDialog(null, "Marker Image not Found "+e);
+		}
 		
 		return lb;
 	}
@@ -1097,6 +1112,9 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 				    accordionMenu.setSearchText(":"+MmLanguage.language_search[language][0]);
 				    map.resetMapContents();
 				    window.setTitle("Untitled - "+windowTitle);
+				    map.setSaved(false);
+				    accordionMenu.setMarkerstSavedState(false);
+					accordionMenu.setStartEventsSaved(false);
 				}
 				else
 				{	

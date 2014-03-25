@@ -575,11 +575,31 @@ public class MmAddEvents extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				// TODO Auto-generated method stub
-				eventDialog.setVisible(false);
+				
+				station.setLatLon(new Double(latText.getText()), new Double(lanText.getText()));
+				map.geoPos.remove(geoIndex);
+				map.geoPos.add(geoIndex,new GeoPosition(new Double(latText.getText()),new Double(lanText.getText())));
+				
+				
+				
+				if(map.geoPos.size()==1 || map.checkDistance())
+				{		
+				    eventDialog.setVisible(false);
+				    if(dialogFrame!=null)
+				       dialogFrame.setVisible(false);
+				    map.drawPoints();
+				}    
+				else
+				{
+					JOptionPane.showMessageDialog(null, MmLanguage.language_exception[language][1]);
+				}
+
+				
+				/*eventDialog.setVisible(false);
 				if(dialogFrame!=null)
 				  dialogFrame.setVisible(false);
 				
-				/*int stationIndex = stationEvents.indexOf(station);
+				int stationIndex = stationEvents.indexOf(station);
 				station.setStationName("station"+Integer.toString(stationIndex+1));
 				station.setStationIndex(stationIndex);*/
 				

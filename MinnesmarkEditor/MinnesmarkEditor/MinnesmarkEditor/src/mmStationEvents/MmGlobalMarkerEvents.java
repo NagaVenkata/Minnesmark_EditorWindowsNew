@@ -343,7 +343,7 @@ public class MmGlobalMarkerEvents {
 		markerEvent.setEventName(this.markerName);
 		markerEvent.setMarkerIndex(markerIndex+1);
 		markerEvent.setDestinationPath(saveFilePath);
-		
+		markerEvent.addActions("MarkerUnDetect");
 			
 		//writeMarkerFile(saveFilePath);
 			   
@@ -416,7 +416,7 @@ public class MmGlobalMarkerEvents {
 					    imageEvent.setDestinationPath(this.saveFilePath);
 					    imageEvent.makeJSONObject();
 					    imageEvent.JSONActions();
-					    imageEvent.addActions("MarkerUnDetect");
+					    //imageEvent.addActions("MarkerUnDetect");
 					    imageEvents.add(imageEvent);
 			    	    currentLabelIndex++;
 			    	    System.out.println("currentLabelIndex "+currentLabelIndex+"  "+labels.size());
@@ -462,7 +462,7 @@ public class MmGlobalMarkerEvents {
 			    	  panoramaEvent.setDestinationPath(this.saveFilePath);
 			    	  panoramaEvent.makeJSONObject();
 			    	  panoramaEvent.JSONActions();
-			    	  panoramaEvent.addActions("MarkerUnDetect");
+			    	  //panoramaEvent.addActions("MarkerUnDetect");
 			    	  panoramaEvents.add(panoramaEvent);
 			    	  currentLabelIndex++;
 			    	  if(currentLabelIndex<=labels.size())
@@ -509,7 +509,7 @@ public class MmGlobalMarkerEvents {
 					  audioEvent.setDestinationPath(this.saveFilePath);
 					  audioEvent.makeJSONObject();
 					  audioEvent.JSONActions();
-					  audioEvent.addActions("MarkerUnDetect");
+					  //audioEvent.addActions("MarkerUnDetect");
 			    	  audioEvents.add(audioEvent);
 			    	  currentLabelIndex++;
 			    	  if(currentLabelIndex<=labels.size())
@@ -552,7 +552,7 @@ public class MmGlobalMarkerEvents {
 					  videoEvent.setDestinationPath(this.saveFilePath);
 					  videoEvent.makeJSONObject();
 					  videoEvent.JSONActions();
-					  videoEvent.addActions("MarkerUnDetect");
+					  //videoEvent.addActions("MarkerUnDetect");
 			    	  videoEvents.add(videoEvent);
 			    	  currentLabelIndex++;
 			    	  if(currentLabelIndex<=labels.size())
@@ -583,7 +583,7 @@ public class MmGlobalMarkerEvents {
 			    	  if(lb.getText().contains("Model"))
 			    	  {
 			    		  markerEvent.setEventName(this.markerName+"_Model");
-			    		  			    		  
+			    		  markerEvent.setAngle(180);			    		  
 			    		  if(attrs.length==2)
 			    		  {	  
 			    		     MmObjWriter objWriter = new MmObjWriter(this.saveFilePath+"/osg_obj/"+attrs[0]);
@@ -701,7 +701,7 @@ public class MmGlobalMarkerEvents {
 					   messageEvent.setDestinationPath(this.saveFilePath);
 					   messageEvent.makeJSONObject();
 					   messageEvent.JSONActions();
-					   messageEvent.addActions("MarkerUnDetect");
+					   //messageEvent.addActions("MarkerUnDetect");
 			    	   messageEvents.add(messageEvent);
 			    	   currentLabelIndex++;
 			    	   
@@ -880,7 +880,7 @@ public class MmGlobalMarkerEvents {
 					if(panoramaEvents.size()==0)
 						panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_panorama");
 					else
-						panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(audioEvents.size())+"_panorama");
+						panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(panoramaEvents.size())+"_panorama");
 						imageEvent.addActions(panoramaEvent.getEventName());
 						imageEvent.makeJSONObject();
 						panoramaEvents.add(panoramaEvent);
@@ -897,7 +897,8 @@ public class MmGlobalMarkerEvents {
 							panoramaEvent.setCollectItem(true);
 							collectItems.add(new Integer(collectItems.size()+1));
 						}	   
-						   
+						panoramaEvent.setSourcePath(lb.getName());
+						panoramaEvent.setDestinationPath(this.saveFilePath);
 						panoramaEvent.makeJSONObject();
 						currentLabelIndex++;
 					    if(!createPanoramaEvent(panoramaEvent))
@@ -1029,7 +1030,10 @@ public class MmGlobalMarkerEvents {
 					      if(lb.getText().contains(".txt"))
 						   { 	  
 								  MmMessageEvent messageEvent = new MmMessageEvent();
-								  messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(videoEvents.size())+"_message"); 
+								  if(messageEvents.size()==0)
+									  messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_message");
+								  else
+									 messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(messageEvents.size())+"_message"); 
 								  String[] attrs = lb.getText().split(":");
 								  if(attrs.length<=1)
 								  {	   
@@ -1104,7 +1108,7 @@ public class MmGlobalMarkerEvents {
 			   if(panoramaEvents.size()==0)
 				   nextPanoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_panorama");
 			   else
-				   nextPanoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(audioEvents.size())+"_panorama");
+				   nextPanoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(panoramaEvents.size())+"_panorama");
 			   panoramaEvent.addActions(nextPanoramaEvent.getEventName());
 			   panoramaEvent.JSONActions();
 			   panoramaEvents.add(nextPanoramaEvent);
@@ -1131,9 +1135,9 @@ public class MmGlobalMarkerEvents {
 			    	nextPanoramaEvent.makeJSONObject();
 			    	
 			    				    	
-			        nextPanoramaEvent.JSONActions();
-				    panoramaEvents.add(nextPanoramaEvent);
-				    panoramaEvent.addActions(nextPanoramaEvent.getEventName());	
+			        //nextPanoramaEvent.JSONActions();
+				    //panoramaEvents.add(nextPanoramaEvent);
+				    //panoramaEvent.addActions(nextPanoramaEvent.getEventName());	
 				    if(!createPanoramaEvent(nextPanoramaEvent))
 				    	return false;
 			       
@@ -1267,7 +1271,10 @@ public class MmGlobalMarkerEvents {
 		      if(lb.getText().contains(".txt"))
 			   { 	  
 					  MmMessageEvent messageEvent = new MmMessageEvent();
-					  messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(videoEvents.size())+"_message"); 
+					  if(messageEvents.size()==0)
+						  messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_message");
+					  else
+						 messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(messageEvents.size())+"_message"); 
 					  String[] attrs = lb.getText().split(":");
 					  if(attrs.length<=1)
 					  {	   
@@ -1377,7 +1384,7 @@ public class MmGlobalMarkerEvents {
 			   if(panoramaEvents.size()==0)
 				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_panorama");
 			   else
-				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(audioEvents.size())+"_panorama");
+				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(panoramaEvents.size())+"_panorama");
 			   modelEvent.addActions(panoramaEvent.getEventName());
 			   modelEvent.JSONActions();
 			   panoramaEvents.add(panoramaEvent);
@@ -1528,7 +1535,10 @@ public class MmGlobalMarkerEvents {
 			   { 	  
 					 
 		    	  MmMessageEvent messageEvent = new MmMessageEvent();
-				  messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(videoEvents.size())+"_message"); 
+		    	  if(messageEvents.size()==0)
+					  messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_message");
+				  else
+					 messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(messageEvents.size())+"_message"); 
 				  String[] attrs = lb.getText().split(":");
 				  if(attrs.length<=1)
 				  {	   
@@ -1643,7 +1653,7 @@ public class MmGlobalMarkerEvents {
 			   if(panoramaEvents.size()==0)
 				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_panorama");
 			   else
-				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(audioEvents.size())+"_panorama");
+				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(panoramaEvents.size())+"_panorama");
 			   audioEvent.addActions(panoramaEvent.getEventName());
 			   audioEvent.JSONActions();
 			   panoramaEvents.add(panoramaEvent);
@@ -1805,7 +1815,10 @@ public class MmGlobalMarkerEvents {
 		      if(lb.getText().contains(".txt"))
 			   { 	  
 					  MmMessageEvent messageEvent = new MmMessageEvent();
-					  messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(videoEvents.size())+"_message"); 
+					  if(messageEvents.size()==0)
+						  messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_message");
+					  else
+						 messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(messageEvents.size())+"_message"); 
 					  String[] attrs = lb.getText().split(":");
 					  if(attrs.length<=1)
 					  {	   
@@ -1915,7 +1928,7 @@ public class MmGlobalMarkerEvents {
 			   if(panoramaEvents.size()==0)
 				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_panorama");
 			   else
-				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(audioEvents.size())+"_panorama");
+				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(panoramaEvents.size())+"_panorama");
 			   videoEvent.addActions(panoramaEvent.getEventName());
 			   videoEvent.JSONActions();
 			   panoramaEvents.add(panoramaEvent);
@@ -2061,7 +2074,10 @@ public class MmGlobalMarkerEvents {
 		       if(lb.getText().contains(".txt"))
 			   { 	  
 					  MmMessageEvent messageEvent = new MmMessageEvent();
-					  messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(videoEvents.size())+"_message"); 
+					  if(messageEvents.size()==0)
+						  messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_message");
+					  else
+						 messageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(messageEvents.size())+"_message"); 
 					  String[] attrs = lb.getText().split(":");
 					  if(attrs.length<=1)
 					  {	   
@@ -2175,7 +2191,7 @@ public class MmGlobalMarkerEvents {
 			   if(panoramaEvents.size()==0)
 				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_panorama");
 			   else
-				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(audioEvents.size())+"_panorama");
+				   panoramaEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(panoramaEvents.size())+"_panorama");
 			   messageEvent.addActions(panoramaEvent.getEventName());
 			   messageEvent.JSONActions();
 			   panoramaEvents.add(panoramaEvent);
@@ -2319,7 +2335,10 @@ public class MmGlobalMarkerEvents {
 		      if(lb.getText().contains(".txt"))
 			   { 	  
 					  MmMessageEvent nextMessageEvent = new MmMessageEvent();
-					  nextMessageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(videoEvents.size())+"_video"); 
+					  if(messageEvents.size()==0)
+						  nextMessageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_message");
+					  else
+						 nextMessageEvent.setEventName("marker"+Integer.toString(markerIndex+1)+"_"+Integer.toString(messageEvents.size())+"_message"); 
 					  String[] attrs = lb.getText().split(":");
 					  
 					  if(attrs.length<=1)
@@ -2485,7 +2504,7 @@ public class MmGlobalMarkerEvents {
 		panoramaEvents.clear();
 		videoEvents.clear();
 		messageEvents.clear();
-		
+		collectItems.clear();
 	}
 	
 }
