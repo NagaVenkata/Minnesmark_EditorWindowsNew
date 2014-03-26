@@ -5057,12 +5057,12 @@ public class MmMapViewer extends JPanel implements Printable {
             public void paint(Graphics2D g, final JXMapViewer map, final int w, final int h) {
                 g = (Graphics2D) g.create();
                 // convert from viewport to world bitmap
-                final Rectangle rect = mapKit.getMainMap().getViewportBounds();
+               final Rectangle rect = mapKit.getMainMap().getViewportBounds();
                 
-                rect.width+=adjustx;
-                rect.height+=adjusty;
+                //rect.width+=adjustx;
+                //rect.height+=adjusty;
                 
-                System.out.println("rect "+rect);
+                System.out.println("rect "+rect); 
                 
                 //g.translate(-rect.x, -rect.y);
                 

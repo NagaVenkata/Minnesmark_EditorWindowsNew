@@ -804,17 +804,17 @@ public class MmAddEvents extends JPanel {
 			    
 		}   
 		 
-		 BigDecimal bd = new BigDecimal(station.getLatitude());
+		 //BigDecimal bd = new BigDecimal(station.getLatitude());
 			
-		 BigDecimal bd1 = bd.setScale(6, 6);
+		 //BigDecimal bd1 = bd.setScale(6, 6);
 			
-		 latText.setText(Double.toString(bd1.doubleValue()));
+		 latText.setText(Double.toString(station.getLatitude()));
 		 
-		 bd = new BigDecimal(station.getLongitude());
+		 //bd = new BigDecimal(station.getLongitude());
 			
-		 bd1 = bd.setScale(6, 6);
+		 //bd1 = bd.setScale(6, 6);
 		 
-		 lanText.setText(Double.toString(bd1.doubleValue())); 
+		 lanText.setText(Double.toString(station.getLongitude())); 
 			 
 		
 	}
@@ -892,6 +892,18 @@ public class MmAddEvents extends JPanel {
 	     
 	     eventPanel.repaint();
 		 eventPanel.updateUI();
+		 
+		 BigDecimal bd = new BigDecimal(station.getLatitude());
+			
+		 BigDecimal bd1 = bd.setScale(6, 6);
+			
+		 latText.setText(Double.toString(bd1.doubleValue()));
+		 
+		 bd = new BigDecimal(station.getLongitude());
+			
+		 bd1 = bd.setScale(6, 6);
+		 
+		 lanText.setText(Double.toString(bd1.doubleValue()));
 		 
 	}
 	
