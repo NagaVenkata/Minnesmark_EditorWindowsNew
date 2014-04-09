@@ -82,7 +82,7 @@ public class MmGlobalMarkerEvents {
 		this.type = type;
 	}
 	
-
+ 
 	public boolean isLastMarker() {
 		return isLastMarker;
 	}
@@ -247,7 +247,7 @@ public class MmGlobalMarkerEvents {
 			}
 		}
 		
-		if(count<4)
+		if(count!=-1 && count<4)
 		{
 			labels.get(count).setText(text);
 			labels.get(count).setName(path);
@@ -580,6 +580,8 @@ public class MmGlobalMarkerEvents {
 			    	     	  
 			    	  String[] attrs = lb.getText().split(":");
 			    	  
+			    	  markerEvent.addActions("MarkerDetect");
+			    	  
 			    	  if(lb.getText().contains("Model"))
 			    	  {
 			    		  markerEvent.setEventName(this.markerName+"_Model");
@@ -606,7 +608,7 @@ public class MmGlobalMarkerEvents {
 			    		  
 			    		  
 			    	  }
-			    	  if(lb.getText().contains("model"))
+			    	  if(lb.getText().contains("model")||lb.getText().contains("modell"))
 			    	  {
 			    		  
                           markerEvent.setEventName(this.markerName+"_model");
@@ -616,6 +618,7 @@ public class MmGlobalMarkerEvents {
 			    		     //MmObjWriter objWriter = new MmObjWriter(this.saveFilePath+"/osg_obj/"+attrs[0]);
 			    		     //objWriter.setImageSrcPath(lb.getName());
 			    			 //objWriter.beginSave(this.saveFilePath+"/osg_obj/"+attrs[0]);
+			    			 JOptionPane.showMessageDialog(null, lb.getName()); 
 			    		     MmObj_OsgWriter.WriteObj_OsgFile(lb.getName(), this.saveFilePath+"/osg_obj/");
 			    			 markerEvent.setModelFile(lb.getText().substring(0,lb.getText().indexOf(":")));
 			    			 //objWriter.endSave();
@@ -845,7 +848,7 @@ public class MmGlobalMarkerEvents {
 			        
 			        if(attrs.length==2)
 			        {	
-			        	nextImageEvent.setImageType(attrs[0]);
+			        	nextImageEvent.setImageFile(attrs[0]);
 			        	nextImageEvent.setCollectItem(true);
 			        	collectItems.add(new Integer(collectItems.size()+1));
 			        }    
@@ -2495,8 +2498,12 @@ public class MmGlobalMarkerEvents {
 	
 	public void clearContent()
 	{
-		markerEvent.clearContent();
-		markerEvent = null;
+		//markerEvent.clearContent();
+		//markerEvent = null;
+		
+		markerEvent.action = null;
+		
+		markerEvent.action = new JSONArray();
 		
 		imageEvents.clear();
 		audioEvents.clear();

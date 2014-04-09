@@ -1,6 +1,7 @@
 package mmGPSCoordinates;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 
 public class MmMousePoints {
 	
@@ -82,7 +83,7 @@ public class MmMousePoints {
 		
 	public boolean isPointInRegion(MmMousePoints pnt)
 	{
-		boolean isPointPresent=false;
+		/*boolean isPointPresent=false;
 		
 				
 		//simple algorithm to find a mouse click in region
@@ -104,7 +105,21 @@ public class MmMousePoints {
 		else
 		{
 			return false;
-		}
+		}*/
+		
+		int x = this.mousePosx-20;
+		int y = this.mousePosy-25;
+		
+		//double dist = (((x-pnt.mousePosx)*(x-pnt.mousePosx))+((y-pnt.mousePosy)*(y-pnt.mousePosy)));
+		
+		Rectangle rect = new Rectangle(x,y,40,40);
+		
+		//System.out.println(" rectangle contains "+ rect.contains(pnt.getPoint()));
+		
+		if(rect.contains(pnt.getPoint()))
+			return true;
+		else
+			return false;
 		
 		
 		//return isPointPresent;

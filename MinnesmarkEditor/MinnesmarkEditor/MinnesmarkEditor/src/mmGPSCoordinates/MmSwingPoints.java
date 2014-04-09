@@ -1,6 +1,7 @@
 package mmGPSCoordinates;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
@@ -22,7 +23,7 @@ public class MmSwingPoints {
 	
 	boolean isSwingPoint;
 	
-	
+	int startPointRadius=0,endPointRadius=0;
 	
 	GeoPosition startPointGeoPosition,endPointGeoPosition;
 	
@@ -35,6 +36,9 @@ public class MmSwingPoints {
 	public MmSwingPoints(Point point)
 	{
 		swingPoint = point;
+		startPointRadius=0;
+		endPointRadius=0;
+
 	}
 	
 	public void setStartPoint(Point point)
@@ -126,6 +130,24 @@ public class MmSwingPoints {
 	{
 		return endPointGeoPosition;
 	}
+	
+	public int getStartPointRadius() {
+		return startPointRadius;
+	}
+
+	public void setStartPointRadius(int radius) {
+		this.startPointRadius = radius;
+	}
+	
+	public int getEndPointRadius() {
+		return endPointRadius;
+	}
+
+	public void setEndPointRadius(int radius) {
+		this.endPointRadius = radius;
+	}
+
+	
 	public void print()
 	{
 		//System.out.println("Start point "+startPoint+"   "+endPoint+"  "+stationIndex);
@@ -205,7 +227,7 @@ public class MmSwingPoints {
 	{
 		//System.out.println("pnt "+startPoint+"  "+endPoint+"  "+pnt);
 		
-		Point pnt1 = new Point(pnt.x,pnt.y+1);
+		/*Point pnt1 = new Point(pnt.x,pnt.y+1);
 		
 		if(startPoint.equals(pnt)||startPoint.equals(pnt1)||startPoint.equals(new Point(pnt.x,pnt.y-1)))
 		{
@@ -221,6 +243,49 @@ public class MmSwingPoints {
 			
 			this.edgeIndex=1;
 			return this.edgeIndex;
+		}*/
+		
+		if(getStartPointRadius()==10)
+		{	
+			Rectangle rect = new Rectangle(startPoint.x-20,startPoint.y-25,40,40);
+			
+			//System.out.println(" rectangle contains "+ rect.contains(pnt));
+			
+			if(rect.contains(pnt))
+			{	
+				this.edgeIndex=0;
+				return edgeIndex;
+			}	
+			
+		   /*double dist = (((startPoint.x-20)-pnt.x)*(((startPoint.x-20)-pnt.x))+(((startPoint.y-25)-pnt.y)*((startPoint.y-25)-pnt.y)));
+		   if(Math.sqrt(dist)<40)
+		   {
+			    //System.out.println("distance startPoint "+ dist);
+				this.edgeIndex=0;
+				return edgeIndex;
+		   }*/
+		}
+		
+		if(getEndPointRadius()==10)
+		{	
+			
+            Rectangle rect = new Rectangle(endPoint.x-20,endPoint.y-25,40,40);
+			
+			//System.out.println(" rectangle contains "+ rect.contains(pnt));
+			
+			if(rect.contains(pnt))
+			{	
+				this.edgeIndex=1;
+				return edgeIndex;
+			}
+		   /*double dist1 = (((endPoint.x-20)-pnt.x)*(((endPoint.x-20)-pnt.x))+(((endPoint.y-25)-pnt.y)*((endPoint.y-25)-pnt.y)));
+		
+		   //System.out.println("distance endPoint "+ dist1);
+		   if(Math.sqrt(dist1)<40)
+		   {
+			   this.edgeIndex=1;
+			   return edgeIndex;
+		   }*/
 		}
 		
 		return -1;
@@ -242,7 +307,7 @@ public class MmSwingPoints {
 		 * then calculate the distance between the current point and the swing point
 		 * the should be less than squre of radius. 
 		 */
-		double x = (endPoint.x-pnt.x)*(endPoint.x-pnt.x);
+		/*double x = (endPoint.x-pnt.x)*(endPoint.x-pnt.x);
 		double y = (endPoint.y-pnt.y)*(endPoint.y-pnt.y);
 		
 		double dist = Math.sqrt((x*x)+(y*y));
@@ -253,6 +318,35 @@ public class MmSwingPoints {
 		{
 			System.out.println("distance1 "+startPoint+"  "+endPoint+"  "+pnt+"  "+dist);
 			return true;
+		}*/
+		
+		if(getEndPointRadius()!=10)
+		{	
+		  	
+			
+			Rectangle rect = new Rectangle(endPoint.x-5,endPoint.y-5,10,10);
+			
+			//System.out.println("data "+rect.contains(pnt));
+			
+			if(rect.contains(pnt))
+			{
+				return true;
+			}
+			
+		   /*double x = (endPoint.x-pnt.x)*(endPoint.x-pnt.x);
+		   double y = (endPoint.y-pnt.y)*(endPoint.y-pnt.y);
+		
+		   double dist = Math.sqrt((x)+(y));
+		
+		   //System.out.println("distance "+startPoint+"  "+endPoint+"  "+pnt+"  "+dist);
+								
+		   if(dist<25)
+		   {
+			  //System.out.println("distance1 "+startPoint+"  "+endPoint+"  "+pnt+"  "+dist);
+			  return true;
+		   }
+		   else
+			   return false;*/
 		}
 		
 		return false;

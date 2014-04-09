@@ -759,7 +759,7 @@ public class MmEditorMain extends JFrame implements ActionListener,AWTEventListe
 		
 		ArrayList<String> markerTexts = new ArrayList<String>();
 		
-		for(int i=0;i<18;i++)
+		for(int i=0;i<14;i++)
 			markerTexts.add(new String(MmLanguage.language_markers[language][i]));
 		
 		accordionMenu.setMarkersText(markerTexts);

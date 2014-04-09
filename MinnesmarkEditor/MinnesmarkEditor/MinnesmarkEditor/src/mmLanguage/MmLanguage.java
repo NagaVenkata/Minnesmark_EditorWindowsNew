@@ -39,8 +39,8 @@ public class MmLanguage {
 	public static String language_fileOptions[][] = new String[][]{{"Spara fil?","Spara","Filen finns redan. Vill du ersätta den?"},
 		                                                           {"Save file?","Save","The file already exists. Do you want to replace it?"}}; 
 	
-	public static String language_mediaException[][] = new String[][]{{"Bildens bredd och höjd ska vara under 512 pixlar för att göra den som en 3D-modell.\n Men bildens bredd och höjd är ","Bilden hittades inte","Kan inte lägga till media, eftersome frösta media är 3D modell som binder till markören. Ta bort 3D mediafilen eller ta bort modell egenskap till lägga media."},
-		                                                              {"The image width and height should be less than 512 to make it a 3D model.\n But the image width and height is ","The image was not found","Cannot add media, because the first event is a 3D model binded to the marker. Remove 3D file or remove model property to add media."}};
+	public static String language_mediaException[][] = new String[][]{{"Bildens bredd och höjd ska vara under 512 pixlar för att göra den som en 3D-modell.\n Men bildens bredd och höjd är ","Bilden hittades inte","Kan inte lägga till media, eftersome frösta media är 3D modell som binder till markören. Ta bort 3D mediafilen eller ta bort modell egenskap till lägga media.","Bildens bredd och höjd ska vara under 1024 pixlar för att göra den som en Panorama.\n Men bildens bredd och höjd är "},
+		                                                              {"The image width and height should be less than 512 to make it a 3D model.\n But the image width and height is ","The image was not found","Cannot add media, because the first event is a 3D model binded to the marker. Remove 3D file or remove model property to add media.","The image width and height should be less than 1024 to make it a Panorama.\n But the image width and height is "}};
 	
 	public static String language_printException[][] = new String[][]{{"Det finns inga stationer eller markörer att skriva ut"},
 		                                                              {"There are no stations or markers to print"}};
@@ -48,8 +48,8 @@ public class MmLanguage {
 	public static String language_menu_languages[][] = new String[][]{{"Svenska","Engelska"},{"Swedish","English"}};
 		                                                              
 	
-	public static String language_search[][] = new String[][]{{"Sök","Klicka på texten för att skriva in latituden","Klicka på texten för att skriva in longituden"},
-		                                                      {"Search","Click the text to enter the latitude","Click the text to enter the longitude"}};
+	public static String language_search[][] = new String[][]{{"Sök","Klicka på texten för att skriva in latituden","Klicka på texten för att skriva in longituden","Latitud","Longitud"},
+		                                                      {"Search","Click the text to enter the latitude","Click the text to enter the longitude","Latitude","Longitude"}};
 	
 	public static String language_options[][] = new String[][]{{"Ja","Nej","Avbryt"},{"Yes","No","Cancel"}};
 	

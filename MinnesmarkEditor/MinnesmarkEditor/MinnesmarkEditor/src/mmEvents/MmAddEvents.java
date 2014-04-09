@@ -94,6 +94,8 @@ public class MmAddEvents extends JPanel {
     String stationIndex;
     
     JLabel stationLabel;
+    
+    JFileChooser fileChooser = new JFileChooser();
 
 	public MmAddEvents(JDialog frame1)
 	{
@@ -909,7 +911,7 @@ public class MmAddEvents extends JPanel {
 	
 	public void insertStation(double lat,double lon,int index,int stationIndex,int gpsRadius,boolean stationType)
 	{
-		 int swgIndx = index;
+		 /*int swgIndx = index;
 		 currentIndex = 0;
 		 for(int i=0;i<stationEvents.size();i++)
 		 {
@@ -993,7 +995,7 @@ public class MmAddEvents extends JPanel {
 			/*for(int i=0;i<stationEvents.size();i++)
 			{
 				System.out.println("station index after remove "+stationEvents.get(i).getStationName()+"  "+stationEvents.get(i).getStationIndex());
-			}*/
+			}
 			
 			return;
 		}
@@ -1041,6 +1043,396 @@ public class MmAddEvents extends JPanel {
 			
 			
 			for(int i=index-1;i<stationEvents.size();i++)
+			{
+				System.out.println("data after "+stationEvents.get(i).getStationName()+"  "+stationEvents.get(i).getStationIndex());
+			}
+			
+			return;
+			
+			/*JOptionPane.showConfirmDialog(null, "Entered "+stationEvents.get(index-1).getIndexStationName()+"  "+stationEvents.get(index+1).getIndexStationName());
+			String prev_station = stationEvents.get(index-1).getStationName();
+			String next_station = stationEvents.get(index+1).getStationName();
+			
+			station_index = stationEvents.get(index).getStationIndex();
+			
+			if(prev_station.length()==8 && next_station.length()==8)
+			{
+				stationEvents.remove(index);
+				
+				for(int i=index;i<stationEvents.size();i++)
+				{
+					if(!stationEvents.get(index).getStationType())
+					{
+						stationEvents.get(index).setStationName("station"+Integer.toString(i));
+						stationEvents.get(index).setStationIndex(stationEvents.get(index).getStationIndex()-2);
+						stationEvents.get(index).setStationIndex(stationEvents.get(index).getCurrentStationIndex()-1);
+					}
+					
+					if(stationEvents.get(index).getStationType())
+					{
+						stationEvents.get(index).setStationIndex(stationEvents.get(index).getStationIndex()-2);
+						stationEvents.get(index).setStationName("station"+Integer.toString(i)+"_swingPoint"+ stationEvents.get(index).getStationIndex());
+						stationEvents.get(index).setStationIndex(stationEvents.get(index).getCurrentStationIndex()-1);
+					}
+				}
+			}
+			
+			/*if(stationEvents.get(index+1).getStationName().contains("station"))
+			{
+				stationEvents.remove(index);
+				
+				for(int i=index;i<stationEvents.size();i++)
+				{
+					if(!stationEvents.get(index).getStationType())
+					{
+						stationEvents.get(index).setStationName("station"+Integer.toString(i));
+						stationEvents.get(index).setStationIndex(stationEvents.get(index).getStationIndex()-2);
+						stationEvents.get(index).setStationIndex(stationEvents.get(index).getCurrentStationIndex()-1);
+					}
+					
+					if(stationEvents.get(index).getStationType())
+					{
+						stationEvents.get(index).setStationIndex(stationEvents.get(index).getStationIndex()-2);
+						stationEvents.get(index).setStationName("station"+Integer.toString(i)+"_swingPoint"+ stationEvents.get(index).getStationIndex());
+						stationEvents.get(index).setStationIndex(stationEvents.get(index).getCurrentStationIndex()-1);
+					}
+				}
+			}
+			
+			
+			String swingName = stationEvents.get(index).getStationName();
+			if(swingName.contains("swingPoint"))
+			{		
+			    int strIndx = stationEvents.get(index).getStationName().indexOf("swingPoint");
+			
+			    swingName = swingName.substring(strIndx+8, swingName.length());
+			
+			    int indx = Integer.parseInt(swingName);
+			
+			    JOptionPane.showMessageDialog(null, "index "+indx);
+			}
+		    
+			stationEvents.remove(index);
+			
+			for(int i=index;i<stationEvents.size();i++)
+			{
+				if(!stationEvents.get(i).getStationType())
+				{
+					stationEvents.get(i).setStationIndex(stationEvents.get(i).getStationIndex()-2);
+					stationEvents.get(i).setStationName("station"+Integer.toString(stationEvents.get(i).getStationIndex()));
+					stationEvents.get(i).setCurrentStationIndex(stationEvents.get(i).getCurrentStationIndex()-1);		
+				}
+				
+				if(stationEvents.get(i).getStationType())
+				{
+					stationEvents.get(i).setStationIndex(stationEvents.get(i).getStationIndex()-2);
+					stationEvents.get(i).setStationName("station"+Integer.toString(stationEvents.get(i).getStationIndex())+"_swingPoint"+Integer.toString(i+1));
+					stationEvents.get(i).setCurrentStationIndex(stationEvents.get(i).getCurrentStationIndex()-1);		
+				}
+			} 
+			
+		}
+		
+		if((index) == stationEvents.size()-1)
+		{
+			stationEvents.remove(index);
+			
+			int i= stationEvents.size()-1;
+			
+			while(!stationEvents.isEmpty())
+			{
+				if(stationEvents.get(i).getStationType())
+				{
+					stationEvents.remove(i);
+					i=stationEvents.size()-1;
+				}
+				else
+					break;
+					
+			}
+			
+			return;
+		}*/
+		
+		int swgIndx = index;
+		 
+		 
+		 currentIndex = 0;
+		 for(int i=0;i<stationEvents.size();i++)
+		 {
+			 if(stationEvents.get(i).getCurrentStationIndex()==index)
+			 {
+				//System.out.println("Current station index "+stationEvents.get(i).getCurrentStationIndex());
+				 for(int j=i;j<stationEvents.size();j++)
+				 { 	 
+				    if(stationEvents.get(j).getCurrentStationIndex()==index && stationEvents.get(j).getStationType())
+				    {
+				       swgIndx++;	
+					   System.out.println("index present "+swgIndx);
+				       stationEvents.get(j).setCurrentStationIndex(swgIndx);
+				       stationEvents.get(j).setStationIndex(stationIndex-1);
+				       stationEvents.get(j).setStationName("station"+stationIndex+"_"+"swingPoint"+(swgIndx));
+				       //System.out.println("swing point name in loop "+stationEvents.get(j).getStationName());
+				       
+				    }
+				 } 
+				 
+			 }
+		 }
+		 
+		 //System.out.println("index "+ index+" "+stationEvents.size());
+		 
+		/* int st_indx=0;
+		 
+		 for(int j=0;j<stationEvents.size();j++)
+		 { 	
+			if(!stationEvents.get(j).getStationType())
+			{
+				st_indx+=1;
+				 
+				System.out.println("current index "+st_indx);
+				
+			}
+			 
+		    if(stationEvents.get(j).getStationType())
+		    {
+		       st_indx+=1;	
+		       System.out.println("index present "+st_indx);
+		       stationEvents.get(j).setCurrentStationIndex(st_indx);
+		       stationEvents.get(j).setStationIndex(stationEvents.get(j).getStationIndex()-1);
+		       stationEvents.get(j).setStationName("station"+stationEvents.get(j).getStationIndex()+"_"+"swingPoint"+(st_indx));
+		       //System.out.println("swing point name in loop "+stationEvents.get(j).getStationName());
+		        
+		       
+		    }
+		   
+		 }*/
+		 
+		 /*for(int i=0;i<stationEvents.size();i++)
+		 {
+			 System.out.println("station names before "+stationEvents.get(i).getStationName());
+		 }
+		 System.out.println(" ");*/
+		 
+		 if(stationIndex==1)
+		 {		 
+		    station = new MmStationEvents();
+		    station.setLatLon(lat, lon);
+		    station.setStationName("station"+stationIndex+"_"+"swingPoint"+index);
+		    station.setStationIndex(stationIndex-1);
+		    station.setCurrentStationIndex(index);
+		    station.setGPSRadius(gpsRadius);
+		    station.setStationType(stationType);
+		    stationEvents.add(index, station);
+		 }
+		 else
+		 {
+			 station = new MmStationEvents();
+			 station.setLatLon(lat, lon);
+			 station.setStationName("station"+stationIndex+"_"+"swingPoint"+(index)); 
+			 station.setStationIndex(stationIndex-1);
+			 station.setCurrentStationIndex(index);
+			 station.setGPSRadius(gpsRadius);
+			 station.setStationType(stationType);
+			 stationEvents.add(index, station);
+			 System.out.println("Entered data");
+		 }
+		 
+		 //System.out.println("swing point name "+station.getStationName());
+		 
+        int st_indx=-1;
+		 
+		 for(int j=0;j<stationEvents.size();j++)
+		 { 	
+			if(!stationEvents.get(j).getStationType())
+			{
+				st_indx+=1;
+				 
+				System.out.println("current index "+st_indx);
+				
+			}
+			 
+		    if(stationEvents.get(j).getStationType())
+		    {
+		       st_indx+=1;	
+		       System.out.println("index present "+st_indx);
+		       stationEvents.get(j).setCurrentStationIndex(st_indx);
+		       stationEvents.get(j).setStationIndex(stationEvents.get(j).getStationIndex()-1);
+		       stationEvents.get(j).setStationName("station"+stationEvents.get(j).getStationIndex()+"_"+"swingPoint"+(st_indx));
+		       //System.out.println("swing point name in loop "+stationEvents.get(j).getStationName());
+		        
+		       
+		    }
+		   
+		 }
+		 
+		 		 
+		/* for(int i=0;i<stationEvents.size();i++)
+		 {
+			 System.out.println("station names "+stationEvents.get(i).getStationName());
+		 }
+		 System.out.println(" ");*/		 
+	}
+	
+	// updates the swing point
+	public void updateSwingPoints(int index,double lat,double lon)
+	{
+		 
+		stationEvents.get(index).setLatLon(lat, lon);
+		 
+	}
+	
+	public void removeStation(int index)
+	{
+		int station_index = stationEvents.get(index).getStationIndex();
+		
+		/*for(int i=0;i<stationEvents.size();i++)
+		{
+			System.out.println("station index before remove "+stationEvents.get(i).getStationName()+"  "+stationEvents.get(i).getStationType());
+		}*/
+		
+	    System.out.println("station index "+station_index+"  "+stationEvents.size());
+			
+		if(index==0)
+		{
+			stationEvents.remove(index);
+			for(int i=index;!stationEvents.isEmpty();)
+			{
+				//JOptionPane.showMessageDialog(null, stationEvents.get(i).getStationName()+"  "+stationEvents.get(i).getStationIndex());
+				if(stationEvents.get(i).getStationIndex()==station_index)
+				{
+					//JOptionPane.showMessageDialog(null, stationEvents.get(i).getStationName()+"  "+stationEvents.get(i).getStationIndex());
+					stationEvents.remove(index);
+				}
+				else
+					break;
+			}
+			
+			/*if(stationEvents.get(index).getStationType())
+			{
+				stationEvents.get(index).setStationType(false);
+			}*/
+			
+			for(int i=0;i<stationEvents.size();i++)
+			{
+				System.out.println("station index before after remove "+stationEvents.get(i).getStationName()+"  "+stationEvents.get(i).getStationType());
+			}
+			
+			for(int i=0;i<stationEvents.size();i++)
+			{
+				
+				//JOptionPane.showMessageDialog(null, "Entered "+stationEvents.get(i).getStationType());
+				
+				if(!stationEvents.get(i).getStationType())
+				{
+					stationEvents.get(i).setStationIndex(stationEvents.get(i).getStationIndex()-2);
+					stationEvents.get(i).setStationName("station"+Integer.toString(stationEvents.get(i).getStationIndex()));
+					stationEvents.get(i).setCurrentStationIndex(stationEvents.get(i).getCurrentStationIndex()-1);		
+				}
+				
+				if(stationEvents.get(i).getStationType())
+				{
+					System.out.println("index "+i+"  "+stationEvents.size());
+					stationEvents.get(i).setStationIndex(stationEvents.get(i).getStationIndex()-2);
+					System.out.println("station index "+stationEvents.get(i).getStationIndex());
+					stationEvents.get(i).setStationName("station"+Integer.toString(stationEvents.get(i).getStationIndex()+1)+"_swingPoint"+Integer.toString(i));
+					stationEvents.get(i).setCurrentStationIndex(stationEvents.get(i).getCurrentStationIndex()-1);		
+				}
+			}
+			
+			/*for(int i=0;i<stationEvents.size();i++)
+			{
+				System.out.println("station index after remove "+stationEvents.get(i).getStationName()+"  "+stationEvents.get(i).getStationIndex());
+			}*/
+			
+			for(int i=0;i<stationEvents.size();i++)
+			{
+				System.out.println("station index after remove "+stationEvents.get(i).getStationName()+"  "+stationEvents.get(i).getStationType());
+			}
+			
+			return;
+		}
+		
+		int swingIndx = -1;
+		
+		if((index)>0 && (index)<stationEvents.size()-1)
+		{
+		    System.out.println("index "+index);
+			for(int i=index-1;i<stationEvents.size();i++)
+			{
+				System.out.println("data before "+stationEvents.get(i).getStationName()+"  "+stationEvents.get(i).getStationIndex());
+			}
+			
+			int removeStationIndex;
+			
+			if(stationEvents.get(index).getStationType())
+				removeStationIndex = stationEvents.get(index).getStationIndexFromSwingPoint();
+			else
+				removeStationIndex = stationEvents.get(index).getStationIndexFromStation();
+			
+			stationEvents.remove(index); 
+			if(stationEvents.get(index-1).getStationType())
+			    swingIndx = stationEvents.get(index-1).getIndexStationNameIndex();
+			int stationIndx;
+			
+			stationIndx = stationEvents.get(index).getCurrentStationIndex()-1;
+			
+			System.out.println("Swing index "+swingIndx+"  "+stationEvents.get(index-1).getIndexStationNameIndex());
+			
+			System.out.println("Station index "+stationEvents.get(index-1).getStationIndex()+"  "+stationIndx);
+			
+			System.out.println("stations size "+stationEvents.size());
+			
+			int swingStationIndex;
+						
+			for(int i=index-1;i<stationEvents.size();i++)
+			{
+				if(stationEvents.get(i).getStationType())
+				{
+					System.out.println("loop index "+i+"  "+stationIndx+"  "+stationEvents.get(i).getStationName());
+					
+					System.out.println("station index "+stationEvents.get(i).getSwingPointStationIndex()+"  "+stationEvents.get(index-1).getStationIndex());
+					
+					System.out.println("swing index "+stationEvents.get(i).getSwingIndexFromSwingPoint());
+					
+					swingIndx = stationEvents.get(i).getSwingIndexFromSwingPoint();
+					
+					stationIndx = stationEvents.get(i).getSwingPointStationIndex();
+					
+					if(stationIndx == removeStationIndex)
+					{
+						stationIndx-=1;
+						swingIndx-=1;
+					}
+					
+					
+					stationEvents.get(i).setStationIndex(stationIndx);
+					stationEvents.get(i).setStationName("station"+Integer.toString(stationIndx)+"_swingPoint"+Integer.toString(swingIndx));
+					stationEvents.get(i).setCurrentStationIndex(stationEvents.get(i).getCurrentStationIndex()-1);
+					
+				}
+				
+				if(!stationEvents.get(i).getStationType())
+				{
+					
+					System.out.println("loop index in station "+i);
+					System.out.println("Station index "+stationEvents.get(i).getStationIndexFromStation());
+					
+					stationIndx = stationEvents.get(i).getStationIndexFromStation();
+					
+					if(stationIndx!=stationEvents.get(index-1).getStationIndex())
+						stationIndx-=1;
+					
+					stationEvents.get(i).setStationIndex(stationIndx);
+					stationEvents.get(i).setStationName("station"+Integer.toString(stationIndx));
+					stationEvents.get(i).setCurrentStationIndex(stationIndx);
+					
+					   
+				}
+			}
+			
+			
+			for(int i=0;i<stationEvents.size();i++)
 			{
 				System.out.println("data after "+stationEvents.get(i).getStationName()+"  "+stationEvents.get(i).getStationIndex());
 			}
@@ -1207,7 +1599,7 @@ public class MmAddEvents extends JPanel {
 		
 		map.hideStationEventWindow();
 		
-		JFileChooser fileChooser = new JFileChooser();
+		
 		
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		
@@ -1224,7 +1616,7 @@ public class MmAddEvents extends JPanel {
 		
 	       if (val == JFileChooser.APPROVE_OPTION) {
 	    	   File file = fileChooser.getSelectedFile();
-	    	   
+	           fileChooser.setCurrentDirectory(fileChooser.getCurrentDirectory());   
 	    	   map.showStationEventWindow();
 	    	   map.bringTofront();
 	    	   

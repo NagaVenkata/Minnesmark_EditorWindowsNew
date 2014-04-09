@@ -21,13 +21,14 @@ public class MmObj_OsgWriter {
 		filePath=path;
 	}
 	
+	
 	public  static void WriteObj_OsgFile(String sourcePath,String destinationPath)
 	{
 		
 		   FileChannel src = null,des=null;
 		   try {
 			    
-			     JOptionPane.showMessageDialog(null, destinationPath);	
+			     //JOptionPane.showMessageDialog(null, destinationPath);	
 			   
 			     File file = new File(destinationPath);
 			  
@@ -47,7 +48,7 @@ public class MmObj_OsgWriter {
 			        {
 			           	
 				       file.mkdir();
-				       JOptionPane.showMessageDialog(null, file.isDirectory());
+				       //JOptionPane.showMessageDialog(null, file.isDirectory());
 				       src = new FileInputStream(sourcePath).getChannel();
 				       des = new FileOutputStream(destinationPath+desPath).getChannel();
 			       }
@@ -131,6 +132,8 @@ public class MmObj_OsgWriter {
 		FileChannel src = null,des=null;
 		
 		String srcFile = null;
+		
+		JOptionPane.showMessageDialog(null, sourcePath+"  "+destinationPath+"   "+materialFiles);
 			
 		try
 		{
@@ -138,10 +141,13 @@ public class MmObj_OsgWriter {
 			  
 		     String desPath = materialFiles;
 		  
-		     srcFile = sourcePath.substring(0,sourcePath.lastIndexOf('/')+1);
+		     srcFile = sourcePath.substring(0,sourcePath.lastIndexOf('\\')+1);
+		     
+		     JOptionPane.showMessageDialog(null, srcFile);
 		     
 		     srcFile = srcFile+materialFiles;
 		     
+		     JOptionPane.showMessageDialog(null, srcFile);
 		     		     		  
 		     src = new FileInputStream(srcFile).getChannel(); 
 		     des = new FileOutputStream(destinationPath+desPath).getChannel();
@@ -208,7 +214,7 @@ public class MmObj_OsgWriter {
 			  
 		     String desPath = filename;
 		  
-		     String srcFile1 = sourcePath.substring(0,sourcePath.lastIndexOf('/')+1);
+		     String srcFile1 = sourcePath.substring(0,sourcePath.lastIndexOf('\\')+1);
 		     
 		     
 		     	     

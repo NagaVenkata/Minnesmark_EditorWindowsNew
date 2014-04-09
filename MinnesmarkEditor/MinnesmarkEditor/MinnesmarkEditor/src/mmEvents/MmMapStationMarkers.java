@@ -78,6 +78,8 @@ public class MmMapStationMarkers extends JPanel {
 	
 	int language;
 	
+	int markersLeft = 6;
+	
 	public MmMapStationMarkers(JDialog markerDialog,MmMapViewer mapView)
 	{
 		
@@ -468,7 +470,8 @@ public class MmMapStationMarkers extends JPanel {
 						isSaved=false;
 						
 					}
-					
+					else if(markerIndex+1==mapMarkers.size())
+						markersLeft = 0;
 				}
 				else
 				{
@@ -606,20 +609,73 @@ public class MmMapStationMarkers extends JPanel {
 		markerIndex=index;
 	}
 	
+	public void hideMarkers()
+	{
+		markerIndex=0;
+		
+		//JOptionPane.showMessageDialog(null, "mapMarkers "+mapMarkers.size());
+		
+		
+						
+		markerPanel.removeAll();
+		
+		markerPanel.revalidate();
+		
+		markerPanel.validate();
+		
+		for(int i=0;i<6;i++)
+		{
+			
+			//markerWindows.get(0).setVisible(false);
+			//markerWindows.get(0).remove(moveableLabel);
+			JLabel lb = new JLabel();
+			mapMarkers.get(i).add(lb);
+			
+			markerIndex++;
+			
+		}
+		
+		for(int i=0;i<6;i++)
+		{
+			
+			//markerWindows.get(markerIndex).setVisible(false);
+			//markerWindows.get(0).remove(moveableLabel);
+			markerPanel.add(mapMarkers.get(i));
+			markerPanel.getComponent(i).setVisible(false);
+			mapMarkers.get(i).setVisible(false);
+			
+			
+		}
+		
+		markerPanel.revalidate();
+		
+		//markerWindows.clear();
+	
+		//mapMarkers.clear();				
+		//markerPanel.removeAll();
+		
+		//markerPanel.revalidate();
+		markerIndex = 5; 
+		
+		markersLeft=0;
+		
+		selectMarker(markerIndex);
+	}
+	
 	
 	public void hideMarker(int index)
 	{
 	
 		if(markerIndex!=markerWindows.size())
 		{	
+		   //JOptionPane.showMessageDialog(null, index+"  "+markerIndex);	
 		   markerWindows.get(index).setVisible(false);
 		   markerWindows.get(index).remove(moveableLabel);
 		   mapMarkers.get(markerIndex).setIcon(icon_gray[index]);
 		}   
 		
-		
-		
-		
+		 
+				
 		markerIndex--;
 		
 		
@@ -634,10 +690,6 @@ public class MmMapStationMarkers extends JPanel {
 		if(markerIndex!=0)
 		{
 			//JOptionPane.showMessageDialog(null, "markers "+mapMarkers.size()+"  "+markerIndex);
-			
-			if(index==5)
-				markerIndex=index;
-			
 			mapMarkers.remove(markerIndex);
 		    mapMarkers.add(new JLabel(icon[index]));
 		    //markerIndex=index;
@@ -658,8 +710,16 @@ public class MmMapStationMarkers extends JPanel {
 		
 		markerPanel.revalidate();
 		
+		System.out.println("markers left "+markersLeft);
+		
+		if(markersLeft==0)
+			index=5;
+		
 		if(markerIndex>=1)
 		{
+			if(index==5)
+				markerIndex = 5;
+			
 			for(int i=0;i<markerIndex;i++)
 			{
 				JLabel lb = new JLabel();
@@ -667,45 +727,57 @@ public class MmMapStationMarkers extends JPanel {
 			}
 		}
 		
+		System.out.println("markerIndex "+markerIndex);
+		
 		mapMarkers.add(new JLabel(icon[markerIndex]));
+		
+		System.out.println("marker index "+index);
 		
 		if(index!=5)
 		{	
-		    for(int i= markerIndex+1;i<6;i++)
+		    for(int i=markerIndex+1;i<6;i++)
 		    {
 			    JLabel lb = new JLabel(icon_gray[i]);
 			    mapMarkers.add(lb);
 		    }
 		
 		    for(int i= 0;i<6;i++)
-			markerPanel.add(mapMarkers.get(i));
+			    markerPanel.add(mapMarkers.get(i));
 		
 		    markerPanel.revalidate();
 		
-		   //JOptionPane.showMessageDialog(null, "markers "+mapMarkers.size()+"  "+markerIndex);
+		    //JOptionPane.showMessageDialog(null, "markers "+mapMarkers.size()+"  "+markerIndex);
 		
 		   mapMarkers.get(markerIndex).setVisible(true);
 		
+		   markersLeft++;
 		   selectMarker(markerIndex);
+		
+		   //markerWindows.get(markerIndex).remove(moveableLabel);
 		}
 		
 		if(index==5)
 		{	
-		    
+		    /*for(int i= markerIndex+1;i<6;i++)
+		    {
+			    JLabel lb = new JLabel(icon_gray[i]);
+			    mapMarkers.add(lb);
+		    } */
+		
 		    for(int i= 0;i<6;i++)
-			markerPanel.add(mapMarkers.get(i));
+			    markerPanel.add(mapMarkers.get(i));
 		
 		    markerPanel.revalidate();
 		
-		   //JOptionPane.showMessageDialog(null, "markers "+mapMarkers.size()+"  "+markerIndex);
+		    //JOptionPane.showMessageDialog(null, "markers "+mapMarkers.size()+"  "+markerIndex);
 		
 		   mapMarkers.get(markerIndex).setVisible(true);
 		
+		   markersLeft++;
 		   selectMarker(markerIndex);
-		}
 		
-		//markerWindows.get(markerIndex).remove(moveableLabel);
-		
+		   //markerWindows.get(markerIndex).remove(moveableLabel);
+		}		
 	}
 	
 	

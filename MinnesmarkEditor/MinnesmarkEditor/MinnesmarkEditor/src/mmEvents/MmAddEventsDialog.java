@@ -261,11 +261,29 @@ public class MmAddEventsDialog extends JPanel implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				if(panoramaChkbx.isSelected())
+				/*if(panoramaChkbx.isSelected())
 					cmbgChkbx.setEnabled(false);
 				else
 					cmbgChkbx.setEnabled(true);
+			}*/
+				
+				JLabel lb = (JLabel) textPanel.getComponent(componentIndex);
+				ImageIcon image1 = new ImageIcon(lb.getName());
+				if(image1.getIconWidth()<=1024 && image1.getIconHeight()<=1024)
+				{	
+
+				     if(panoramaChkbx.isSelected())
+					     cmbgChkbx.setEnabled(false);
+				     else
+					    cmbgChkbx.setEnabled(true);
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, MmLanguage.language_mediaException[language][3]+" "+image1.getIconWidth()+" och "+image1.getIconHeight());
+					panoramaChkbx.setSelected(false);
+				}
 			}
+	
 			
 		});
 		
@@ -538,6 +556,28 @@ public class MmAddEventsDialog extends JPanel implements ActionListener {
 			if(textStrings[2].contains(MmLanguage.language_mediaevents[language][7]))
 				chkbx.setSelected(true);
 		}
+		
+		panoramaChkbx.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				JLabel lb = (JLabel) textPanel.getComponent(componentIndex);
+				ImageIcon image1 = new ImageIcon(lb.getName());
+				if(image1.getIconWidth()<=1024 && image1.getIconHeight()<=1024)
+				{	
+					if(!panoramaChkbx.isSelected())
+						panoramaChkbx.setSelected(false);
+				     
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null, MmLanguage.language_mediaException[language][3]+" "+image1.getIconWidth()+" och "+image1.getIconHeight());
+					panoramaChkbx.setSelected(false);
+				}
+			}
+			
+		});
 		
 		
 		p.setLayout(new GridLayout(0,2,50,20));

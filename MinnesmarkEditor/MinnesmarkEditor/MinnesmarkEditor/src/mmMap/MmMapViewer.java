@@ -1,6 +1,5 @@
 package mmMap;
 import java.awt.*;
-
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTarget;
@@ -61,7 +60,6 @@ import javax.swing.*;
 
 import mmAccordionMenu.*;
 import mmEvents.*;
-
 import mmGPSCoordinates.*;
 import mmLanguage.MmLanguage;
 import mmObjWriter.MmObjWriter;
@@ -374,6 +372,7 @@ public class MmMapViewer extends JPanel implements Printable {
     	    	if(isMouseOnStation(e.getPoint()))
     	    	{	
     	    	    Image curs_image = new ImageIcon(getClass().getResource("/station_move1.png")).getImage();
+    	    	    curs_image = curs_image.getScaledInstance(35, 35, 0);
     	    	    Cursor cursor = toolKit.createCustomCursor(curs_image, new Point(0,0), "cursor");
 				    mapKit.getMainMap().setCursor(cursor);
 				    
@@ -397,6 +396,7 @@ public class MmMapViewer extends JPanel implements Printable {
     	    	else if(isMouseOnLine(e.getPoint()))
     	    	{	
     	    		Image curs_image = new ImageIcon(getClass().getResource("/line_move.png")).getImage();
+    	    		
     	    	    Cursor cursor = toolKit.createCustomCursor(curs_image, new Point(0,0), "cursor");
 				    mapKit.getMainMap().setCursor(cursor);
 				    JComponent cmp = (JComponent)e.getSource();
@@ -475,8 +475,8 @@ public class MmMapViewer extends JPanel implements Printable {
     	    	
     	    	
     	    	Toolkit toolKit = Toolkit.getDefaultToolkit();
-    	    	
-    	    	if(isPointPresent)
+    	    	System.out.println("is point present on line "+isPointPickedOnLine);
+    	    	if(isPointPresent && !isPointPickedOnLine)
     	    	{
     	    	   
     	    	   Image curs_image = new ImageIcon(getClass().getResource("/station_move1.png")).getImage();
@@ -629,30 +629,53 @@ public class MmMapViewer extends JPanel implements Printable {
         	public void mouseClicked(MouseEvent e)
         	{
         		        		        		
+        		int stationIndex =-1;        		        		
         		for(int i=0;i<mousePos.size();i++)
         		{ 
-        			isPointPresent = mousePos.get(i).isPointInRegion(new MmMousePoints(e.getX(),e.getY()));
+        			//isPointPresent = mousePos.get(i).isPointInRegion(getGeoPosition(mousePos.get(i).getPoint()),getGeoPosition(new Point(e.getX()+20,e.getY()+25)));
+        			isPointPresent = mousePos.get(i).isPointInRegion(new MmMousePoints(e.getPoint()));
+        			stationIndex=i;
+        			if(isPointPresent)
+        			   break;
+        		}		
         			
-        			/*if(e.getClickCount()==2)
-        			{
-        				JOptionPane.showMessageDialog(null, e.getX()+" "+e.getY());
-        				eventsDialog.setVisible(false);
-        			}*/
+        		if(!swingPos.isEmpty())
+        		{
+        			isPointPresent = false;
         			
-        			if(!isPointPresent)
-        				continue;
-        			else
+        			for(int j=0;j<swingPos.size();j++)
         			{
-        				isPointPresent=true;
-        				eventsDialog.setVisible(true);
-        				events.setStationIndex(Integer.toString(index+1));
-        				events.setGeoIndex(index);
-        				events.updateStationEvents(geoPos.get(index));
-        				index=i;
-        				break;
-        			}	
-        					
+        				//clickedEdge = swingPos.get(j).getEdgeIndex(mousePos.get(index).getPoint());
+        				//clickedEdge = swingPos.get(j).getEdgeIndex(getGeoPosition(new Point(e.getX()+20,e.getY()+25)));
+        				clickedEdge = swingPos.get(j).getEdgeIndex(e.getPoint());
+        				if(clickedEdge!= -1)
+        				{
+        					edgeIndex = j;
+        					isPointPresent=true;
+        					//System.out.println("index of station point in clicked "+edgeIndex);
+        					break;
+        				}
+                                     				
+        			 }
         		}
+        		/*else if(!mousePos.isEmpty() && swingPos.isEmpty())
+        		{
+        			System.out.println("entered the condition ");
+        		    isPointPresent = true;
+        		}*/
+        		
+        		
+
+        		if(isPointPresent)
+        		{	
+        			
+        			eventsDialog.setVisible(true);
+        			events.setStationIndex(Integer.toString(index+1));
+        			events.setGeoIndex(index);
+        			events.updateStationEvents(geoPos.get(index));
+        			index=stationIndex;
+        		}    
+
         		
         		int swingPointsIndex = -1;
         		
@@ -782,39 +805,45 @@ public class MmMapViewer extends JPanel implements Printable {
 			public void mousePressed(MouseEvent event) {
 				// TODO Auto-generated method stub
 								
+				isStationDelete = false;
+				
 				for(int i=0;i<mousePos.size();i++)
         		{ 
-        			isPointPresent = mousePos.get(i).isPointInRegion(new MmMousePoints(event.getX(),event.getY()));
-        			
-        			if(!isPointPresent)
-        				continue;
-        			else
+					//isPointPresent = mousePos.get(i).isPointInRegion(getGeoPosition(mousePos.get(i).getPoint()),getGeoPosition(new Point(event.getX()+20,event.getY()+25)));
+					isPointPresent = mousePos.get(i).isPointInRegion(new MmMousePoints(event.getPoint()));
+					
+					if(isPointPresent)
+					{
+						currentStationPoint = mousePos.get(i).getPoint();
+	    				index=i;
+	    				mapKit.getMainMap().setPanEnabled(false);
+						break;
+					}	
+        		}	
+        				
+        		if(!swingPos.isEmpty())
+        		{
+        			isPointPresent=false;        					
+        			for(int j=0;j<swingPos.size();j++)
         			{
-        				currentStationPoint = mousePos.get(i).getPoint();
-        				isPointPresent=true;
-        				
-        				index=i;
-        				mapKit.getMainMap().setPanEnabled(false);
-        				if(!swingPos.isEmpty())
+        						
+        				//clickedEdge = swingPos.get(j).getEdgeIndex(mousePos.get(index).getPoint());
+        				//clickedEdge = swingPos.get(j).getEdgeIndex(getGeoPosition(new Point(event.getX()+20,event.getY()+25)));
+        				clickedEdge = swingPos.get(j).getEdgeIndex(event.getPoint());
+        				//System.out.println("clicked index and point "+clickedEdge+" "+isPointPresent);
+        				if(clickedEdge!= -1)
         				{
-        					        					
-        					for(int j=0;j<swingPos.size();j++)
-        					{
-        					    
-        					    clickedEdge = swingPos.get(j).getEdgeIndex(mousePos.get(index).getPoint()); 
-        						if(clickedEdge!= -1)
-        						{
-        							edgeIndex = j;
-        							break;
-        						}
-                                     				
-        					}
+        					edgeIndex = j;
+        					isPointPresent=true;
+        					mapKit.getMainMap().setPanEnabled(false);
+        					break;
         				}
-        				
-        				break;
-        			}	
+                                     				
+        		     }
         			
-           		}
+        			//System.out.println("clicked index and point persent after "+clickedEdge+" "+isPointPresent);
+        		}
+        		
 				
 				if(!swingPos.isEmpty() && !isPointPresent)
 				{
@@ -1432,7 +1461,8 @@ public class MmMapViewer extends JPanel implements Printable {
 	{
 		for(int i=0;i<mousePos.size();i++)
 		{ 
-			if(mousePos.get(i).isPointInRegion(new MmMousePoints(point.x,point.y)))
+			//if(mousePos.get(i).isPointInRegion(getGeoPosition(mousePos.get(i).getPoint()),getGeoPosition(new Point(point.x+20,point.y+25))))
+			if(mousePos.get(i).isPointInRegion(new MmMousePoints(point)))
 			{
 				if(i==0)
 					station_index=i;
@@ -1444,10 +1474,13 @@ public class MmMapViewer extends JPanel implements Printable {
     					for(int j=0;j<swingPos.size();j++)
     					{
     					    
-    					    clickedEdge = swingPos.get(j).getEdgeIndex(mousePos.get(i).getPoint()); 
+    					    //clickedEdge = swingPos.get(j).getEdgeIndex(getGeoPosition(new Point(point.x+20,point.y+25)));
+    						clickedEdge = swingPos.get(j).getEdgeIndex(point);
     						if(clickedEdge!= -1)
     						{
     							station_index = j+1;
+    							if(station_index>=swingPos.size())
+    								station_index = swingPos.size()-1;
     							break;
     						}
                                  				
@@ -1528,9 +1561,11 @@ public class MmMapViewer extends JPanel implements Printable {
 		 if(swingPos.size()==1)
 			 return false;
 		 
+		 
+		 
 		 for(int i=0;i<swingPos.size();i++)
 		 {
-		     if(swingPos.get(i).getStartPointType() || swingPos.get(i).getStartPointType())
+		     if(swingPos.get(i).getStartPointRadius()==5 || swingPos.get(i).getEndPointRadius()==5)
 		     { 	 
 			     if(swingPos.get(i).isSwingPointPresent(point))
 			     {
@@ -1556,13 +1591,17 @@ public class MmMapViewer extends JPanel implements Printable {
 	//add the edge between the two stations
 	public void addEdge()
 	{
-		MmSwingPoints swgPnts = new MmSwingPoints(new Point(-1,-1));
+        MmSwingPoints swgPnts = new MmSwingPoints(new Point(-1,-1));
 		
 		swgPnts.setStartPoint(mousePos.get(mousePos.size()-2).getPoint());
+		swgPnts.setStartPointRadius(10);
+		swgPnts.setStartPointType(false);
 		swgPnts.setEndPoint(mousePos.get(mousePos.size()-1).getPoint());
 		swgPnts.setStartGeoPosition(getGeoPosition(mousePos.get(mousePos.size()-2).getPoint()));
 		swgPnts.setEndGeoPosition(getGeoPosition(mousePos.get(mousePos.size()-1).getPoint()));
+		swgPnts.setEndPointRadius(10);
 		swgPnts.setStationIndex(geoPos.size()-1);
+		swgPnts.setEndPointType(false);
 		swingPos.add(swgPnts);
 		
 		
@@ -1627,15 +1666,25 @@ public class MmMapViewer extends JPanel implements Printable {
 					
 				if(!swingPos.isEmpty())
 				{
-					//System.out.println("Entered data ");
 					int swing_index = swingPos.get(i).getStationIndex();
+					boolean stationType = swingPos.get(i).getStartPointType();
+					int radius = swingPos.get(i).getStartPointRadius();
+					int radius1 = swingPos.get(i).getEndPointRadius();
+					System.out.println("radius and radius1 "+radius+"  "+radius1);
+				    //System.out.println("station index "+swing_index+"  "+i); 
 					swingPos.remove(i);
 					MmSwingPoints swgPnts = new MmSwingPoints(point);
 					swgPnts.setStartPoint(firstStationPoint);
 					swgPnts.setStartGeoPosition(getGeoPosition(firstStationPoint));
+					swgPnts.setStartPointType(stationType);
+					if(radius==0)
+						swgPnts.setStartPointRadius(5);
+					else
+						swgPnts.setStartPointRadius(radius);
 					swgPnts.setEndPointType(true);
 					swgPnts.setEndPoint(point);
 					swgPnts.setEndGeoPosition(getGeoPosition(point));
+					swgPnts.setEndPointRadius(5);
 					swgPnts.setStationIndex(swing_index);
 					swingPos.add(i,swgPnts);
 					
@@ -1643,15 +1692,21 @@ public class MmMapViewer extends JPanel implements Printable {
 					MmSwingPoints swgPnts1 = new MmSwingPoints(point);
 					swgPnts1.setStartPoint(point);
 					swgPnts1.setStartGeoPosition(getGeoPosition(point));
+					swgPnts1.setStartPointType(true);
+					swgPnts1.setStartPointRadius(5);
 					swgPnts1.setEndPoint(secondStationPoint);
 					swgPnts1.setEndGeoPosition(getGeoPosition(secondStationPoint));
-					swgPnts1.setEndPointType(true);
+					stationType = swingPos.get(i).getEndPointType();
+					swgPnts1.setEndPointType(stationType);
 					swgPnts1.setStationIndex(swing_index);
+					if(radius1==0)
+						swgPnts1.setEndPointRadius(5);
+					else
+						swgPnts1.setEndPointRadius(radius1);
 		 			swingPos.add(i+1,swgPnts1);
 		 			edgeIndex = i;
 		 					 					 			
-		 		    return true;
-		 		    
+		 		    return true;		 		    
 			
 					/*for(int j=0;j<swingPos.size();j++)
 					{
@@ -1907,7 +1962,7 @@ public class MmMapViewer extends JPanel implements Printable {
 	           float pntDist = new Float(dist * meterConversion).floatValue();
 	            
 	       	       
-	           if(pntDist>50)
+	           if(pntDist>35)
 	           {	   
 	    	      insertPnt=true;
 	    	      continue;
@@ -1972,6 +2027,8 @@ public class MmMapViewer extends JPanel implements Printable {
 		if(!geoPos.isEmpty())
 		    pnt = geoPos.get(index);
 		
+		
+		
 	    for(int i=0;i<geoPos.size();i++)
 	    {	
 	    	if(i!=index && pnt!=null)
@@ -1998,10 +2055,78 @@ public class MmMapViewer extends JPanel implements Printable {
 	          else
 	          {	   
 	    	      insertPnt=false;
-	    	      break;
+	    	      
+	    	      return insertPnt;
+	    	      
 	          }
 	       }   
 	    }   
+	    
+        double dLat,dLng,a;
+	    
+	    if(swingPos.size() > 1)
+	    { 	
+	       for(int i=1;i<swingPos.size();i++)
+	       {
+	    	   if(i==0)
+	    	   {	   
+	    		  
+	    	      dLat = Math.toRadians((swingPos.get(i).getEndGeoPosition().getLatitude()-pnt.getLatitude()));
+	              dLng = Math.toRadians((swingPos.get(i).getEndGeoPosition().getLongitude()-pnt.getLongitude()));
+	              a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+		    	    	   Math.cos(DegreesToRadians(pnt.getLatitude())) *
+		    	    	   Math.cos(DegreesToRadians(swingPos.get(i).getEndGeoPosition().getLatitude())) *
+		    	      	   Math.sin(dLng/2) * Math.sin(dLng/2);
+	    	   }
+	    	   else
+	    	   {
+	    		   dLat = Math.toRadians((swingPos.get(i).getStartGeoPosition().getLatitude()-pnt.getLatitude()));
+		           dLng = Math.toRadians((swingPos.get(i).getStartGeoPosition().getLongitude()-pnt.getLongitude()));
+		           a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+		    	    	   Math.cos(DegreesToRadians(pnt.getLatitude())) *
+		    	    	   Math.cos(DegreesToRadians(swingPos.get(i).getStartGeoPosition().getLatitude())) *
+		    	      	   Math.sin(dLng/2) * Math.sin(dLng/2);
+	    	   }
+	    	   
+	           
+	   
+	           double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+	           double dist = earthRadius * c;
+	    
+	           int meterConversion = 1609;
+	           float pntDist = new Float(dist * meterConversion).floatValue();
+	       
+	           System.out.println("distance1 "+pntDist);
+	          	       
+	           if(pntDist>35)
+	           {	   
+	    	      insertPnt=true;
+	    	      continue;
+	           }
+	           else if(Math.round(pntDist)<=5)
+	           {
+	        	   insertPnt = true;
+	        	   continue;
+	           }
+	           else
+	           {	   
+	    	      insertPnt=false;
+	    	      return insertPnt;
+	           }
+	           
+	           
+	           
+	           /*else if(Math.round(pntDist)==0)
+	           {
+	        	   insertPnt=true;
+		    	   continue;
+	           }*/
+	           
+	           
+	           
+	       }
+	    }
+
 	    
 	    return insertPnt;
 	}
@@ -2040,9 +2165,11 @@ public class MmMapViewer extends JPanel implements Printable {
 	    
 	           int meterConversion = 1609;
 	           float pntDist = new Float(dist * meterConversion).floatValue();
-	       
 	           
-	       	       
+	           
+	       
+	           System.out.println("distance "+pntDist);
+	       	   
 	           if(pntDist>20)
 	           {	   
 	    	      insertPnt=true;
@@ -2126,7 +2253,7 @@ public class MmMapViewer extends JPanel implements Printable {
 		
 		action = new JSONArray();
 		
-		if(file1.exists())
+		//if(file1.exists())
 		{
 			if(!events.getStations().isEmpty())
 			{
@@ -3405,6 +3532,21 @@ public class MmMapViewer extends JPanel implements Printable {
         	swingPoint.setStartPoint(pnts);
         	swingPoint.setEndPoint(pnts1);
         	
+        	if(events.getStations().get(i).getStationType())
+        	{
+        		swingPoint.setStartPointRadius(5);
+        	}
+        	else
+        		swingPoint.setStartPointRadius(10);
+        	
+        	if(events.getStations().get(i+1).getStationType())
+        	{
+        		swingPoint.setEndPointRadius(5);
+        	}
+        	else
+        		swingPoint.setEndPointRadius(10);
+
+        	
         	//set the geo position
         	swingPoint.setStartGeoPosition(gp);
         	swingPoint.setEndGeoPosition(gp1);
@@ -3434,8 +3576,16 @@ public class MmMapViewer extends JPanel implements Printable {
         
         if(!geoPos.isEmpty())
 		{	
-		    mapMarkerWindow.setMarkerIndex(geoPos.size()+1);
-		    mapMarkerWindow.hideMarker(geoPos.size()-1);
+        	if(geoPos.size()==6)
+        	{	
+		       mapMarkerWindow.setMarkerIndex(geoPos.size());
+		       mapMarkerWindow.hideMarkers();
+        	}   
+        	else
+        	{	
+        		mapMarkerWindow.setMarkerIndex(geoPos.size()+1);
+        		mapMarkerWindow.hideMarker(geoPos.size()-1);
+        	}
 		}
 		
 		drawPoints();
@@ -4818,11 +4968,11 @@ public class MmMapViewer extends JPanel implements Printable {
 	
 	public void parseMarkerEvent(JSONObject jsonObject)
 	{
-		int markerIndex=0;
+int markerIndex=0;
 		
 		
 		
-		for(int i=1;i<19;i++)
+		for(int i=1;i<15;i++)
 		{	
 			
 			try
@@ -4862,15 +5012,47 @@ public class MmMapViewer extends JPanel implements Printable {
 							     menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(fileName+MmLanguage.language_events[language][1],imageFile.getAbsolutePath());
 				   		   else
 				   			 showMessage(MmLanguage.language_jsonException[language][0]);
+				   		   
+				   		   if(attributes.get("collectItem").toString().equals("true"))
+					   	   {		 
+							    attrs +=MmLanguage.language_events[language][0];
+						   }
 		            	
 		               }
+		               else
+		               {
+		            	   
+			               if(jsonObject.get("name").toString().contains("_model"))
+			               {
+			            	   attrs +=MmLanguage.language_mediaevents[language][9];
+			            	  
+			 			      for(i=1;i<15;i++)
+			 			      {
+			 			    	   if(jsonObject.get("name").toString().indexOf("marker"+Integer.toString(i))==0)
+			 			    	   {	  
+			 			    		    
+			 			    			 markerIndex=i-1;
+			 			    			 attrs = attributes.get("modelName").toString()+":"+MmLanguage.language_mediaevents[language][9];
+			 			    			 if(attributes.get("collectItem").toString().equals("true"))
+			 			    			 {		 
+			 							     attrs +=":skatt";
+			 			    			 }    
+			 			    			 File filename = new File(openFileName.getParent()+"/osg_obj/"+attributes.get("modelName").toString());
+			 			    			 if(filename.exists())
+			 							     menuItems.getGlobalMarkers().getStations().get(markerIndex).setLabelsText(attrs,filename.getAbsolutePath());
+			 			    			 else
+			 			    				 showMessage(MmLanguage.language_jsonException[language][1]);
+			 			    			 break;
+			 			    	   }	  
+			 			    			      
+			 			      }
+			               }       
+		               }
 		               
-		               if(attributes.get("collectItem").toString().equals("true"))
-				   	   {		 
-						    attrs +=MmLanguage.language_events[language][0];
-					   }
-		    	    }    
-		    	    else
+		               
+		               
+		    	    }   
+		            else
 		    	    { 	
 		    	      //menuItems.getGlobalMarkers().addStation(jsonObject.get("name").toString(), markerIndex);
 		    	      
@@ -5062,7 +5244,7 @@ public class MmMapViewer extends JPanel implements Printable {
                 //rect.width+=adjustx;
                 //rect.height+=adjusty;
                 
-                System.out.println("rect "+rect); 
+                //System.out.println("rect "+rect); 
                 
                 //g.translate(-rect.x, -rect.y);
                 

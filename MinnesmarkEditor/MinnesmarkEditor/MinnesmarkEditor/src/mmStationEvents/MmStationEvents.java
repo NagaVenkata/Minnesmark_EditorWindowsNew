@@ -229,7 +229,7 @@ public class MmStationEvents {
 			}
 		}
 		
-		if(count<4)
+		if(count!=-1 && count<4)
 		{
 			labels.get(count).setText(text);
 			labels.get(count).setName(path);
@@ -253,6 +253,61 @@ public class MmStationEvents {
 	public String getStationName()
 	{
 		return this.stationName;
+	}
+	
+	public int getStationIndexFromSwingPoint()
+	{
+		int index;
+		if(this.getStationType())
+		{
+			String[] subStr = this.stationName.split("_");
+			
+			if(subStr.length>0)
+			{
+				String str = subStr[0];
+				str = str.substring(str.length()-1);
+				index = Integer.parseInt(str);
+				
+				return index;
+			}
+		}
+		
+		return 0;
+	}
+	
+	public int getSwingIndexFromSwingPoint()
+	{
+		int index;
+		if(this.getStationType())
+		{
+			String[] subStr = this.stationName.split("_");
+			
+			if(subStr.length>0)
+			{
+				String str = subStr[subStr.length-1];
+				str = str.substring(str.length()-1);
+				index = Integer.parseInt(str);
+				
+				return index;
+			}
+		}
+		
+		return 0;
+	}
+	
+	public int getStationIndexFromStation()
+	{
+		int index;
+		if(!this.getStationType())
+		{
+				String str = this.stationName.substring(this.stationName.length()-1);
+				index = Integer.parseInt(str);
+				
+				return index;
+			
+		}
+		
+		return 0;
 	}
 	
 	public double getLatitude()
@@ -783,7 +838,7 @@ public class MmStationEvents {
 			    	   {	
 			    	     if(!createMessageEvent(messageEvent))
 			    	     {
-			    	    	 messageEvent.addActions("mapEditMarker"+Integer.toString(stationIndex)); 
+			    	    	 //messageEvent.addActions("mapEditMarker"+Integer.toString(stationIndex)); 
 			    	    	 break;
 			    	     }	 
 			    	   }   
@@ -867,6 +922,9 @@ public class MmStationEvents {
 			  else
 				  nextImageEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(imageEvents.size())+"image");
 			  
+			  imageEvent.JSONActions();
+			  imageEvents.add(nextImageEvent);
+			  imageEvent.addActions(nextImageEvent.getEventName());
 			        String[] attrs = lb.getText().split(":");
 			        
 			        if(attrs.length<=1)
@@ -900,10 +958,7 @@ public class MmStationEvents {
 //						    else
 //						    	imageEvent.addActions("EnableStation"+Integer.toString(nextStation.getSwingPointStationIndex())+"SwingPoint"+Integer.toString(nextStation.getIndexStationNameIndex())+"Compass");     
 				    	
-				        nextImageEvent.JSONActions();
-					    imageEvents.add(nextImageEvent);
-					    imageEvent.addActions(nextImageEvent.getEventName());	
-				        
+				        				        
 					    if(!createImageEvent(nextImageEvent))
 					    	return false;
 				       
@@ -1378,7 +1433,7 @@ public class MmStationEvents {
 				        imageEvent.makeJSONObject();
 				        imageEvent.JSONActions();
 					    imageEvents.add(imageEvent);
-					    imageEvent.addActions(imageEvent.getEventName());
+					    //imageEvent.addActions(imageEvent.getEventName());
 					    currentLabelIndex++;
 					    
 					    panoramaEvent.addActions(imageEvent.getEventName());
@@ -2014,7 +2069,7 @@ public class MmStationEvents {
 			    	    videoEvent.addActions("enableStation"+Integer.toString(nextStation.getIndexStationNameIndex())+"Compass");
 			        else
 			    	    videoEvent.addActions("enableStation"+Integer.toString(nextStation.getSwingPointStationIndex())+"SwingPoint"+Integer.toString(nextStation.getIndexStationNameIndex())+"Compass");
-			        
+			        videoEvent.addActions("mapEditMarker"+Integer.toString(stationIndex));
 		    	}
 			    else
 				{	
@@ -2095,7 +2150,10 @@ public class MmStationEvents {
 		   if(lb.getText().contains(".m4v"))
 		   { 	  
 				  MmVideoEvent nextVideoEvent = new MmVideoEvent();
-				  nextVideoEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(videoEvents.size())+"_video"); 
+				  nextVideoEvent.setEventName("station"+Integer.toString(stationIndex)+"_"+Integer.toString(videoEvents.size())+"_video");
+				  videoEvents.add(nextVideoEvent);
+				  videoEvent.addActions(nextVideoEvent.getEventName());
+				  videoEvent.JSONActions();
 				  String[] attrs = lb.getText().split(":");
 				  if(attrs.length<=1)
 				  {	   
@@ -2122,9 +2180,7 @@ public class MmStationEvents {
 //					    	videoEvent.addActions("EnableStation"+Integer.toString(nextStation.getSwingPointStationIndex())+"SwingPoint"+Integer.toString(nextStation.getIndexStationNameIndex())+"Compass");
 				      	    
 				    	
-				         nextVideoEvent.JSONActions();
-					     videoEvents.add(nextVideoEvent);
-					     videoEvent.addActions(nextVideoEvent.getEventName());	
+				         	
 					     if(!createVideoEvent(nextVideoEvent))
 					    	 return false;
 				     	    	     
