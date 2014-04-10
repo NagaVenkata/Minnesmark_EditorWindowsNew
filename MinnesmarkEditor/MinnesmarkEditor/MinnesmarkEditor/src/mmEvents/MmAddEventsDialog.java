@@ -516,8 +516,6 @@ public class MmAddEventsDialog extends JPanel implements ActionListener {
 		
 		textStrings = ((JLabel) textPanel.getComponent(componentIndex)).getText().split(":");
 		
-		
-		
 				
 		if(isImageFile(textStrings[0]))
 		{

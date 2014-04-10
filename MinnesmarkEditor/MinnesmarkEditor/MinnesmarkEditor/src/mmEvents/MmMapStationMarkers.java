@@ -361,9 +361,11 @@ public class MmMapStationMarkers extends JPanel {
 				   int y = event.getPoint().y - moveableLabel.getHeight()/2;
 				   Point pt = new Point(x,y);
 				
+				   
 				
 				   SwingUtilities.convertPointToScreen(pt, mapMarkers.get(markerIndex));
 					
+				   System.out.println("pts "+pt);
 			    				   
 				   moveableLabel = new JLabel(mapMarkers.get(markerIndex).getIcon());
 			    
@@ -426,7 +428,7 @@ public class MmMapStationMarkers extends JPanel {
 				// TODO Auto-generated method stub
 				//Point pnt = new Point((markerWindows.get(markerIndex).getLocation().x+window.getWidth())-370,(markerWindows.get(markerIndex).getLocation().y+window.getHeight())-80);
 				//Point pnt = new Point((markerWindows.get(markerIndex).getLocation().x+window.getWidth()),(markerWindows.get(markerIndex).getLocation().y+window.getHeight()));
-				Point pnt = new Point((markerWindows.get(markerIndex).getLocation().x+window.getWidth())-408,(markerWindows.get(markerIndex).getLocation().y+window.getHeight())-40);
+				Point pnt = new Point((markerWindows.get(markerIndex).getLocation().x+window.getWidth())-415,(markerWindows.get(markerIndex).getLocation().y+window.getHeight())-15);
 				
 				//JOptionPane.showMessageDialog(mainPanel, "marker panel "+Integer.toString(markerIndex));
 				
