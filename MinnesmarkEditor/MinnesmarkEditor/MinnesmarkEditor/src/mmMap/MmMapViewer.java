@@ -1369,11 +1369,14 @@ public class MmMapViewer extends JPanel implements Printable {
 				//System.out.println("station point "+point+"  "+pnt1);
 				//swingPos.get(i).print();
 				
-			     if(swingPos.get(i).getEndPoint().equals(point) || (swingPos.get(i).getEndPoint().equals(pnt1)))
-			     {
+				if(swingPos.get(i).isPointPresent(point))
+			    {
 			    	 swingPos.get(i).setEndPoint(swingPos.get(i+1).getEndPoint());
 			    	 swingPos.get(i).setEndGeoPosition(swingPos.get(i+1).getEndGeoPosition());
+			    	 swingPos.get(i).setEndPointRadius(swingPos.get(i+1).getEndPointRadius());
 			         swingPos.remove(i+1);
+			         JOptionPane.showMessageDialog(null, "size  "+swingPos.size());
+			         System.out.println("index points after point removed "+swingPos.size());
 			         return;
 			    	    		    	
 			     }
@@ -1384,8 +1387,36 @@ public class MmMapViewer extends JPanel implements Printable {
 		
 		if(edgeIndex==swingPos.size()-1)
 		{
-		   	
-		   int swingIndx = swingPos.get(edgeIndex).getStationIndex();	
+			int indx = -1;
+			
+			
+			  if(swingPos.get(swingPos.size()-2).getStartPointRadius()==5)
+			  {	  
+			     for(int i=swingPos.size()-2;;i--)
+			     {
+				     if(swingPos.get(i).getStartPointRadius()==10)
+				     {
+					    indx=i;
+					    break;
+				     }
+			     }  
+			     
+			     //JOptionPane.showMessageDialog(null, " indx "+indx);
+				  
+				  ArrayList<MmSwingPoints> pnts = new ArrayList<MmSwingPoints>();
+				  
+				  for(int i=indx;i<swingPos.size();i++)
+				  {
+					  //JOptionPane.showMessageDialog(null, " indx "+i);
+					  pnts.add(swingPos.get(i));
+				  }
+				  
+				  swingPos.removeAll(pnts);
+				  
+			  }
+			  else
+				  swingPos.remove(edgeIndex);
+		   /*int swingIndx = swingPos.get(edgeIndex).getStationIndex();	
 		   swingPos.remove(edgeIndex);
 		   int indx = swingPos.size()-1;
 		   
@@ -1401,7 +1432,7 @@ public class MmMapViewer extends JPanel implements Printable {
 			   else
 				   return;
 			   
-		   }
+		   }*/
 		  
 		   /*Point pnt1 = new Point(point.x,point.y+1);
 		   for(int i=swingPos.size()-1;i>=0;)

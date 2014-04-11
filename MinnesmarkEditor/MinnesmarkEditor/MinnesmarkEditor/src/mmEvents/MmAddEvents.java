@@ -1399,14 +1399,19 @@ public class MmAddEvents extends JPanel {
 					
 					stationIndx = stationEvents.get(i).getSwingPointStationIndex();
 					
-					if(stationIndx == removeStationIndex)
+					if(stationIndx >= removeStationIndex)
 					{
 						stationIndx-=1;
 						swingIndx-=1;
 					}
 					
 					
-					stationEvents.get(i).setStationIndex(stationIndx);
+					if(stationIndx != removeStationIndex)
+					{
+					   stationEvents.get(i).setStationIndex(stationIndx-1);
+					}  
+					else
+						stationEvents.get(i).setStationIndex(stationIndx);
 					stationEvents.get(i).setStationName("station"+Integer.toString(stationIndx)+"_swingPoint"+Integer.toString(swingIndx));
 					stationEvents.get(i).setCurrentStationIndex(stationEvents.get(i).getCurrentStationIndex()-1);
 					
@@ -1423,7 +1428,7 @@ public class MmAddEvents extends JPanel {
 					if(stationIndx!=stationEvents.get(index-1).getStationIndex())
 						stationIndx-=1;
 					
-					stationEvents.get(i).setStationIndex(stationIndx);
+					stationEvents.get(i).setStationIndex(stationIndx-1);
 					stationEvents.get(i).setStationName("station"+Integer.toString(stationIndx));
 					stationEvents.get(i).setCurrentStationIndex(stationIndx);
 					

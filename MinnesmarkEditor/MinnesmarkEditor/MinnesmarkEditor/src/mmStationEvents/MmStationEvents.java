@@ -6,6 +6,8 @@ import java.awt.event.MouseListener;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jdesktop.swingx.mapviewer.GeoPosition;
 import org.json.*;
@@ -282,19 +284,30 @@ public class MmStationEvents {
 		{
 			String[] subStr = this.stationName.split("_");
 			
+			Pattern pattern = Pattern.compile("[0-9]+");
+			
+			
+			
 			if(subStr.length>0)
 			{
-				String str = subStr[subStr.length-1];
-				str = str.substring(str.length()-1);
-				index = Integer.parseInt(str);
 				
-				return index;
+				String str = subStr[subStr.length-1];
+				Matcher matcher = pattern.matcher(str);
+				while(matcher.find())
+				{
+					//System.out.println("matches "+matcher.group());
+					index = Integer.parseInt(matcher.group());
+					return index;
+				}
+				//str = str.substring(str.length()-1);
+				//index = Integer.parseInt(str);
+				//System.out.println("index of swing point from name "+index);
+				//return index;
 			}
 		}
 		
 		return 0;
-	}
-	
+	}	
 	public int getStationIndexFromStation()
 	{
 		int index;
