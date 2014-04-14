@@ -1284,7 +1284,18 @@ public class MmAddEvents extends JPanel {
 	
 	public void removeStation(int index)
 	{
-		int station_index = stationEvents.get(index).getStationIndex();
+		int station_index =-1;
+		
+		if(index<stationEvents.size())
+		{	
+			station_index = stationEvents.get(index).getStationIndex();
+		}    
+		
+		if(index>=stationEvents.size())
+		{
+			index--;
+			station_index = stationEvents.get(index).getStationIndex();
+		}	
 		
 		/*for(int i=0;i<stationEvents.size();i++)
 		{

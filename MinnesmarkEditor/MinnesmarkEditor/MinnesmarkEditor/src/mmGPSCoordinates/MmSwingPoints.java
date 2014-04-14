@@ -30,7 +30,8 @@ public class MmSwingPoints {
 	
 	public MmSwingPoints()
 	{
-		
+		startPointRadius=0;
+		endPointRadius=0;
 	}
 	
 	public MmSwingPoints(Point point)
