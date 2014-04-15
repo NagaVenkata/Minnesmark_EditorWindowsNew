@@ -338,7 +338,7 @@ public class MmGlobalMarkerEvents {
 		
 		this.saveFilePath = saveFilePath;
 		
-		
+		markerEvent = new MmMarkerEvent();
 		
 		markerEvent.setEventName(this.markerName);
 		markerEvent.setMarkerIndex(markerIndex+1);
@@ -2498,12 +2498,12 @@ public class MmGlobalMarkerEvents {
 	
 	public void clearContent()
 	{
-		//markerEvent.clearContent();
-		//markerEvent = null;
+		markerEvent.clearContent();
+		markerEvent = null;
 		
-		markerEvent.action = null;
+		//markerEvent.action = null;
 		
-		markerEvent.action = new JSONArray();
+		//markerEvent.action = new JSONArray();
 		
 		imageEvents.clear();
 		audioEvents.clear();

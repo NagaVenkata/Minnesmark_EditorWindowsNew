@@ -2753,6 +2753,7 @@ public class MmMapViewer extends JPanel implements Printable {
 		
 		if(!startEvents.getTexts().isEmpty())
 		{
+			 
 			 startEvents.writeJson(filePath);
 			 startEvents.writeJsonObjects(jsonObjects);
 			 startEvents.writeBackgroundImage(jsonObjects);

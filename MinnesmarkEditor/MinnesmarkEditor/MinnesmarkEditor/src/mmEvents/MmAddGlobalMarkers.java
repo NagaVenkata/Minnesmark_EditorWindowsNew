@@ -217,7 +217,7 @@ public class MmAddGlobalMarkers extends JPanel {
 				int index = station.getLabels().indexOf(lb);
 				System.out.println("index "+index);
 				
-				if(!lb.getName().equals("label") && !station.getLabels().get(index+1).getName().equals("label"))
+				if(!lb.getName().equals("label") && (index+1)<station.getLabels().size() /*!lb.getName().equals("label") && !station.getLabels().get(index+1).getName().equals("label")*/)
 				{
 					isMoveLabel=true;
 					select_index = station.getLabels().indexOf(lb);
@@ -521,7 +521,8 @@ public class MmAddGlobalMarkers extends JPanel {
 				
 				//station.setLabels(eventLabels);
 				int stationIndex = globalMarkerEvents.indexOf(station);
-				station.setMarkerName("marker"+Integer.toString(stationIndex+1));
+				//station.setMarkerName("marker"+Integer.toString(stationIndex+1));
+				station.setMarkerName("marker"+Integer.toString(globalMarkerEvents.get(stationIndex).getMarkerIndex()+1));
 				station.setMarkerIndex(globalMarkerEvents.get(stationIndex).getMarkerIndex());
 				if(!globalMarkerEvents.isEmpty())
 				{ 	

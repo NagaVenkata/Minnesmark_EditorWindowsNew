@@ -43,7 +43,7 @@ public class MmStartEvents {
     		eventNames[i] = "";
     	}
     	
-    	
+       setContent(); 	
     }
     
         
@@ -361,24 +361,38 @@ public class MmStartEvents {
 			  			  
 			  File file = new File(destinationPath+"/images");
 			  
-			  String[] desPath = pathsText.get(0).split("/");
+			  //String[] desPath = pathsText.get(0).split("\\");
 			  
-			  if(file.isDirectory())
+			  File desFilePath = new File(pathsText.get(0));
+			  String desPath = desFilePath.getName();
+		
+			  
+			  //JOptionPane.showMessageDialog(null, "despath "+desPath);
+			  
+			  File desFile = new File(destinationPath+"/images/"+desPath);
+              
+ 			  
+			  if(!desFile.exists())
 			  {
-				  src = new FileInputStream(pathsText.get(0)).getChannel(); 
-			      des = new FileOutputStream(destinationPath+"/images/"+desPath[desPath.length-1]).getChannel();
-			  }
-			  else
-			  {
-				  file.mkdir();
-				  src = new FileInputStream(pathsText.get(0)).getChannel();
-				  des = new FileOutputStream(destinationPath+"/images/"+desPath[desPath.length-1]).getChannel();
-			  }
+			      if(file.isDirectory())
+			      {
+				      src = new FileInputStream(desFilePath).getChannel(); 
+			          des = new FileOutputStream(destinationPath+"/images/"+desPath).getChannel();
+			      }
+			      else
+			      {
+				      file.mkdir();
+				      src = new FileInputStream(desFilePath).getChannel();
+				      des = new FileOutputStream(destinationPath+"/images/"+desPath).getChannel();
+				     
+			      }
+			  }    
 			  
 			  
 			  
 			  try {
-				    des.transferFrom(src, 0, src.size());
+				  if(des!=null)
+					     des.transferFrom(src, 0, src.size());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -391,8 +405,11 @@ public class MmStartEvents {
 		finally
 		{
 			try {
-				   src.close();
-				   des.close();
+				  if(src!=null)
+				  {	
+				     src.close();
+				     des.close();
+				  }
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
