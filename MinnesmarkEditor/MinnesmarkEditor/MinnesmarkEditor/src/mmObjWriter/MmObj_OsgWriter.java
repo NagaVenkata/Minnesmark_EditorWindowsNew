@@ -133,7 +133,7 @@ public class MmObj_OsgWriter {
 		
 		String srcFile = null;
 		
-		JOptionPane.showMessageDialog(null, sourcePath+"  "+destinationPath+"   "+materialFiles);
+		//JOptionPane.showMessageDialog(null, sourcePath+"  "+destinationPath+"   "+materialFiles);
 			
 		try
 		{

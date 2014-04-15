@@ -1711,17 +1711,19 @@ public class MmGlobalMarkerEvents {
 			   
 			   nextAudioEvent.setSourcePath(lb.getName());
 			   nextAudioEvent.setDestinationPath(this.saveFilePath);
+			   
+			   nextAudioEvent.makeJSONObject();
+		    	
+ 		    	
+		       audioEvent.JSONActions();
 		       
 		       currentLabelIndex++;
 		       
 		       if(currentLabelIndex<=labels.size())
 		       {	   
-		         nextAudioEvent.makeJSONObject();
-		    	
-		     	 		    	
-		         nextAudioEvent.JSONActions();
-			     audioEvents.add(nextAudioEvent);
-			     audioEvent.addActions(nextAudioEvent.getEventName());	
+		         
+			     //audioEvents.add(nextAudioEvent);
+			     //audioEvent.addActions(nextAudioEvent.getEventName());	
 			     if(!createAudioEvent(nextAudioEvent))
 			    	 return false;
 		         
@@ -2008,14 +2010,16 @@ public class MmGlobalMarkerEvents {
 				  nextVideoEvent.setSourcePath(lb.getName());
 				  nextVideoEvent.setDestinationPath(this.saveFilePath);
 				  
+				  nextVideoEvent.makeJSONObject();
+			    	
+			      videoEvent.JSONActions();
+				  videoEvents.add(nextVideoEvent);
+				  videoEvent.addActions(nextVideoEvent.getEventName());
+				  
 		    	  currentLabelIndex++;
 		    	  if(currentLabelIndex<=labels.size())
 		    	  {	
-		    		  nextVideoEvent.makeJSONObject();
-				    	
-				      nextVideoEvent.JSONActions();
-					  videoEvents.add(nextVideoEvent);
-					  videoEvent.addActions(nextVideoEvent.getEventName());	
+		    		  	
 					  if(!createVideoEvent(nextVideoEvent))
 						  return false;
 				     	    	     
